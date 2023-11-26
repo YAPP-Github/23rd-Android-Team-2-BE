@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db:
+    container_name: moneymong-db
+    image: mysql
+    environment:
+      MYSQL_DATABASE: moneymong
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    restart: always
+
+  server:
+    container_name: server
+    image: yapp/moneymong
+    ports:
+      - "8080:8080"
