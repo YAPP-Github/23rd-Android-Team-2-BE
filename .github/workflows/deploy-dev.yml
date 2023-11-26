@@ -42,13 +42,13 @@ jobs:
 
       # 도커 MYSQL 이미지 실행
       - name: Create Mysql Docker Container
-        run: sudo docker run -d -p 3305:3306 --env MYSQL_DATABASE="${{ secrets.TEST_DATABASE }}" --env MYSQL_ROOT_PASSWORD="${{ secrets.TEST_DATASOURCE_PASSWORD }}" mysql:8.0.31
+        run: sudo docker run -d -p 3306:3306 --env MYSQL_DATABASE="${{ secrets.TEST_DATABASE }}" --env MYSQL_ROOT_PASSWORD="${{ secrets.TEST_DATASOURCE_PASSWORD }}" mysql:8.0.31
 
       # 빌드
       - name: Build with Gradle
         run: ./gradlew clean bootJar
 
-      #빌드 후 도커 허브로 push
+      # 빌드 후 도커 허브로 push
       - name: Docker Build & Push to Hub
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -75,9 +75,7 @@ jobs:
           password: ${{ secrets.NCP_PASSWORD }}
           script: |
             sudo cp /home/ubuntu/.docker/docker-compose.yml /home/ubuntu
-            sudo cp /home/ubuntu/script/deploy.sh /home/ubuntu
             cd /home/ubuntu
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
-            chmod 777 ./deploy.sh
-            ./deploy.sh
+            docker-compose up -d
             docker image prune -f

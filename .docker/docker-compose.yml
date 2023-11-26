@@ -16,6 +16,6 @@ services:
 
   server:
     container_name: server
-    image: yapp/moneymong
+    image: ${DOCKER_IMAGE_NAME}
     ports:
       - "8080:8080"
