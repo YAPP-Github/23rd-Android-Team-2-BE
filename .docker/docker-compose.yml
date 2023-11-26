@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       TZ: Asia/Seoul
     ports:
-      - "3306:3306"
+      - ${DOCKER_DB_PORT}
     volumes:
       - ./mysqldata:/var/lib/mysql
     restart: always
@@ -18,4 +18,4 @@ services:
     container_name: server
     image: ${DOCKER_IMAGE_NAME}
     ports:
-      - "8080:8080"
+      - ${DOCKER_SERVER_PORT}
