@@ -9,7 +9,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 public final class ProblemResponseData {
-    private final String message;
     private final Map<String, Object> detail;
     private final List<String> stacktrace;
     private final ProblemResponseData cause;
@@ -27,7 +26,6 @@ public final class ProblemResponseData {
         List<String> truncatedStackTrace = problem.getStackTrace(showStackTraceCount);
 
         return new ProblemResponseData(
-                problem.getMessage(),
                 detail,
                 truncatedStackTrace,
                 problem.getCause() != null ? ProblemResponseData.of(problem.getCause(), showStackTraceCount) : null
