@@ -1,5 +1,6 @@
 package com.moneymong.common.exception;
 
+import com.moneymong.common.exception.problem.RuntimeProblem;
 import com.moneymong.common.exception.problem.ErrorCategory;
 import com.moneymong.common.exception.problem.Problem;
 import com.moneymong.common.response.ApiResponse;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import static com.moneymong.common.exception.problem.ErrorCategory.INVALID_REQUEST;
-import static com.moneymong.common.exception.problem.ErrorCategory.SERVICE_UNAVAILABLE;
 
 
 @Slf4j
@@ -99,10 +99,7 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ApiResponse> handleException(Exception e) {
 		logError(e);
 
-		return new ResponseEntity<>(
-				ApiResponse.fail(e.getMessage()),
-				convertErrorCodeToHttpStatus(SERVICE_UNAVAILABLE)
-		);
+		return problemControllerAdvice.handleProblem(new RuntimeProblem(e));
 	}
 
 	private void logService(HttpServletRequest request, Problem problem) {

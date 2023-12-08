@@ -1,6 +1,7 @@
 package com.moneymong.common.response;
 
 import com.moneymong.common.exception.problem.Problem;
+import com.moneymong.common.exception.problem.ProblemResponseData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +47,10 @@ public class ApiResponse<T> {
 
     public static ApiResponse<Void> success(String message) {
         return success(message, null);
+    }
+
+    public static ApiResponse<ProblemResponseData> fail(Problem cause, int showStackTraceCount) {
+        return new ApiResponse<>(Result.FAIL, cause.getMessage(), ProblemResponseData.of(cause, showStackTraceCount), cause.getErrorCode().getCode());
     }
 
     public static ApiResponse<Void> fail(String message) {
