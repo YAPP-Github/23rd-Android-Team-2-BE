@@ -25,7 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager;
         transactionManagerRef = "moneyMongTransactionManager"
 )
 @Configuration(proxyBeanMethods = false)
-public class JPAConfig {
+public class JpaConfig {
     @Bean
     @ConfigurationProperties(prefix = "datasource.db")
     public DataSource moneyMongDataSource() {
