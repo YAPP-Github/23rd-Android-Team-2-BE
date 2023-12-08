@@ -1,14 +1,68 @@
-spring:
-  config:
-    import: optional:file:.env[.properties]
-
 server:
-  port: ${SERVER_PORT}
+  port: 8080
   shutdown: graceful
 
+spring:
+  profiles:
+    active: local
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    properties:
+      format_sql: true
+    hibernate:
+      ddl-auto: create
+
+
+# actuator 관리
 management:
   endpoints:
     web:
       base-path: /
       exposure:
         include: health
+
+  # db 설정
+datasource:
+  db:
+    pool-name: moneymong
+    jdbc-url: jdbc:mysql://localhost:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    maximum-pool-size: 5
+    connection-timeout: 3000
+    cache-prep-stmts: true
+    prep-stmt-cache-size: 250
+    prep-stmt-cache-sql-limit: 2048
+    use-server-prep-stmts: true
+    use-local-session-state: true
+    cache-result-set-metadata: true
+    maintain-time-stats: false
+    leak-detection-threshold: 5000
+    autocommit: false
+    connection-init-sql: "SET NAMES 'utf8mb4'"
+    read-only: false
+    data-source-properties:
+      useCursors: false
+      sendStringParametersAsUnicode: false
+      characterEncoding: utf8
+      zeroDateTimeBehavior: convertToNull
+      useSSL: false
+      autoReconnect: true
+      autoReconnectForPools: true
+      usePipelineAuth: false
+      useBatchMultiSend: false
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
