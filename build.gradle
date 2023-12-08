@@ -32,6 +32,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	//actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
