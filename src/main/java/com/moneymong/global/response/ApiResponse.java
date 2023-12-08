@@ -1,7 +1,7 @@
-package com.moneymong.common.response;
+package com.moneymong.global.response;
 
-import com.moneymong.common.exception.problem.Problem;
-import com.moneymong.common.exception.problem.ProblemResponseData;
+import com.moneymong.global.exception.problem.Problem;
+import com.moneymong.global.exception.problem.ProblemResponseData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

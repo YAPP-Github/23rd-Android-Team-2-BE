@@ -1,4 +1,8 @@
-package com.moneymong.common.exception.problem;
+package com.moneymong.global.exception.problem.common;
+
+import com.moneymong.global.exception.problem.ErrorCategory;
+import com.moneymong.global.exception.problem.ErrorCode;
+import com.moneymong.global.exception.problem.Problem;
 
 public class IllegalArgumentProblem extends Problem {
 

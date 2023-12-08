@@ -1,13 +1,13 @@
-package com.moneymong.common.exception;
+package com.moneymong.global.exception;
 
-import com.moneymong.common.exception.problem.ErrorCode;
-import com.moneymong.common.exception.problem.Problem;
-import com.moneymong.common.response.ApiResponse;
+import com.moneymong.global.exception.problem.ErrorCode;
+import com.moneymong.global.exception.problem.Problem;
+import com.moneymong.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.moneymong.common.exception.GlobalExceptionHandler.convertErrorCodeToHttpStatus;
+import static com.moneymong.global.exception.CommonControllerAdvice.convertErrorCodeToHttpStatus;
 
 @RestControllerAdvice
 public class ProblemControllerAdvice {

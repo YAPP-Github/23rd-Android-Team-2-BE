@@ -1,9 +1,9 @@
-package com.moneymong.common.exception;
+package com.moneymong.global.exception;
 
-import com.moneymong.common.exception.problem.RuntimeProblem;
-import com.moneymong.common.exception.problem.ErrorCategory;
-import com.moneymong.common.exception.problem.Problem;
-import com.moneymong.common.response.ApiResponse;
+import com.moneymong.global.exception.problem.common.RuntimeProblem;
+import com.moneymong.global.exception.problem.ErrorCategory;
+import com.moneymong.global.exception.problem.Problem;
+import com.moneymong.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import static com.moneymong.common.exception.problem.ErrorCategory.INVALID_REQUEST;
+import static com.moneymong.global.exception.problem.ErrorCategory.INVALID_REQUEST;
 
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class CommonControllerAdvice {
 	private static ProblemControllerAdvice problemControllerAdvice;
 
-	public GlobalExceptionHandler(ProblemControllerAdvice problemControllerAdvice) {
-		GlobalExceptionHandler.problemControllerAdvice = problemControllerAdvice;
+	public CommonControllerAdvice(ProblemControllerAdvice problemControllerAdvice) {
+		CommonControllerAdvice.problemControllerAdvice = problemControllerAdvice;
 	}
 
 	private static final String EXCEPTION_FORMAT = "[EXCEPTION]                   -----> ";

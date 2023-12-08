@@ -1,4 +1,4 @@
-package com.moneymong.common.config.jpa;
+package com.moneymong.global.config.jpa;
 
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;

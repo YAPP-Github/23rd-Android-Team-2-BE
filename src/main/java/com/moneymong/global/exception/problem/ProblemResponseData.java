@@ -1,4 +1,4 @@
-package com.moneymong.common.exception.problem;
+package com.moneymong.global.exception.problem;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
