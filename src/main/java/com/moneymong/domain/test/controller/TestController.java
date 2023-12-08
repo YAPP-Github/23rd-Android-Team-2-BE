@@ -1,8 +1,10 @@
 package com.moneymong.domain.test.controller;
 
+import com.moneymong.global.exception.problem.ProblemParameters;
 import com.moneymong.domain.test.TestEntity;
+import com.moneymong.domain.test.exception.TestNotFoundProblem;
 import com.moneymong.domain.test.service.TestService;
-import com.moneymong.common.response.ApiResponse;
+import com.moneymong.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +22,7 @@ public class TestController {
             @RequestParam("name") String name
     ) {
         TestEntity testEntity = testService.create(name);
-        return ApiResponse.success(testEntity, "[Success] create testEntity");
+        return ApiResponse.success("[Success] create testEntity", testEntity);
     }
 
     @GetMapping("/test/{id}")
@@ -28,6 +30,19 @@ public class TestController {
             @PathVariable("id") Long id
     ) {
         TestEntity testEntity = testService.find(id);
-        return ApiResponse.success(testEntity, "[Success] find testEntity");
+        return ApiResponse.success("[Success] find testEntity", testEntity);
     }
+
+    @GetMapping("/ex")
+    public Void exception() {
+        Long testId = 1L;
+        throw new TestNotFoundProblem(ProblemParameters.of("testId", testId));
+    }
+
+
+    @GetMapping("/ex2")
+    public Void exception2() throws Exception {
+        throw new Exception("error occurs");
+    }
+
 }
