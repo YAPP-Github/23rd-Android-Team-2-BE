@@ -1,4 +1,4 @@
-package com.moneymong.api.config;
+package com.moneymong.common.config.jpa;
 
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
@@ -19,13 +19,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @EnableJpaRepositories(
         basePackages = {
-                "com.moneymong.api"
+                "com.moneymong"
         },
         entityManagerFactoryRef = "moneyMongEntityManagerFactory",
         transactionManagerRef = "moneyMongTransactionManager"
 )
 @Configuration(proxyBeanMethods = false)
-public class JPAConfig {
+public class JpaConfig {
     @Bean
     @ConfigurationProperties(prefix = "datasource.db")
     public DataSource moneyMongDataSource() {
@@ -49,7 +49,7 @@ public class JPAConfig {
     ) {
         return entityManagerFactoryBuilder
                 .dataSource(lazyDataSource)
-                .packages("com.moneymong.api.domain")
+                .packages("com.moneymong")
                 .persistenceUnit("moneymong")
                 .build();
     }
