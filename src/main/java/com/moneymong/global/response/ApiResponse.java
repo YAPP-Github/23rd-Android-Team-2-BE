@@ -50,7 +50,12 @@ public class ApiResponse<T> {
     }
 
     public static ApiResponse<ProblemResponseData> fail(Problem cause, int showStackTraceCount) {
-        return new ApiResponse<>(Result.FAIL, cause.getMessage(), ProblemResponseData.of(cause, showStackTraceCount), cause.getErrorCode().getCode());
+        return new ApiResponse<>(
+                Result.FAIL,
+                cause.getMessage(),
+                ProblemResponseData.of(cause, showStackTraceCount),
+                cause.getErrorCode().getCode()
+        );
     }
 
     public static ApiResponse<Void> fail(String message) {
