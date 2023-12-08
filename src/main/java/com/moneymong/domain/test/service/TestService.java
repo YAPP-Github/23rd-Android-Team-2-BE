@@ -1,7 +1,7 @@
-package com.moneymong.api.service;
+package com.moneymong.domain.test.service;
 
-import com.moneymong.api.domain.TestEntity;
-import com.moneymong.api.repository.TestRepository;
+import com.moneymong.domain.test.TestEntity;
+import com.moneymong.domain.test.repository.TestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,5 +15,11 @@ public class TestService {
     public TestEntity create(String name) {
         TestEntity testEntity = TestEntity.createNew(name);
         return testRepository.save(testEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public TestEntity find(Long id) {
+        return testRepository.findById(id)
+                .orElseThrow();
     }
 }

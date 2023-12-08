@@ -1,4 +1,4 @@
-package com.moneymong.api;
+package com.moneymong;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
