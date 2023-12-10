@@ -11,9 +11,7 @@ spring:
     show-sql: true
     properties:
       format_sql: true
-    hibernate:
-      ddl-auto: create
-
+      hibernate.hbm2ddl.auto: create
 
 # actuator 관리
 management:
