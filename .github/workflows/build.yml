@@ -2,7 +2,7 @@ name: gradle build
 
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [ main ]
 
 # 권한 설정
 permissions: write-all
