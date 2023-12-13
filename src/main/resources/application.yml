@@ -9,6 +9,7 @@ spring:
       - security
 
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
     show-sql: true
     properties:
