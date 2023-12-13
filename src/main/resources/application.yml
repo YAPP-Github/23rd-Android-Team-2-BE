@@ -5,8 +5,11 @@ server:
 spring:
   profiles:
     active: local
+    include:
+      - security
 
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
     show-sql: true
     properties:
