@@ -5,6 +5,8 @@ server:
 spring:
   profiles:
     active: local
+    include:
+      - security
 
   jpa:
     open-in-view: false
