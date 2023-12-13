@@ -3,10 +3,12 @@ server:
   shutdown: graceful
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   profiles:
     active: local
-    include:
-      - security
+    include: security
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
