@@ -1,4 +1,4 @@
-package com.moneymong.domain.useruniversity;
+package com.moneymong.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,17 +29,21 @@ public class UserUniversity {
     @Column(unique = true, nullable = false)
     private String userToken;
 
-    @Column(length = 100, nullable = false)
-    private String name;
+    @Column(
+            name = "university_name",
+            length = 100,
+            nullable = false
+    )
+    private String universityName;
 
     @Column(nullable = false)
     private int grade;
 
     @Builder
-    private UserUniversity(Long id, String userToken, String name, int grade) {
+    private UserUniversity(Long id, String userToken, String universityName, int grade) {
         this.id = id;
         this.userToken = userToken;
-        this.name = name;
+        this.universityName = universityName;
         this.grade = grade;
     }
 }

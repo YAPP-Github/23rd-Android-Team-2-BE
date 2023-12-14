@@ -1,4 +1,4 @@
-package com.moneymong.domain.user;
+package com.moneymong.domain.user.entity;
 
 import com.moneymong.global.domain.BaseEntity;
 import jakarta.persistence.Column;
