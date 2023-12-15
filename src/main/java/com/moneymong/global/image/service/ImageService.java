@@ -1,6 +1,7 @@
 package com.moneymong.global.image.service;
 
 import com.moneymong.global.exception.problem.ProblemParameters;
+import com.moneymong.global.exception.problem.common.IOProblem;
 import com.moneymong.global.image.dto.ImageDeleteRequest;
 import com.moneymong.global.image.exception.FileNotFoundProblem;
 import com.moneymong.global.image.exception.ImageNotExistsProblem;
@@ -21,7 +22,7 @@ public class ImageService {
 
     private final ImageStorageHandler imageStorageHandler;
 
-    public ImageResponse upload(MultipartFile multipartFile, String dirName) throws IOException {
+    public ImageResponse upload(MultipartFile multipartFile, String dirName) {
         File file = convertMultipartFileToFile(multipartFile)
                 .orElseThrow(() -> new FileNotFoundProblem(ProblemParameters.of("file", multipartFile.getName())));
 
@@ -36,14 +37,19 @@ public class ImageService {
         imageStorageHandler.remove(deleteRequest.getKey());
     }
 
-    private Optional<File> convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+    private Optional<File> convertMultipartFileToFile(MultipartFile multipartFile) {
         File file = new File(System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename());
 
-        if (file.createNewFile()) {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                fileOutputStream.write(multipartFile.getBytes());
+        try {
+            if (file.createNewFile()) {
+                try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                    fileOutputStream.write(multipartFile.getBytes());
+                }
+                return Optional.of(file);
             }
-            return Optional.of(file);
+
+        } catch (IOException e) {
+            throw new IOProblem();
         }
         return Optional.empty();
     }

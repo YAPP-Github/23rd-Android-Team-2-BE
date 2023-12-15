@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 import static org.springframework.http.MediaType.*;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
@@ -27,7 +25,7 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
-    public ApiResponse<ImageResponse> upload(@RequestPart("file") MultipartFile multipartFile, @ModelAttribute("dirName") String dirName) throws IOException {
+    public ApiResponse<ImageResponse> upload(@RequestPart("file") MultipartFile multipartFile, @ModelAttribute("dirName") String dirName) {
         ImageResponse response = imageService.upload(multipartFile, dirName);
         return ApiResponse.success(response);
     }
