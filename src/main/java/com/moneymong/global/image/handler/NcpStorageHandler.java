@@ -47,7 +47,7 @@ public class NcpStorageHandler implements ImageStorageHandler{
     }
 
     private String generateRandomFileName(File file, String dirName) {
-        return ROOT_DIRNAME + "/" + dirName + "/" + UUID.randomUUID().toString().substring(0, 8) + file.getName();
+        return ROOT_DIRNAME + "/" + dirName + "/" + UUID.randomUUID().toString().substring(0, 8) + "-" + file.getName();
     }
 
     private String putImage(File uploadFile, String fileName) {
