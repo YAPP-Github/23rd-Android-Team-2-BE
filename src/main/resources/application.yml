@@ -8,7 +8,9 @@ spring:
 
   profiles:
     active: local
-    include: security
+    include:
+    - security
+    - cloud
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
