@@ -3,10 +3,12 @@ package com.moneymong.global.image.api;
 import com.moneymong.global.image.dto.ImageDeleteRequest;
 import com.moneymong.global.image.dto.ImageResponse;
 import com.moneymong.global.image.service.ImageService;
+import com.moneymong.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,12 +27,14 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
-    public ImageResponse upload(@RequestPart("file") MultipartFile multipartFile, @ModelAttribute("dirName") String dirName) throws IOException {
-        return imageService.upload(multipartFile, dirName);
+    public ApiResponse<ImageResponse> upload(@RequestPart("file") MultipartFile multipartFile, @ModelAttribute("dirName") String dirName) throws IOException {
+        ImageResponse response = imageService.upload(multipartFile, dirName);
+        return ApiResponse.success(response);
     }
 
-    @DeleteMapping
-    public void remove(ImageDeleteRequest deleteRequest) {
+    @DeleteMapping(consumes = APPLICATION_JSON_VALUE)
+    public ApiResponse<Void> remove(@RequestBody ImageDeleteRequest deleteRequest) {
         imageService.remove(deleteRequest);
+        return ApiResponse.success();
     }
 }
