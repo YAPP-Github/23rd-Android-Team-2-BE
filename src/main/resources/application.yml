@@ -6,7 +6,7 @@ spring:
   config:
     import: optional:file:.env[.properties]
   profiles:
-    active: ${profile}
+    active: ${ACTIVE_PROFILE}
 
 # actuator 관리
 management:
