@@ -1,0 +1,19 @@
+spring:
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 10MB
+
+cloud:
+  ncp:
+    s3:
+      bucket: moneymong
+      endpoint: "https://kr.object.ncloudstorage.com"
+    credentials:
+      access-key: ${NCP_ACCESS_KEY}
+      secret-key: ${NCP_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false

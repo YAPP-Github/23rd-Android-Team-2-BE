@@ -8,6 +8,14 @@ spring:
   profiles:
     active: ${ACTIVE_PROFILE}
 
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+    show-sql: true
+    properties:
+      format_sql: true
+      hibernate.hbm2ddl.auto: create
+
 # actuator 관리
 management:
   endpoints:

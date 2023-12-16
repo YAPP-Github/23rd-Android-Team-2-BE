@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -87,6 +89,26 @@ public class CommonControllerAdvice {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<ApiResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+		logWarn(e);
+
+		return new ResponseEntity<>(
+				ApiResponse.fail(e.getMessage()),
+				convertErrorCodeToHttpStatus(INVALID_REQUEST)
+		);
+	}
+
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<ApiResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+		logWarn(e);
+
+		return new ResponseEntity<>(
+				ApiResponse.fail(e.getMessage()),
+				convertErrorCodeToHttpStatus(INVALID_REQUEST)
+		);
+	}
+
+	@ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+	public ResponseEntity<ApiResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
 		logWarn(e);
 
 		return new ResponseEntity<>(
