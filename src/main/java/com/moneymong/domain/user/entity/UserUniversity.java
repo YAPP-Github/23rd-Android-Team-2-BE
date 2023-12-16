@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 
 import static lombok.AccessLevel.PROTECTED;
 
-@Table(name = "user_university")
+@Table(name = "user_universities")
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
