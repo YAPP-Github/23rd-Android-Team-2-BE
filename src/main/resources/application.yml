@@ -5,18 +5,8 @@ server:
 spring:
   config:
     import: optional:file:.env[.properties]
-
   profiles:
-    active: local
-    include: security
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
-    open-in-view: false
-    show-sql: true
-    properties:
-      format_sql: true
-      hibernate.hbm2ddl.auto: create
+    active: ${profile}
 
 # actuator 관리
 management:
@@ -26,46 +16,18 @@ management:
       exposure:
         include: health
 
-  # db 설정
-datasource:
-  db:
-    pool-name: moneymong
-    jdbc-url: jdbc:mysql://localhost:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
-    username: root
-    password: 1234
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    maximum-pool-size: 5
-    connection-timeout: 3000
-    cache-prep-stmts: true
-    prep-stmt-cache-size: 250
-    prep-stmt-cache-sql-limit: 2048
-    use-server-prep-stmts: true
-    use-local-session-state: true
-    cache-result-set-metadata: true
-    maintain-time-stats: false
-    leak-detection-threshold: 5000
-    autocommit: false
-    connection-init-sql: "SET NAMES 'utf8mb4'"
-    read-only: false
-    data-source-properties:
-      useCursors: false
-      sendStringParametersAsUnicode: false
-      characterEncoding: utf8
-      zeroDateTimeBehavior: convertToNull
-      useSSL: false
-      autoReconnect: true
-      autoReconnectForPools: true
-      usePipelineAuth: false
-      useBatchMultiSend: false
-
----
-spring:
-  config:
-    activate:
-      on-profile: local
-
----
-spring:
-  config:
-    activate:
-      on-profile: dev
+# swagger
+springdoc:
+  packages-to-scan: com.moneymong.domain
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: swagger-ui
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /api-docs/json
+    groups:
+      enabled: true
+  cache:
+    disabled: true
