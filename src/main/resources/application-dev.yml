@@ -11,9 +11,9 @@ spring:
 datasource:
   db:
     pool-name: moneymong
-    jdbc-url: jdbc:mysql://127.0.0.1:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
+    jdbc-url: jdbc:mysql://moneymong-db:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
     username: root
-    password: 1234
+    password: ${DB_ROOT_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     maximum-pool-size: 5
     connection-timeout: 3000
