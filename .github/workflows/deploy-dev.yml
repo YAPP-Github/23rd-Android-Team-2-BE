@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+  pull_request:
+    branches:
+      - main
+
 # 권한 설정
 permissions:
   contents: read
@@ -24,7 +28,7 @@ jobs:
 
       # 환경 변수 설정
       - name: Set up Environment
-        run: echo "${{ secrets.ENV_PROPERTIES }}" > ./.env
+        run: echo "${{ secrets.ENV_PROPERTIES_DEV }}" > ./.env
 
       # 환경 변수 파일 서버로 전달
       - name: Send env file

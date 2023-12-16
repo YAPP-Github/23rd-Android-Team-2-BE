@@ -6,7 +6,7 @@ services:
     environment:
       MYSQL_DATABASE: moneymong
       MYSQL_USERNAME: root
-      MYSQL_ROOT_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       TZ: Asia/Seoul
     ports:
       - ${DOCKER_DB_PORT}
@@ -20,5 +20,9 @@ services:
     ports:
       - ${DOCKER_SERVER_PORT}
     environment:
-      SERVER_PORT: ${SERVER_PORT}
-
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      NCP_ACCESS_KEY: ${NCP_ACCESS_KEY}
+      NCP_SECRET_KEY: ${NCP_SECRET_KEY}
+      ACTIVE_PROFILE: ${ACTIVE_PROFILE}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_URL: ${DB_URL}
