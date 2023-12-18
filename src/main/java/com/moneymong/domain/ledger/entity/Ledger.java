@@ -52,4 +52,7 @@ public class Ledger {
 
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private ZonedDateTime updatedAt;
 }
