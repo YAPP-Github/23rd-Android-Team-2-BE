@@ -26,37 +26,29 @@ class JwtTokenProviderTest {
     private final JwtTokenProvider jwtTokenProvider
             = new JwtTokenProvider(ISSUER, SECRET_KEY, ACCESS_TOKEN_EXPIRY_SECONDS);
 
-    private Map<Long, String> roles;
+    private String role = "ADMIN";
 
     private String accessToken;
-
-    @BeforeEach
-    void setup() {
-        roles = new HashMap<>();
-        roles.put(1L, "ADMIN");
-        roles.put(2L, "GUEST");
-    }
-
     @Test
     @DisplayName("페이로드(userToken, role)를 담은 JWT를 생성 및 추출할 수 있다.")
     void success1() {
         // when
-        String accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, roles);
+        String accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, role);
         Claims claims = jwtTokenProvider.getClaims(accessToken);
 
         //then
-        assertDoesNotThrow(() -> jwtTokenProvider.getAccessToken(USER_TOKEN, roles));
+        assertDoesNotThrow(() -> jwtTokenProvider.getAccessToken(USER_TOKEN, role));
 
         assertThat(claims)
                 .containsEntry("userToken", USER_TOKEN)
-                .containsKey("roles");
+                .containsEntry("role", role);
     }
 
     @Test
     @DisplayName("유효한 토큰의 경우 검증 시 예외가 발생하지 않는다.")
     void success2() {
         // given
-        accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, roles);
+        accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, role);
 
         // when & then
         assertDoesNotThrow(() -> jwtTokenProvider.validateToken(accessToken));
@@ -66,7 +58,7 @@ class JwtTokenProviderTest {
     @DisplayName("토큰의 만료 시간이 지나면 ExpiredTokenProblem이 발생한다.")
     void fail1() throws Exception {
         // given
-        accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, roles);
+        accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, role);
 
         Thread.sleep(ACCESS_TOKEN_EXPIRY_SECONDS * 1000L);
 
@@ -107,7 +99,7 @@ class JwtTokenProviderTest {
                 = new JwtTokenProvider(ISSUER, invalidSecretKey, ACCESS_TOKEN_EXPIRY_SECONDS);
 
         //when
-        accessToken = wongTokenProvider.getAccessToken(USER_TOKEN, roles);
+        accessToken = wongTokenProvider.getAccessToken(USER_TOKEN, role);
 
         //then
         assertThatThrownBy(() -> jwtTokenProvider.validateToken(accessToken))
