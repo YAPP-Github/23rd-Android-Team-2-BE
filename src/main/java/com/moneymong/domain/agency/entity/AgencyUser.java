@@ -62,3 +62,4 @@ public class AgencyUser {
         this.agencyUserRole = agencyUserRole;
     }
 }
+
