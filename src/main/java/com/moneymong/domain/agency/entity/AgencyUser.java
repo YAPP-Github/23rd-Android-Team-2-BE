@@ -40,15 +40,7 @@ public class AgencyUser {
     )
     private Agency agency;
 
-    @ManyToOne(
-            targetEntity = User.class,
-            fetch = FetchType.LAZY
-    )
-    @JoinColumn(
-            name = "user_id",
-            referencedColumnName = "id"
-    )
-    private User user;
+    private String userToken;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
