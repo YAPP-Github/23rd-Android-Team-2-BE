@@ -29,19 +29,28 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(
+            name = "user_token",
+            unique = true,
+            nullable = false
+    )
     private String userToken;
 
     @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
-    private String profileImgUrl;
+    @Column(
+            name = "profile_image_url",
+            nullable = false)
+    private String profileImageUrl;
 
     @Column(nullable = false)
     private String provider;
 
-    @Column(nullable = false)
+    @Column(
+            name = "oauth_id",
+            nullable = false
+    )
     private String oauthId;
 
     private LocalDate birthDay;
@@ -51,7 +60,7 @@ public class User extends BaseEntity {
         this.id = id;
         this.userToken = userToken;
         this.nickname = nickname;
-        this.profileImgUrl = profileImgUrl;
+        this.profileImageUrl = profileImgUrl;
         this.provider = provider;
         this.oauthId = oauthId;
         this.birthDay = birthDay;

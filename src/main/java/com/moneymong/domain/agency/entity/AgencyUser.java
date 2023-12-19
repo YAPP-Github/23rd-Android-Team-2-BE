@@ -49,7 +49,10 @@ public class AgencyUser {
     )
     private User user;
 
-    @Column(nullable = false)
+    @Column(
+            name = "agency_user_role",
+            nullable = false
+    )
     @Enumerated(EnumType.STRING)
     private AgencyUserRole agencyUserRole;
 }

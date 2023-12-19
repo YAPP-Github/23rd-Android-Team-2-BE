@@ -2,6 +2,8 @@ package com.moneymong.domain.test.service;
 
 import com.moneymong.domain.test.TestEntity;
 import com.moneymong.domain.test.repository.TestRepository;
+import com.moneymong.global.exception.custom.BusinessException;
+import com.moneymong.global.exception.enums.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

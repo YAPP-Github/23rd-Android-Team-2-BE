@@ -1,10 +1,6 @@
 package com.moneymong.global.image.service;
 
-import com.moneymong.global.exception.problem.ProblemParameters;
-import com.moneymong.global.exception.problem.common.IOProblem;
 import com.moneymong.global.image.dto.ImageDeleteRequest;
-import com.moneymong.global.image.exception.FileNotFoundProblem;
-import com.moneymong.global.image.exception.ImageNotExistsProblem;
 import com.moneymong.global.image.handler.ImageStorageHandler;
 import com.moneymong.global.image.dto.ImageResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +20,15 @@ public class ImageService {
 
     public ImageResponse upload(MultipartFile multipartFile, String dirName) {
         File file = convertMultipartFileToFile(multipartFile)
-                .orElseThrow(() -> new FileNotFoundProblem(ProblemParameters.of("file", multipartFile.getName())));
+               .orElseThrow();
 
         return imageStorageHandler.upload(file, dirName);
     }
 
     public void remove(ImageDeleteRequest deleteRequest) {
-        if (!imageStorageHandler.doesObjectExists(deleteRequest.getKey())) {
-            throw new ImageNotExistsProblem(ProblemParameters.of("key", deleteRequest.getKey()));
-        }
+//        if (!imageStorageHandler.doesObjectExists(deleteRequest.getKey())) {
+//            throw new ImageNotExistsProblem(ProblemParameters.of("key", deleteRequest.getKey()));
+//        }
 
         imageStorageHandler.remove(deleteRequest.getKey());
     }
@@ -49,7 +45,7 @@ public class ImageService {
             }
 
         } catch (IOException e) {
-            throw new IOProblem();
+            // throw new IOProblem();
         }
         return Optional.empty();
     }

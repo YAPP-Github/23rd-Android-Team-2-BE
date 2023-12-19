@@ -28,17 +28,30 @@ public class Agency {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(
+            name = "agency_name",
+            length = 100,
+            nullable = false
+    )
     private String agencyName;
 
-    @Column(nullable = false)
+    @Column(
+            name = "agency_type",
+            nullable = false
+    )
     @Enumerated(EnumType.STRING)
     private AgencyType agencyType;
 
-    @Column(nullable = false)
+    @Column(
+            name = "head_count",
+            nullable = false
+    )
     private Integer headCount;
 
-    @Column(length = 2000)
+    @Column(
+            name = "thumbnail_image_url",
+            length = 2000
+    )
     private String thumbnailImageUrl;
 
     private String description;
