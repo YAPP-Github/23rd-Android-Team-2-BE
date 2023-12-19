@@ -18,15 +18,15 @@ public class TokenService {
 
     @Transactional
     public Tokens createTokens(AuthUserInfo authUserInfo) {
-
-        String accessToken = createAccessToken(authUserInfo.getUserToken(), new HashMap<>());
+      
+        String accessToken = createAccessToken(authUserInfo.getUserToken(), "role");
         String refreshToken = createRefreshToken();
 
         return new Tokens(accessToken, refreshToken);
     }
 
-    private String createAccessToken(String userToken, Map<Long, String> roles) {
-        return jwtTokenProvider.getAccessToken(userToken, roles);
+    private String createAccessToken(String userToken, String role) {
+        return jwtTokenProvider.getAccessToken(userToken, role);
     }
 
     private String createRefreshToken() {

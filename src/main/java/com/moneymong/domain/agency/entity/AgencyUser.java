@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -39,15 +40,7 @@ public class AgencyUser {
     )
     private Agency agency;
 
-    @ManyToOne(
-            targetEntity = User.class,
-            fetch = FetchType.LAZY
-    )
-    @JoinColumn(
-            name = "user_id",
-            referencedColumnName = "id"
-    )
-    private User user;
+    private String userToken;
 
     @Column(
             name = "agency_user_role",
@@ -55,4 +48,13 @@ public class AgencyUser {
     )
     @Enumerated(EnumType.STRING)
     private AgencyUserRole agencyUserRole;
+
+    @Builder
+    private AgencyUser(Long id, Agency agency, String userToken, AgencyUserRole agencyUserRole) {
+        this.id = id;
+        this.agency = agency;
+        this.userToken = userToken;
+        this.agencyUserRole = agencyUserRole;
+    }
 }
+

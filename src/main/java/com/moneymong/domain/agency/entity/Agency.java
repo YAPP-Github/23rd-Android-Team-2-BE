@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -55,4 +56,14 @@ public class Agency {
     private String thumbnailImageUrl;
 
     private String description;
+
+    @Builder
+    private Agency(Long id, String agencyName, AgencyType agencyType, Integer headCount, String thumbnailImageUrl, String description) {
+        this.id = id;
+        this.agencyName = agencyName;
+        this.agencyType = agencyType;
+        this.headCount = headCount;
+        this.thumbnailImageUrl = thumbnailImageUrl;
+        this.description = description;
+    }
 }
