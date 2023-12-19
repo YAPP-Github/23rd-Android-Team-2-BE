@@ -17,15 +17,15 @@ public class RefreshToken extends BaseEntity {
     private String token;
 
     @Column(nullable = false)
-    private Long userId;
+    private String userToken;
 
     @Column(nullable = false)
     private String role;
 
     @Builder
-    private RefreshToken(String token, Long userId, String role) {
+    private RefreshToken(String token, String userToken, String role) {
         this.token = token;
-        this.userId = userId;
+        this.userToken = userToken;
         this.role = role;
     }
 }
