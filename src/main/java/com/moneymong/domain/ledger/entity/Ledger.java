@@ -20,16 +20,8 @@ public class Ledger {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "group_id")
-    private Long groupId; // 소속 그룹 엔티티 생성 이 후 연관 관계 매핑
-
-    @BatchSize(size = 50)
-    @OneToMany(
-            mappedBy = "ledger",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<LedgerUsers> ledgerUsersList;
+    @Column(name = "agency_id")
+    private Long agencyId; // 소속 그룹 엔티티 생성 이 후 연관 관계 매핑
 
     @BatchSize(size = 50)
     @OneToMany(
