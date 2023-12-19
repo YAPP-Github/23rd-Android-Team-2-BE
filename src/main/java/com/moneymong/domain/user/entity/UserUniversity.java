@@ -1,5 +1,6 @@
 package com.moneymong.domain.user.entity;
 
+import com.moneymong.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @Where(clause = "deleted = false")
 @SQLDelete(sql = "UPDATE user_university SET deleted = true where id=?")
-public class UserUniversity {
+public class UserUniversity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
