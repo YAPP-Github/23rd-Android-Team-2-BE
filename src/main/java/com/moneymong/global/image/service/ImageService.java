@@ -1,6 +1,9 @@
 package com.moneymong.global.image.service;
 
+import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.image.dto.ImageDeleteRequest;
+import com.moneymong.global.image.exception.FileIOException;
+import com.moneymong.global.image.exception.ImageNotExistsException;
 import com.moneymong.global.image.handler.ImageStorageHandler;
 import com.moneymong.global.image.dto.ImageResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +29,9 @@ public class ImageService {
     }
 
     public void remove(ImageDeleteRequest deleteRequest) {
-//        if (!imageStorageHandler.doesObjectExists(deleteRequest.getKey())) {
-//            throw new ImageNotExistsProblem(ProblemParameters.of("key", deleteRequest.getKey()));
-//        }
+        if (!imageStorageHandler.doesObjectExists(deleteRequest.getKey())) {
+            throw new ImageNotExistsException(ErrorCode.IMAGE_NOT_EXISTS);
+        }
 
         imageStorageHandler.remove(deleteRequest.getKey());
     }
@@ -45,7 +48,7 @@ public class ImageService {
             }
 
         } catch (IOException e) {
-            // throw new IOProblem();
+            throw new FileIOException(ErrorCode.FILE_IO_EXCEPTION);
         }
         return Optional.empty();
     }
