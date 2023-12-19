@@ -42,7 +42,10 @@ public class AgencyUser {
 
     private String userToken;
 
-    @Column(nullable = false)
+    @Column(
+            name = "agency_user_role",
+            nullable = false
+    )
     @Enumerated(EnumType.STRING)
     private AgencyUserRole agencyUserRole;
 

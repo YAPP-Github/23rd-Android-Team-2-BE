@@ -18,7 +18,7 @@ public class TokenService {
 
     @Transactional
     public Tokens createTokens(AuthUserInfo authUserInfo) {
-        //TODO OAuth 인증 후 각 소속마다 권한을 조회한다.
+      
         String accessToken = createAccessToken(authUserInfo.getUserToken(), "role");
         String refreshToken = createRefreshToken();
 
