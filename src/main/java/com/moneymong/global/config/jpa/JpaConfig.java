@@ -5,9 +5,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -18,6 +20,9 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @EnableJpaAuditing
 @EnableJpaRepositories(
@@ -53,6 +58,7 @@ public class JpaConfig {
         return entityManagerFactoryBuilder
                 .dataSource(lazyDataSource)
                 .packages("com.moneymong")
+                .properties(jpaProperties())
                 .persistenceUnit("moneymong")
                 .build();
     }
@@ -62,5 +68,12 @@ public class JpaConfig {
             @Qualifier("moneyMongEntityManagerFactory") EntityManagerFactory moneyMongEntityManagerFactory
     ) {
         return new JpaTransactionManager(moneyMongEntityManagerFactory);
+    }
+
+    private Map<String, Object> jpaProperties() {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy.class.getName());
+
+        return properties;
     }
 }
