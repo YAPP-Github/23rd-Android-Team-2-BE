@@ -31,8 +31,8 @@ public class LedgerDetails {
     )
     private Ledger ledger;
 
-    @Column(name = "fund_source")
-    private String fundSource;
+    @Column(name = "store_info")
+    private String storeInfo;
 
     @Column(name = "fund_type")
     @Enumerated(value = EnumType.STRING)
@@ -43,6 +43,9 @@ public class LedgerDetails {
     private Integer balance;
 
     private String description;
+
+    @Column(name = "payment_date")
+    private ZonedDateTime paymentDate;
 
     @Column(name = "created_at")
     private ZonedDateTime createdAt;

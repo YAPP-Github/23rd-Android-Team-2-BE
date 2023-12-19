@@ -29,8 +29,8 @@ public class LedgerReceipts {
     )
     private Ledger ledger;
 
-    @Column(name = "receipt_url")
-    private String receiptUrl;
+    @Column(name = "receipt_image_url")
+    private String receiptImageUrl;
 
     @Column(name = "created_at")
     private ZonedDateTime createdAt;

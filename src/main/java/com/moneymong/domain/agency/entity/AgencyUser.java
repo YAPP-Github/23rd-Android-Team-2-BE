@@ -1,10 +1,12 @@
 package com.moneymong.domain.agency.entity;
 
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
+import com.moneymong.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,13 +18,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
-@Table(name = "agency_users")
-@Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@Table(name = "agency_users")
+@Entity
 @Where(clause = "deleted = false")
 @SQLDelete(sql = "UPDATE agency_users SET deleted = true where id=?")
 public class AgencyUser {
@@ -31,15 +32,22 @@ public class AgencyUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "agency_id",
             referencedColumnName = "id"
     )
     private Agency agency;
 
-    @Column(nullable = false)
-    private String userToken;
+    @ManyToOne(
+            targetEntity = User.class,
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id"
+    )
+    private User user;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
