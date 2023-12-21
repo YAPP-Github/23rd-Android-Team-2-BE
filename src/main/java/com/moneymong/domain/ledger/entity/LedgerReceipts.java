@@ -10,7 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "ledger_receipts")
 @Entity
 public class LedgerReceipts {
@@ -19,17 +27,17 @@ public class LedgerReceipts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(
-            targetEntity = Ledger.class,
-            fetch = FetchType.LAZY
-    )
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "ledger_id",
             referencedColumnName = "id"
     )
     private Ledger ledger;
 
-    @Column(name = "receipt_image_url")
+    @Column(
+            name = "receipt_image_url",
+            length = 2500
+    )
     private String receiptImageUrl;
 
     @Column(name = "created_at")
@@ -37,4 +45,17 @@ public class LedgerReceipts {
 
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    public static LedgerReceipts of(
+            final Ledger ledger,
+            final String receiptImageUrl
+    ) {
+        return LedgerReceipts
+                .builder()
+                .ledger(ledger)
+                .receiptImageUrl(receiptImageUrl)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
+    }
 }
