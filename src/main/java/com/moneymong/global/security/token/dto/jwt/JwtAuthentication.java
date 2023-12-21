@@ -13,6 +13,7 @@ public class JwtAuthentication{
 		this.userToken = validateToken(accessToken);
 		this.accessToken = validateUserToken(userToken);
 	}
+
 	private String validateToken(String accessToken) {
 		if (StringUtils.isEmpty(accessToken)) {
 			throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);

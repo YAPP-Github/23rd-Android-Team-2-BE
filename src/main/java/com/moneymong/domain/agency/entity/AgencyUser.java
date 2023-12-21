@@ -1,6 +1,7 @@
 package com.moneymong.domain.agency.entity;
 
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
+import com.moneymong.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,9 +25,9 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "agency_users")
 @Entity
-//@Where(clause = "deleted = false")
-//@SQLDelete(sql = "UPDATE agency_users SET deleted = true where id=?")
-public class AgencyUser {
+@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE agency_users SET deleted = true where id=?")
+public class AgencyUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
