@@ -19,8 +19,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE user_university SET deleted = true where id=?")
+//@Where(clause = "deleted = false")
+//@SQLDelete(sql = "UPDATE user_university SET deleted = true where id=?")
 public class UserUniversity extends BaseEntity {
 
     @Id

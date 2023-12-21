@@ -21,8 +21,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE users SET deleted = true where id=?")
+//@Where(clause = "deleted = false")
+//@SQLDelete(sql = "UPDATE users SET deleted = true where id=?")
 public class User extends BaseEntity {
 
     @Id
@@ -41,7 +41,9 @@ public class User extends BaseEntity {
 
     @Column(
             name = "profile_image_url",
-            nullable = false)
+            nullable = false,
+            length = 2500
+    )
     private String profileImageUrl;
 
     @Column(nullable = false)
