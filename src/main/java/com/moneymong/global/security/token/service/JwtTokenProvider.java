@@ -1,5 +1,8 @@
 package com.moneymong.global.security.token.service;
 
+import com.moneymong.global.exception.enums.ErrorCode;
+import com.moneymong.global.security.token.exception.ExpireTokenException;
+import com.moneymong.global.security.token.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -64,9 +67,9 @@ public class JwtTokenProvider {
 				.build()
 				.parseClaimsJws(token);
 		} catch (ExpiredJwtException e) {
-			// throw new ExpiredTokenProblem(ProblemParameters.of("token", token));
+			throw new ExpireTokenException(ErrorCode.TOKEN_EXPIRED);
 		} catch (JwtException | IllegalArgumentException e) {
-			// throw new InvalidTokenProblem();
+			throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
 		}
 	}
 
