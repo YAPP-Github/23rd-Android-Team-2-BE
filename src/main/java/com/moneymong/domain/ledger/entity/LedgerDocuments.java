@@ -19,9 +19,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "ledger_receipts")
+@Table(name = "ledger_documents")
 @Entity
-public class LedgerReceipts {
+public class LedgerDocuments {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,10 +35,10 @@ public class LedgerReceipts {
     private Ledger ledger;
 
     @Column(
-            name = "receipt_image_url",
+            name = "document_image_url",
             length = 2500
     )
-    private String receiptImageUrl;
+    private String documentImageUrl;
 
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
@@ -46,14 +46,14 @@ public class LedgerReceipts {
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
 
-    public static LedgerReceipts of(
+    public static LedgerDocuments of(
             final Ledger ledger,
-            final String receiptImageUrl
+            final String documentImageUrl
     ) {
-        return LedgerReceipts
+        return LedgerDocuments
                 .builder()
                 .ledger(ledger)
-                .receiptImageUrl(receiptImageUrl)
+                .documentImageUrl(documentImageUrl)
                 .createdAt(ZonedDateTime.now())
                 .updatedAt(ZonedDateTime.now())
                 .build();

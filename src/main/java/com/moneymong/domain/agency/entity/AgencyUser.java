@@ -1,7 +1,6 @@
 package com.moneymong.domain.agency.entity;
 
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
-import com.moneymong.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,8 +24,8 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "agency_users")
 @Entity
-@Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE agency_users SET deleted = true where id=?")
+//@Where(clause = "deleted = false")
+//@SQLDelete(sql = "UPDATE agency_users SET deleted = true where id=?")
 public class AgencyUser {
 
     @Id
@@ -40,7 +39,8 @@ public class AgencyUser {
     )
     private Agency agency;
 
-    private String userToken;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(
             name = "agency_user_role",
@@ -50,10 +50,10 @@ public class AgencyUser {
     private AgencyUserRole agencyUserRole;
 
     @Builder
-    private AgencyUser(Long id, Agency agency, String userToken, AgencyUserRole agencyUserRole) {
+    private AgencyUser(Long id, Agency agency, Long userId, AgencyUserRole agencyUserRole) {
         this.id = id;
         this.agency = agency;
-        this.userToken = userToken;
+        this.userId = userId;
         this.agencyUserRole = agencyUserRole;
     }
 }
