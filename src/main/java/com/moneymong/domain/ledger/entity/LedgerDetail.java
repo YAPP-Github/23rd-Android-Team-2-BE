@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "ledger_details")
 @Entity
-public class LedgerDetails {
+public class LedgerDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -68,7 +68,7 @@ public class LedgerDetails {
     private ZonedDateTime updatedAt;
 
 
-    public static LedgerDetails of(
+    public static LedgerDetail of(
             final Ledger ledger,
             final User user,
             final String storeInfo,
@@ -78,7 +78,7 @@ public class LedgerDetails {
             final String description,
             final ZonedDateTime paymentDate
     ) {
-        return LedgerDetails
+        return LedgerDetail
                 .builder()
                 .ledger(ledger)
                 .user(user)

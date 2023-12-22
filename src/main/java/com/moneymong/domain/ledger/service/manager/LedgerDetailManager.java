@@ -1,7 +1,7 @@
-package com.moneymong.domain.ledger.service;
+package com.moneymong.domain.ledger.service.manager;
 
 import com.moneymong.domain.ledger.entity.Ledger;
-import com.moneymong.domain.ledger.entity.LedgerDetails;
+import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class LedgerDetailService {
+public class LedgerDetailManager {
     private final LedgerAssembler ledgerAssembler;
     private final LedgerDetailRepository ledgerDetailRepository;
 
     @Transactional
-    public LedgerDetails createLedgerDetail(
+    public LedgerDetail createLedgerDetail(
             final Ledger ledger,
             final User user,
             final String storeInfo,
@@ -28,7 +28,7 @@ public class LedgerDetailService {
             final String description,
             final ZonedDateTime paymentDate
     ) {
-        LedgerDetails ledgerDetails = ledgerAssembler.toLedgerDetailEntity(ledger, user, storeInfo, fundType, amount, balance, description, paymentDate);
-        return ledgerDetailRepository.save(ledgerDetails);
+        LedgerDetail ledgerDetail = ledgerAssembler.toLedgerDetailEntity(ledger, user, storeInfo, fundType, amount, balance, description, paymentDate);
+        return ledgerDetailRepository.save(ledgerDetail);
     }
 }

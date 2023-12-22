@@ -1,7 +1,9 @@
 package com.moneymong.domain.ledger.repository;
 
-import com.moneymong.domain.ledger.entity.LedgerReceipts;
+import com.moneymong.domain.ledger.entity.LedgerReceipt;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LedgerReceiptRepository extends JpaRepository<LedgerReceipts, Long> {
+public interface LedgerReceiptRepository extends JpaRepository<LedgerReceipt, Long> {
+    List<LedgerReceipt> findByLedgerId(final Long ledgerId);
 }
