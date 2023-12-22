@@ -50,7 +50,7 @@ public class LedgerManager {
         Ledger ledger = validateLedger(agencyUser.getAgency().getId());
 
         // 4. 유저 권한 검증
-        if(!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
+        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
             throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
         }
 
@@ -76,15 +76,14 @@ public class LedgerManager {
         // 7. 장부 영수증 등록
         List<LedgerReceipt> ledgerReceipts = List.of();
         List<String> requestReceiptImageUrls = createLedgerRequest.getReceiptImageUrls();
-        if(requestReceiptImageUrls.size() > 0) {
+        if (requestReceiptImageUrls.size() > 0) {
             ledgerReceipts = ledgerReceiptManager.createLedgerReceipts(updateLedger, requestReceiptImageUrls);
         }
-
 
         // 8. 장부 증빙 자료 등록
         List<LedgerDocument> ledgerDocuments = List.of();
         List<String> requestDocumentImageUrls = createLedgerRequest.getDocumentImageUrls();
-        if(requestDocumentImageUrls.size() > 0) {
+        if (requestDocumentImageUrls.size() > 0) {
             ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(updateLedger, requestDocumentImageUrls);
         }
         return LedgerDetailInfoView.of(ledgerDetail, ledgerReceipts, ledgerDocuments);
@@ -97,8 +96,12 @@ public class LedgerManager {
     ) {
         Integer newAmount = AmountCalculatorByFundType.calculate(fundType, amount);
 
-        // 7. 장부 금액 초과 검증
-        if(ledger.getTotalBalance() + newAmount > MoneymongConstant.MAX_ALLOWED_AMOUNT) {
+        // 7. 장부 금액 최소 초과 검증
+        final Integer expectedAmount = ledger.getTotalBalance() + newAmount;
+
+        if (expectedAmount < MoneymongConstant.MIN_ALLOWED_AMOUNT &&
+            expectedAmount > MoneymongConstant.MAX_ALLOWED_AMOUNT
+        ) {
             throw new BadRequestException(ErrorCode.INVALID_LEDGER_AMOUNT);
         }
 
