@@ -1,10 +1,9 @@
 package com.moneymong.domain.ledger.api.response;
 
-import com.moneymong.domain.ledger.entity.LedgerDetails;
-import com.moneymong.domain.ledger.entity.LedgerDocuments;
-import com.moneymong.domain.ledger.entity.LedgerReceipts;
+import com.moneymong.domain.ledger.entity.LedgerDetail;
+import com.moneymong.domain.ledger.entity.LedgerDocument;
+import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.entity.enums.FundType;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -25,18 +24,18 @@ public class LedgerDetailInfoView {
     private List<LedgerDocumentInfoView> documentImageUrls;
 
     public static LedgerDetailInfoView of(
-            LedgerDetails ledgerDetails,
-            List<LedgerReceipts> ledgerReceipts,
-            List<LedgerDocuments> ledgerDocuments
+            LedgerDetail ledgerDetail,
+            List<LedgerReceipt> ledgerReceipts,
+            List<LedgerDocument> ledgerDocuments
     ) {
         return LedgerDetailInfoView
                 .builder()
-                .id(ledgerDetails.getId())
-                .storeInfo(ledgerDetails.getStoreInfo())
-                .amount(ledgerDetails.getAmount())
-                .fundType(ledgerDetails.getFundType())
-                .description(ledgerDetails.getDescription())
-                .paymentDate(ledgerDetails.getPaymentDate())
+                .id(ledgerDetail.getId())
+                .storeInfo(ledgerDetail.getStoreInfo())
+                .amount(ledgerDetail.getAmount())
+                .fundType(ledgerDetail.getFundType())
+                .description(ledgerDetail.getDescription())
+                .paymentDate(ledgerDetail.getPaymentDate())
                 .receiptImageUrls(
                         ledgerReceipts
                                 .stream()

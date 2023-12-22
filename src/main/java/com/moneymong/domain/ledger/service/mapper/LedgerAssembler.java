@@ -1,9 +1,9 @@
 package com.moneymong.domain.ledger.service.mapper;
 
 import com.moneymong.domain.ledger.entity.Ledger;
-import com.moneymong.domain.ledger.entity.LedgerDetails;
-import com.moneymong.domain.ledger.entity.LedgerDocuments;
-import com.moneymong.domain.ledger.entity.LedgerReceipts;
+import com.moneymong.domain.ledger.entity.LedgerDetail;
+import com.moneymong.domain.ledger.entity.LedgerDocument;
+import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.user.entity.User;
 import java.time.ZonedDateTime;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LedgerAssembler {
 
-    public LedgerDetails toLedgerDetailEntity(
+    public LedgerDetail toLedgerDetailEntity(
             final Ledger ledger,
             final User user,
             final String storeInfo,
@@ -24,26 +24,26 @@ public class LedgerAssembler {
             final ZonedDateTime paymentDate
 
     ) {
-        return LedgerDetails.of(ledger, user, storeInfo, fundType, amount, balance, description, paymentDate);
+        return LedgerDetail.of(ledger, user, storeInfo, fundType, amount, balance, description, paymentDate);
     }
 
-    public List<LedgerReceipts> toLedgerReceiptEntities(
+    public List<LedgerReceipt> toLedgerReceiptEntities(
             final Ledger ledger,
             final List<String> receiptImageUrls
     ) {
         return receiptImageUrls
                 .stream()
-                .map(receiptImageUrl -> LedgerReceipts.of(ledger, receiptImageUrl))
+                .map(receiptImageUrl -> LedgerReceipt.of(ledger, receiptImageUrl))
                 .toList();
     }
 
-    public List<LedgerDocuments> toLedgerDocumentEntities(
+    public List<LedgerDocument> toLedgerDocumentEntities(
             final Ledger ledger,
             final List<String> documentImageUrls
     ) {
         return documentImageUrls
                 .stream()
-                .map(documentImageUrl -> LedgerDocuments.of(ledger, documentImageUrl))
+                .map(documentImageUrl -> LedgerDocument.of(ledger, documentImageUrl))
                 .toList();
     }
 }

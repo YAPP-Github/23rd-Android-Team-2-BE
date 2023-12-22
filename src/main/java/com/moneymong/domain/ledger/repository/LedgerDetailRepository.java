@@ -1,7 +1,7 @@
 package com.moneymong.domain.ledger.repository;
 
-import com.moneymong.domain.ledger.entity.LedgerDetails;
+import com.moneymong.domain.ledger.entity.LedgerDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LedgerDetailRepository extends JpaRepository<LedgerDetails, Long> {
+public interface LedgerDetailRepository extends JpaRepository<LedgerDetail, Long> {
 }

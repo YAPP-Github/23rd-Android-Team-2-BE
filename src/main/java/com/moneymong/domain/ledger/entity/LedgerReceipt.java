@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "ledger_receipts")
 @Entity
-public class LedgerReceipts {
+public class LedgerReceipt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,11 +46,11 @@ public class LedgerReceipts {
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
 
-    public static LedgerReceipts of(
+    public static LedgerReceipt of(
             final Ledger ledger,
             final String receiptImageUrl
     ) {
-        return LedgerReceipts
+        return LedgerReceipt
                 .builder()
                 .ledger(ledger)
                 .receiptImageUrl(receiptImageUrl)

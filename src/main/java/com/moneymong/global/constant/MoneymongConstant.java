@@ -7,4 +7,7 @@ public class MoneymongConstant {
     public static Integer FORBIDDEN = HttpStatus.FORBIDDEN.value();
     public static Integer NOT_FOUND = HttpStatus.NOT_FOUND.value();
     public static Integer INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
+
+    // --- 장부 ---
+    public static Integer MAX_ALLOWED_AMOUNT = 999_999_999;
 }
