@@ -1,4 +1,4 @@
-package com.moneymong.domain.ledger.service;
+package com.moneymong.domain.ledger.service.manager;
 
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
@@ -6,13 +6,15 @@ import com.moneymong.domain.agency.service.AgencyService;
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.entity.Ledger;
-import com.moneymong.domain.ledger.entity.LedgerDetails;
-import com.moneymong.domain.ledger.entity.LedgerDocuments;
-import com.moneymong.domain.ledger.entity.LedgerReceipts;
+import com.moneymong.domain.ledger.entity.LedgerDetail;
+import com.moneymong.domain.ledger.entity.LedgerDocument;
+import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.service.UserService;
+import com.moneymong.global.constant.MoneymongConstant;
+import com.moneymong.global.exception.custom.BadRequestException;
 import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
@@ -24,12 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class LedgerService {
+public class LedgerManager {
     private final UserService userService;
     private final AgencyService agencyService;
-    private final LedgerDetailService ledgerDetailService;
-    private final LedgerReceiptService ledgerReceiptService;
-    private final LedgerDocumentService ledgerDocumentService;
+    private final LedgerDetailManager ledgerDetailManager;
+    private final LedgerReceiptManager ledgerReceiptManager;
+    private final LedgerDocumentManager ledgerDocumentManager;
     private final LedgerRepository ledgerRepository;
 
 
@@ -60,7 +62,7 @@ public class LedgerService {
         );
 
         // 6. 장부 내역 등록
-        LedgerDetails ledgerDetails = ledgerDetailService.createLedgerDetail(
+        LedgerDetail ledgerDetail = ledgerDetailManager.createLedgerDetail(
                 updateLedger,
                 user,
                 createLedgerRequest.getStoreInfo(),
@@ -72,20 +74,20 @@ public class LedgerService {
         );
 
         // 7. 장부 영수증 등록
-        List<LedgerReceipts> ledgerReceipts = List.of();
+        List<LedgerReceipt> ledgerReceipts = List.of();
         List<String> requestReceiptImageUrls = createLedgerRequest.getReceiptImageUrls();
         if(requestReceiptImageUrls.size() > 0) {
-            ledgerReceipts = ledgerReceiptService.createLedgerReceipts(updateLedger, requestReceiptImageUrls);
+            ledgerReceipts = ledgerReceiptManager.createLedgerReceipts(updateLedger, requestReceiptImageUrls);
         }
 
 
         // 8. 장부 증빙 자료 등록
-        List<LedgerDocuments> ledgerDocuments = List.of();
+        List<LedgerDocument> ledgerDocuments = List.of();
         List<String> requestDocumentImageUrls = createLedgerRequest.getDocumentImageUrls();
         if(requestDocumentImageUrls.size() > 0) {
-            ledgerDocuments = ledgerDocumentService.createLedgerDocuments(updateLedger, requestDocumentImageUrls);
+            ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(updateLedger, requestDocumentImageUrls);
         }
-        return LedgerDetailInfoView.of(ledgerDetails, ledgerReceipts, ledgerDocuments);
+        return LedgerDetailInfoView.of(ledgerDetail, ledgerReceipts, ledgerDocuments);
     }
 
     private Ledger updateLedgerTotalBalance(
@@ -94,6 +96,12 @@ public class LedgerService {
             final Ledger ledger
     ) {
         Integer newAmount = AmountCalculatorByFundType.calculate(fundType, amount);
+
+        // 7. 장부 금액 초과 검증
+        if(ledger.getTotalBalance() + newAmount > MoneymongConstant.MAX_ALLOWED_AMOUNT) {
+            throw new BadRequestException(ErrorCode.INVALID_LEDGER_AMOUNT);
+        }
+
         ledger.updateTotalBalance(newAmount);
         return ledgerRepository.save(ledger);
     }
