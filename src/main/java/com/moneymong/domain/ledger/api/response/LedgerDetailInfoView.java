@@ -4,6 +4,7 @@ import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.entity.enums.FundType;
+import com.moneymong.domain.user.entity.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -22,11 +23,13 @@ public class LedgerDetailInfoView {
     private ZonedDateTime paymentDate;
     private List<LedgerReceiptInfoView> receiptImageUrls;
     private List<LedgerDocumentInfoView> documentImageUrls;
+    private String authorName;
 
     public static LedgerDetailInfoView of(
-            LedgerDetail ledgerDetail,
-            List<LedgerReceipt> ledgerReceipts,
-            List<LedgerDocument> ledgerDocuments
+            final LedgerDetail ledgerDetail,
+            final List<LedgerReceipt> ledgerReceipts,
+            final List<LedgerDocument> ledgerDocuments,
+            final User user
     ) {
         return LedgerDetailInfoView
                 .builder()
@@ -48,6 +51,7 @@ public class LedgerDetailInfoView {
                                 .map(ledgerDocument -> LedgerDocumentInfoView.from(ledgerDocument.getId(), ledgerDocument.getDocumentImageUrl()))
                                 .toList()
                 )
+                .authorName(user.getNickname())
                 .build();
     }
 }
