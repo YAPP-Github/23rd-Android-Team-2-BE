@@ -5,6 +5,8 @@ import com.moneymong.global.exception.custom.BusinessException;
 import com.moneymong.global.exception.dto.ErrorResponse;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,7 +30,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInternalException(
             final Exception exception
     ) {
-
+        log.info(exception.getMessage());
         return ResponseEntity
                 .status(MoneymongConstant.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER));

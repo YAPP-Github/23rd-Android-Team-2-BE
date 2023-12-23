@@ -6,13 +6,15 @@ import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.service.manager.LedgerManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "5. [장부]")
@@ -26,7 +28,7 @@ public class LedgerController {
     @PostMapping("/{id}")
     public LedgerDetailInfoView createLedger(
             // @AuthenticationPrincipal ..
-            @RequestParam("id") final Long ledgerId,
+            @PathVariable("id") final Long ledgerId,
             @RequestBody final CreateLedgerRequest createLedgerRequest
     ) {
         return ledgerManager.createLedger(

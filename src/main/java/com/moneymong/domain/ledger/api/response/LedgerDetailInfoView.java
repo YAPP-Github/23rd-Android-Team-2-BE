@@ -5,8 +5,13 @@ import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.user.entity.User;
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javax.swing.text.DateFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,13 +47,15 @@ public class LedgerDetailInfoView {
                 .receiptImageUrls(
                         ledgerReceipts
                                 .stream()
-                                .map(ledgerReceipt -> LedgerReceiptInfoView.from(ledgerReceipt.getId(), ledgerReceipt.getReceiptImageUrl()))
+                                .map(ledgerReceipt -> LedgerReceiptInfoView.from(ledgerReceipt.getId(),
+                                        ledgerReceipt.getReceiptImageUrl()))
                                 .toList()
                 )
                 .documentImageUrls(
                         ledgerDocuments
                                 .stream()
-                                .map(ledgerDocument -> LedgerDocumentInfoView.from(ledgerDocument.getId(), ledgerDocument.getDocumentImageUrl()))
+                                .map(ledgerDocument -> LedgerDocumentInfoView.from(ledgerDocument.getId(),
+                                        ledgerDocument.getDocumentImageUrl()))
                                 .toList()
                 )
                 .authorName(user.getNickname())

@@ -20,12 +20,15 @@ import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.utils.AmountCalculatorByFundType;
-import com.moneymong.utils.AmountCalculatorByIncomeExpense;
+import com.moneymong.utils.ModificationAmountCalculator;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LedgerManager {
@@ -52,7 +55,6 @@ public class LedgerManager {
 
         // 3. 유저 소속 검증
         AgencyUser agencyUser = agencyService.validateAgencyUser(userId, ledger.getAgency().getId());
-
 
         // 4. 유저 권한 검증
         if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
@@ -115,7 +117,10 @@ public class LedgerManager {
         Ledger ledger = validateLedger(ledgerId);
 
         // 3. 유저 소속 검증
-        AgencyUser agencyUser = agencyService.validateAgencyUser(userId, ledger.getAgency().getId());
+        AgencyUser agencyUser = agencyService.validateAgencyUser(
+                userId,
+                ledger.getAgency().getId()
+        );
 
         // 4. 유저 권한 검증
         if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
@@ -125,16 +130,14 @@ public class LedgerManager {
         // 5. 장부 상세 내역 검증
         LedgerDetail ledgerDetail = ledgerDetailReader.validateLedgerDetail(ledgerDetailId);
 
-
         // 6. 장부 총 잔액 업데이트
-        if (!ledgerDetail.getFundType().equals(updateLedgerRequest.getFundType())) {
-            final Integer newAmount = AmountCalculatorByIncomeExpense.calculate(
-                    updateLedgerRequest.getFundType(),
-                    updateLedgerRequest.getAmount()
-            );
+        final Integer newAmount = ModificationAmountCalculator.calculate(
+                ledgerDetail.getFundType(),
+                ledgerDetail.getAmount(),
+                updateLedgerRequest.getAmount()
+        );
 
-            ledger = updateLedgerTotalBalance(newAmount, ledger);
-        }
+        ledger = updateLedgerTotalBalance(newAmount, ledger);
 
         // 7. 장부 상세 내역 정보 업데이트
         return ledgerDetailManager.updateLedgerDetail(
@@ -150,16 +153,16 @@ public class LedgerManager {
             final Ledger ledger
     ) {
 
-        final Integer expectedAmount = ledger.getTotalBalance() + newAmount;
+        final Integer expectedAmount = new BigDecimal(ledger.getTotalBalance()).add(new BigDecimal(newAmount)).intValue();
 
         // 7. 장부 금액 최소 초과 검증
         if (expectedAmount < MoneymongConstant.MIN_ALLOWED_AMOUNT &&
-            expectedAmount > MoneymongConstant.MAX_ALLOWED_AMOUNT
+                expectedAmount > MoneymongConstant.MAX_ALLOWED_AMOUNT
         ) {
             throw new BadRequestException(ErrorCode.INVALID_LEDGER_AMOUNT);
         }
 
-        ledger.updateTotalBalance(newAmount);
+        ledger.updateTotalBalance(expectedAmount);
         return ledgerRepository.save(ledger);
     }
 

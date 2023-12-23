@@ -47,6 +47,9 @@ dependencies {
 	// Cloud
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+	// 기타
+	implementation platform("com.fasterxml.jackson:jackson-bom:2.14.0")
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

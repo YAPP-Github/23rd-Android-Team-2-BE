@@ -64,7 +64,7 @@ public class LedgerDetailManager {
         ledgerDetail.update(
                 user,
                 updateLedgerRequest.getStoreInfo(),
-                updateLedgerRequest.getFundType(),
+                ledgerDetail.getFundType(),
                 updateLedgerRequest.getAmount(),
                 ledger.getTotalBalance(),
                 updateLedgerRequest.getDescription(),

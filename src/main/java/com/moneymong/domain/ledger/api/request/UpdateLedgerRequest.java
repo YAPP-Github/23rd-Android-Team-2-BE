@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateLedgerRequest {
     private String storeInfo;
-    private FundType fundType;
     private Integer amount;
     private String description;
     private ZonedDateTime paymentDate;

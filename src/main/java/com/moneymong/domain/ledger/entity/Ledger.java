@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,7 +46,7 @@ public class Ledger {
     private ZonedDateTime updatedAt;
 
     public void updateTotalBalance(final Integer amount) {
-        this.totalBalance += amount;
+        this.totalBalance = amount;
         this.updatedAt = ZonedDateTime.now();
     }
 
