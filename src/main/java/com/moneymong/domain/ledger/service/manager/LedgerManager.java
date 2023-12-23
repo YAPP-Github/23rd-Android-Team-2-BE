@@ -153,16 +153,18 @@ public class LedgerManager {
             final Ledger ledger
     ) {
 
-        final Integer expectedAmount = new BigDecimal(ledger.getTotalBalance()).add(new BigDecimal(newAmount)).intValue();
+        BigDecimal expectedAmount = new BigDecimal(ledger.getTotalBalance()).add(new BigDecimal(newAmount));
 
         // 7. 장부 금액 최소 초과 검증
-        if (expectedAmount < MoneymongConstant.MIN_ALLOWED_AMOUNT &&
-                expectedAmount > MoneymongConstant.MAX_ALLOWED_AMOUNT
+        BigDecimal minValue = BigDecimal.ZERO;
+        BigDecimal maxValue = new BigDecimal("999999999");
+        if (!(expectedAmount.compareTo(minValue) >= 0 &&
+                expectedAmount.compareTo(maxValue) <= 0)
         ) {
             throw new BadRequestException(ErrorCode.INVALID_LEDGER_AMOUNT);
         }
 
-        ledger.updateTotalBalance(expectedAmount);
+        ledger.updateTotalBalance(expectedAmount.intValue());
         return ledgerRepository.save(ledger);
     }
 
