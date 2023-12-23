@@ -4,13 +4,14 @@ import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.service.AgencyService;
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
+import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;
-import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
+import com.moneymong.domain.ledger.service.reader.LedgerDetailReader;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.service.UserService;
 import com.moneymong.global.constant.MoneymongConstant;
@@ -19,6 +20,7 @@ import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.utils.AmountCalculatorByFundType;
+import com.moneymong.utils.AmountCalculatorByIncomeExpense;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class LedgerManager {
     private final UserService userService;
     private final AgencyService agencyService;
     private final LedgerDetailManager ledgerDetailManager;
+    private final LedgerDetailReader ledgerDetailReader;
     private final LedgerReceiptManager ledgerReceiptManager;
     private final LedgerDocumentManager ledgerDocumentManager;
     private final LedgerRepository ledgerRepository;
@@ -43,11 +46,12 @@ public class LedgerManager {
         // 1. 유저 검증
         User user = userService.validateUser(userId);
 
+        // 3. 소속 장부 검증
+        Ledger ledger = validateLedger(agencyUser.getAgency().getId());
+
         // 2. 유저 소속 검증
         AgencyUser agencyUser = agencyService.validateAgencyUser(userId);
 
-        // 3. 소속 장부 검증
-        Ledger ledger = validateLedger(agencyUser.getAgency().getId());
 
         // 4. 유저 권한 검증
         if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
@@ -56,8 +60,10 @@ public class LedgerManager {
 
         // 5. 장부 totalBalance 업데이트
         Ledger updateLedger = updateLedgerTotalBalance(
-                createLedgerRequest.getFundType(),
-                createLedgerRequest.getAmount(),
+                AmountCalculatorByFundType.calculate(
+                        createLedgerRequest.getFundType(),
+                        createLedgerRequest.getAmount()
+                ),
                 ledger
         );
 
@@ -77,28 +83,76 @@ public class LedgerManager {
         List<LedgerReceipt> ledgerReceipts = List.of();
         List<String> requestReceiptImageUrls = createLedgerRequest.getReceiptImageUrls();
         if (requestReceiptImageUrls.size() > 0) {
-            ledgerReceipts = ledgerReceiptManager.createLedgerReceipts(updateLedger, requestReceiptImageUrls);
+            ledgerReceipts = ledgerReceiptManager.createLedgerReceipts(ledgerDetail, requestReceiptImageUrls);
         }
 
         // 8. 장부 증빙 자료 등록
         List<LedgerDocument> ledgerDocuments = List.of();
         List<String> requestDocumentImageUrls = createLedgerRequest.getDocumentImageUrls();
         if (requestDocumentImageUrls.size() > 0) {
-            ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(updateLedger, requestDocumentImageUrls);
+            ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(ledgerDetail, requestDocumentImageUrls);
         }
-        return LedgerDetailInfoView.of(ledgerDetail, ledgerReceipts, ledgerDocuments);
+        return LedgerDetailInfoView.of(
+                ledgerDetail,
+                ledgerReceipts,
+                ledgerDocuments,
+                user
+        );
+    }
+
+    @Transactional
+    public LedgerDetailInfoView updateLedger(
+            final Long userId,
+            final Long ledgerDetailId,
+            final UpdateLedgerRequest updateLedgerRequest
+    ) {
+        // 1. 유저 검증
+        User user = userService.validateUser(userId);
+
+        // 2. 장부 상세 내역 검증
+        LedgerDetail ledgerDetail = ledgerDetailReader.validateLedgerDetail(ledgerDetailId);
+
+        // 3. 그룹 소속 검증
+        AgencyUser agencyUser = agencyService.validateAgencyUser(userId);
+        if(!ledgerDetail.getLedger().getAgency().getId().equals(agencyUser.getAgency().getId())) {
+            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
+        }
+
+        // 3. 유저 권한 검증
+
+
+        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
+            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
+        }
+
+        // 3. 장부 총 잔액 업데이트
+        Ledger ledger = ledgerDetail.getLedger();
+        if (!ledgerDetail.getFundType().equals(updateLedgerRequest.getFundType())) {
+            final Integer newAmount = AmountCalculatorByIncomeExpense.calculate(
+                    updateLedgerRequest.getFundType(),
+                    updateLedgerRequest.getAmount()
+            );
+
+            ledger = updateLedgerTotalBalance(newAmount, ledger);
+        }
+
+        // 4. 장부 상세 내역 정보 업데이트
+        return ledgerDetailManager.updateLedgerDetail(
+                user,
+                ledger,
+                ledgerDetail,
+                updateLedgerRequest
+        );
     }
 
     private Ledger updateLedgerTotalBalance(
-            final FundType fundType,
-            final Integer amount,
+            final Integer newAmount,
             final Ledger ledger
     ) {
-        Integer newAmount = AmountCalculatorByFundType.calculate(fundType, amount);
 
-        // 7. 장부 금액 최소 초과 검증
         final Integer expectedAmount = ledger.getTotalBalance() + newAmount;
 
+        // 7. 장부 금액 최소 초과 검증
         if (expectedAmount < MoneymongConstant.MIN_ALLOWED_AMOUNT &&
             expectedAmount > MoneymongConstant.MAX_ALLOWED_AMOUNT
         ) {
