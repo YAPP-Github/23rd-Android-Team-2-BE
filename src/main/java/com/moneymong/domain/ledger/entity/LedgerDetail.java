@@ -67,6 +67,23 @@ public class LedgerDetail {
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
 
+    public void update(
+            final User user,
+            final String storeInfo,
+            final FundType fundType,
+            final Integer amount,
+            final Integer balance,
+            final String description,
+            final ZonedDateTime paymentDate
+    ) {
+        this.user = user;
+        this.storeInfo = storeInfo;
+        this.fundType = fundType;
+        this.amount = amount;
+        this.balance = balance;
+        this.description = description;
+        this.paymentDate = paymentDate;
+    }
 
     public static LedgerDetail of(
             final Ledger ledger,

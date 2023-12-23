@@ -5,5 +5,5 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LedgerDocumentRepository extends JpaRepository<LedgerDocument, Long> {
-    List<LedgerDocument> findByLedgerId(final Long ledgerId);
+    List<LedgerDocument> findByLedgerDetailId(final Long ledgerDetailId);
 }

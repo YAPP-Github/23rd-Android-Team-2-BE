@@ -29,10 +29,10 @@ public class LedgerDocument {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "ledger_id",
+            name = "ledger_detail_id",
             referencedColumnName = "id"
     )
-    private Ledger ledger;
+    private LedgerDetail ledgerDetail;
 
     @Column(
             name = "document_image_url",
@@ -47,12 +47,12 @@ public class LedgerDocument {
     private ZonedDateTime updatedAt;
 
     public static LedgerDocument of(
-            final Ledger ledger,
+            final LedgerDetail ledgerDetail,
             final String documentImageUrl
     ) {
         return LedgerDocument
                 .builder()
-                .ledger(ledger)
+                .ledgerDetail(ledgerDetail)
                 .documentImageUrl(documentImageUrl)
                 .createdAt(ZonedDateTime.now())
                 .updatedAt(ZonedDateTime.now())

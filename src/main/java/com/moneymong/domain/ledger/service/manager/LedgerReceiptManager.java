@@ -1,6 +1,6 @@
 package com.moneymong.domain.ledger.service.manager;
 
-import com.moneymong.domain.ledger.entity.Ledger;
+import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.repository.LedgerReceiptRepository;
 import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
@@ -17,10 +17,10 @@ public class LedgerReceiptManager {
 
     @Transactional
     public List<LedgerReceipt> createLedgerReceipts(
-            final Ledger ledger,
+            final LedgerDetail ledgerDetail,
             final List<String> receiptImageUrls
     ) {
-        List<LedgerReceipt> ledgerReceipts = ledgerAssembler.toLedgerReceiptEntities(ledger, receiptImageUrls);
+        List<LedgerReceipt> ledgerReceipts = ledgerAssembler.toLedgerReceiptEntities(ledgerDetail, receiptImageUrls);
         return ledgerReceipts.stream()
                 .map(ledgerReceiptRepository::save)
                 .toList();

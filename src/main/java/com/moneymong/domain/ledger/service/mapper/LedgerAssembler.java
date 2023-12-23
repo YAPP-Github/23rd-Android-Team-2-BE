@@ -24,26 +24,35 @@ public class LedgerAssembler {
             final ZonedDateTime paymentDate
 
     ) {
-        return LedgerDetail.of(ledger, user, storeInfo, fundType, amount, balance, description, paymentDate);
+        return LedgerDetail.of(
+                ledger,
+                user,
+                storeInfo,
+                fundType,
+                amount,
+                balance,
+                description,
+                paymentDate
+        );
     }
 
     public List<LedgerReceipt> toLedgerReceiptEntities(
-            final Ledger ledger,
+            final LedgerDetail ledgerDetail,
             final List<String> receiptImageUrls
     ) {
         return receiptImageUrls
                 .stream()
-                .map(receiptImageUrl -> LedgerReceipt.of(ledger, receiptImageUrl))
+                .map(receiptImageUrl -> LedgerReceipt.of(ledgerDetail, receiptImageUrl))
                 .toList();
     }
 
     public List<LedgerDocument> toLedgerDocumentEntities(
-            final Ledger ledger,
+            final LedgerDetail ledgerDetail,
             final List<String> documentImageUrls
     ) {
         return documentImageUrls
                 .stream()
-                .map(documentImageUrl -> LedgerDocument.of(ledger, documentImageUrl))
+                .map(documentImageUrl -> LedgerDocument.of(ledgerDetail, documentImageUrl))
                 .toList();
     }
 }
