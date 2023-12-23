@@ -5,23 +5,25 @@ import com.moneymong.global.security.token.exception.InvalidTokenException;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 @Getter
 public class JwtAuthentication{
 
-	private String userToken;
+	private Long id;
 	private String accessToken;
 
-	public JwtAuthentication(String userToken, String accessToken) {
-		this.userToken = validateToken(userToken);
+	public JwtAuthentication(Long id, String accessToken) {
+		this.id = validateId(id);
 		this.accessToken = validateUserToken(accessToken);
 	}
 
-	private String validateToken(String accessToken) {
-		if (StringUtils.isEmpty(accessToken)) {
+	private Long validateId(Long id) {
+		if (Objects.isNull(id) || id <= 0L) {
 			throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
 		}
 
-		return accessToken;
+		return id;
 	}
 
 	private String validateUserToken(String userToken) {

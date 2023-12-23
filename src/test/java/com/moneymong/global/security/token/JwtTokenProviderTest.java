@@ -14,7 +14,7 @@ import io.jsonwebtoken.Claims;
 
 class JwtTokenProviderTest {
 
-    private static final String USER_TOKEN = "test-token";
+    private static final Long ID = 1L;
     private static final String ISSUER = "issuer";
     private static final String SECRET_KEY = "moneymong is the best accounting management app of all time.";
     private static final int ACCESS_TOKEN_EXPIRY_SECONDS = 3;
@@ -29,14 +29,14 @@ class JwtTokenProviderTest {
     @DisplayName("페이로드(userToken, role)를 담은 JWT를 생성 및 추출할 수 있다.")
     void success1() {
         // when
-        String accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, role);
+        String accessToken = jwtTokenProvider.getAccessToken(ID, role);
         Claims claims = jwtTokenProvider.getClaims(accessToken);
 
         //then
-        assertDoesNotThrow(() -> jwtTokenProvider.getAccessToken(USER_TOKEN, role));
+        assertDoesNotThrow(() -> jwtTokenProvider.getAccessToken(ID, role));
 
         assertThat(claims)
-                .containsEntry("userToken", USER_TOKEN)
+                .containsEntry("userId", ID.intValue())
                 .containsEntry("role", role);
     }
 
@@ -44,7 +44,7 @@ class JwtTokenProviderTest {
     @DisplayName("유효한 토큰의 경우 검증 시 예외가 발생하지 않는다.")
     void success2() {
         // given
-        accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, role);
+        accessToken = jwtTokenProvider.getAccessToken(ID, role);
 
         // when & then
         assertDoesNotThrow(() -> jwtTokenProvider.validateToken(accessToken));
@@ -54,7 +54,7 @@ class JwtTokenProviderTest {
     @DisplayName("토큰의 만료 시간이 지나면 ExpiredTokenProblem이 발생한다.")
     void fail1() throws Exception {
         // given
-        accessToken = jwtTokenProvider.getAccessToken(USER_TOKEN, role);
+        accessToken = jwtTokenProvider.getAccessToken(ID, role);
 
         Thread.sleep(ACCESS_TOKEN_EXPIRY_SECONDS * 1000L);
 
@@ -95,7 +95,7 @@ class JwtTokenProviderTest {
                 = new JwtTokenProvider(ISSUER, invalidSecretKey, ACCESS_TOKEN_EXPIRY_SECONDS);
 
         //when
-        accessToken = wongTokenProvider.getAccessToken(USER_TOKEN, role);
+        accessToken = wongTokenProvider.getAccessToken(ID, role);
 
         //then
         assertThatThrownBy(() -> jwtTokenProvider.validateToken(accessToken))

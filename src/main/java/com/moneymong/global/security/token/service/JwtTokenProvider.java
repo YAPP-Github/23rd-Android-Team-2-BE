@@ -34,8 +34,8 @@ public class JwtTokenProvider {
 		this.accessTokenExpirySeconds = accessTokenExpirySeconds;
 	}
 
-	public String getAccessToken(String userToken, String role) {
-		Map<String, Object> claims = Map.of("userToken", userToken, "role", role);
+	public String getAccessToken(Long userId, String role) {
+		Map<String, Object> claims = Map.of("userId", userId, "role", role);
 		return this.createAccessToken(claims);
 	}
 

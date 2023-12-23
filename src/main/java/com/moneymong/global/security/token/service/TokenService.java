@@ -31,23 +31,23 @@ public class TokenService {
 
     @Transactional
     public Tokens createTokens(AuthUserInfo authUserInfo) {
-        String userToken = authUserInfo.getUserToken();
+        Long userId = authUserInfo.getUserId();
         String role = authUserInfo.getRole();
 
-        String accessToken = createAccessToken(userToken, role);
-        String refreshToken = createRefreshToken(userToken, role);
+        String accessToken = createAccessToken(userId, role);
+        String refreshToken = createRefreshToken(userId, role);
 
         return new Tokens(accessToken, refreshToken);
     }
 
-    private String createAccessToken(String userToken, String role) {
-        return jwtTokenProvider.getAccessToken(userToken, role);
+    private String createAccessToken(Long userId, String role) {
+        return jwtTokenProvider.getAccessToken(userId, role);
     }
 
-    private String createRefreshToken(String userToken, String role) {
+    private String createRefreshToken(Long userId, String role) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(UUID.randomUUID().toString())
-                .userToken(userToken)
+                .userId(userId)
                 .role(role)
                 .build();
 
@@ -57,7 +57,7 @@ public class TokenService {
     @Transactional(readOnly = true)
     public String getAccessTokensByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findById(refreshToken)
-                .map(token -> createAccessToken(token.getUserToken(), token.getRole()))
+                .map(token -> createAccessToken(token.getUserId(), token.getRole()))
                 .orElseThrow(() -> new RefreshTokenNotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
     }
 
@@ -66,10 +66,10 @@ public class TokenService {
 
         Claims claims = jwtTokenProvider.getClaims(accessToken);
 
-        String userToken = claims.get("userToken", String.class);
+        Long id = claims.get("userId", Long.class);
         String role = claims.get("role", String.class);
 
-        JwtAuthentication principal = new JwtAuthentication(userToken, accessToken);
+        JwtAuthentication principal = new JwtAuthentication(id, accessToken);
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
         return new JwtAuthenticationToken(principal, null, authorities);
