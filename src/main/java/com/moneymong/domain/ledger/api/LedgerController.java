@@ -31,18 +31,24 @@ public class LedgerController {
     ) {
         return ledgerManager.createLedger(
                 1L,
+                ledgerId,
                 createLedgerRequest
         );
     }
 
     @Operation(summary = "장부 상세 내역 수정 API")
-    @PutMapping("/{id}/ledger-detail/{ledgerDetailid}")
+    @PutMapping("/{id}/ledger-detail/{ledgerDetailId}")
     public LedgerDetailInfoView updateLedger(
             // @AuthenticationPrincipal ..
             @PathVariable("id") final Long ledgerId,
             @PathVariable("ledgerDetailId") final Long ledgerDetailId,
             @RequestBody final UpdateLedgerRequest updateLedgerRequest
     ) {
-        return ledgerManager.updateLedger(1L, ledgerDetailId, updateLedgerRequest);
+        return ledgerManager.updateLedger(
+                1L,
+                ledgerId,
+                ledgerDetailId,
+                updateLedgerRequest
+        );
     }
 }

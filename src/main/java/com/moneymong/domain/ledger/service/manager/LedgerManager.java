@@ -41,16 +41,17 @@ public class LedgerManager {
     @Transactional
     public LedgerDetailInfoView createLedger(
             final Long userId,
+            final Long ledgerId,
             final CreateLedgerRequest createLedgerRequest
     ) {
         // 1. 유저 검증
         User user = userService.validateUser(userId);
 
-        // 3. 소속 장부 검증
-        Ledger ledger = validateLedger(agencyUser.getAgency().getId());
+        // 2. 소속 장부 검증
+        Ledger ledger = validateLedger(ledgerId);
 
-        // 2. 유저 소속 검증
-        AgencyUser agencyUser = agencyService.validateAgencyUser(userId);
+        // 3. 유저 소속 검증
+        AgencyUser agencyUser = agencyService.validateAgencyUser(userId, ledger.getAgency().getId());
 
 
         // 4. 유저 권한 검증
@@ -103,30 +104,29 @@ public class LedgerManager {
     @Transactional
     public LedgerDetailInfoView updateLedger(
             final Long userId,
+            final Long ledgerId,
             final Long ledgerDetailId,
             final UpdateLedgerRequest updateLedgerRequest
     ) {
         // 1. 유저 검증
         User user = userService.validateUser(userId);
 
-        // 2. 장부 상세 내역 검증
-        LedgerDetail ledgerDetail = ledgerDetailReader.validateLedgerDetail(ledgerDetailId);
+        // 2. 소속 장부 검증
+        Ledger ledger = validateLedger(ledgerId);
 
-        // 3. 그룹 소속 검증
-        AgencyUser agencyUser = agencyService.validateAgencyUser(userId);
-        if(!ledgerDetail.getLedger().getAgency().getId().equals(agencyUser.getAgency().getId())) {
-            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
-        }
+        // 3. 유저 소속 검증
+        AgencyUser agencyUser = agencyService.validateAgencyUser(userId, ledger.getAgency().getId());
 
-        // 3. 유저 권한 검증
-
-
+        // 4. 유저 권한 검증
         if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
             throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
         }
 
-        // 3. 장부 총 잔액 업데이트
-        Ledger ledger = ledgerDetail.getLedger();
+        // 5. 장부 상세 내역 검증
+        LedgerDetail ledgerDetail = ledgerDetailReader.validateLedgerDetail(ledgerDetailId);
+
+
+        // 6. 장부 총 잔액 업데이트
         if (!ledgerDetail.getFundType().equals(updateLedgerRequest.getFundType())) {
             final Integer newAmount = AmountCalculatorByIncomeExpense.calculate(
                     updateLedgerRequest.getFundType(),
@@ -136,7 +136,7 @@ public class LedgerManager {
             ledger = updateLedgerTotalBalance(newAmount, ledger);
         }
 
-        // 4. 장부 상세 내역 정보 업데이트
+        // 7. 장부 상세 내역 정보 업데이트
         return ledgerDetailManager.updateLedgerDetail(
                 user,
                 ledger,
@@ -164,9 +164,9 @@ public class LedgerManager {
     }
 
 
-    private Ledger validateLedger(final Long agencyId) {
+    private Ledger validateLedger(final Long id) {
         return ledgerRepository
-                .findByAgencyId(agencyId)
+                .findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND));
     }
 }
