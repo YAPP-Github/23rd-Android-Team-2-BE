@@ -1,6 +1,6 @@
 package com.moneymong.domain.ledger.service.manager;
 
-import com.moneymong.domain.ledger.entity.Ledger;
+import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.repository.LedgerDocumentRepository;
 import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
@@ -18,10 +18,10 @@ public class LedgerDocumentManager {
 
     @Transactional
     public List<LedgerDocument> createLedgerDocuments(
-            final Ledger ledger,
+            final LedgerDetail ledgerDetail,
             final List<String> documentImageUrls
     ) {
-        List<LedgerDocument> ledgerDocuments = ledgerAssembler.toLedgerDocumentEntities(ledger, documentImageUrls);
+        List<LedgerDocument> ledgerDocuments = ledgerAssembler.toLedgerDocumentEntities(ledgerDetail, documentImageUrls);
         return ledgerDocuments.stream()
                 .map(ledgerDocumentRepository::save)
                 .toList();

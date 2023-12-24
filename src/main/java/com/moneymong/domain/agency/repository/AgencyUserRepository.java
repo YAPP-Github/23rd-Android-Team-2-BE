@@ -5,5 +5,5 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AgencyUserRepository extends JpaRepository<AgencyUser, Long> {
-    Optional<AgencyUser> findByUserId(Long userId);
+    Optional<AgencyUser> findByUserIdAndAgencyId(final Long userId, final Long agencyId);
 }

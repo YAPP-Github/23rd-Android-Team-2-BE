@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,10 +30,10 @@ public class LedgerReceipt {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "ledger_id",
+            name = "ledger_detail_id",
             referencedColumnName = "id"
     )
-    private Ledger ledger;
+    private LedgerDetail ledgerDetail;
 
     @Column(
             name = "receipt_image_url",
@@ -47,12 +48,12 @@ public class LedgerReceipt {
     private ZonedDateTime updatedAt;
 
     public static LedgerReceipt of(
-            final Ledger ledger,
+            final LedgerDetail ledgerDetail,
             final String receiptImageUrl
     ) {
         return LedgerReceipt
                 .builder()
-                .ledger(ledger)
+                .ledgerDetail(ledgerDetail)
                 .receiptImageUrl(receiptImageUrl)
                 .createdAt(ZonedDateTime.now())
                 .updatedAt(ZonedDateTime.now())
