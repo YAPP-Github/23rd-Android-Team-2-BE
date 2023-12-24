@@ -1,6 +1,5 @@
 package com.moneymong.global.config.jpa;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -9,7 +8,6 @@ import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -27,7 +25,7 @@ import java.util.Map;
 @EnableJpaAuditing
 @EnableJpaRepositories(
         basePackages = {
-                "com.moneymong.domain"
+                "com.moneymong"
         },
         entityManagerFactoryRef = "moneyMongEntityManagerFactory",
         transactionManagerRef = "moneyMongTransactionManager"

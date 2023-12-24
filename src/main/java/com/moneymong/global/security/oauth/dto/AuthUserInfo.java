@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class AuthUserInfo {
-    private final String userToken;
+    private final Long userId;
+    private final String role;
 }
