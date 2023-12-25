@@ -9,9 +9,7 @@ import com.moneymong.global.security.token.entity.RefreshToken;
 import com.moneymong.global.security.token.exception.RefreshTokenNotFoundException;
 import com.moneymong.global.security.token.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -74,4 +72,11 @@ public class TokenService {
 
         return new JwtAuthenticationToken(principal, null, authorities);
     }
+
+    @Transactional
+    public void deleteRefreshToken(String refreshToken) {
+        refreshTokenRepository.findById(refreshToken)
+                .ifPresent(refreshTokenRepository::delete);
+    }
+
 }
