@@ -1,6 +1,5 @@
 package com.moneymong.global.security.token.entity;
 
-import com.moneymong.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class RefreshToken extends BaseEntity {
+public class RefreshToken {
 
     @Id
     private String token;
