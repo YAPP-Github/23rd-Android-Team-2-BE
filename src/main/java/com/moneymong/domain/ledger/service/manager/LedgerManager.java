@@ -10,11 +10,10 @@ import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;
+import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
-import com.moneymong.domain.ledger.service.reader.LedgerDetailReader;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.service.UserService;
-import com.moneymong.global.constant.MoneymongConstant;
 import com.moneymong.global.exception.custom.BadRequestException;
 import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
@@ -35,11 +34,10 @@ public class LedgerManager {
     private final UserService userService;
     private final AgencyService agencyService;
     private final LedgerDetailManager ledgerDetailManager;
-    private final LedgerDetailReader ledgerDetailReader;
     private final LedgerReceiptManager ledgerReceiptManager;
     private final LedgerDocumentManager ledgerDocumentManager;
     private final LedgerRepository ledgerRepository;
-
+    private final LedgerDetailRepository ledgerDetailRepository;
 
     @Transactional
     public LedgerDetailInfoView createLedger(
@@ -50,18 +48,22 @@ public class LedgerManager {
         // 1. 유저 검증
         User user = userService.validateUser(userId);
 
-        // 2. 소속 장부 검증
-        Ledger ledger = validateLedger(ledgerId);
+        Ledger ledger = ledgerRepository
+                .findById(ledgerId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND));
 
-        // 3. 유저 소속 검증
-        AgencyUser agencyUser = agencyService.validateAgencyUser(userId, ledger.getAgency().getId());
+        // 2. 유저 소속 검증
+        AgencyUser agencyUser = agencyService.validateAgencyUser(
+                userId,
+                ledger.getAgency().getId()
+        );
 
-        // 4. 유저 권한 검증
+        // 3. 유저 권한 검증
         if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
             throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
         }
 
-        // 5. 장부 totalBalance 업데이트
+        // 4. 장부 totalBalance 업데이트
         Ledger updateLedger = updateLedgerTotalBalance(
                 AmountCalculatorByFundType.calculate(
                         createLedgerRequest.getFundType(),
@@ -70,7 +72,7 @@ public class LedgerManager {
                 ledger
         );
 
-        // 6. 장부 내역 등록
+        // 5. 장부 내역 등록
         LedgerDetail ledgerDetail = ledgerDetailManager.createLedgerDetail(
                 updateLedger,
                 user,
@@ -82,11 +84,14 @@ public class LedgerManager {
                 createLedgerRequest.getPaymentDate()
         );
 
-        // 7. 장부 영수증 등록
+        // 6. 장부 영수증 등록
         List<LedgerReceipt> ledgerReceipts = List.of();
         List<String> requestReceiptImageUrls = createLedgerRequest.getReceiptImageUrls();
         if (requestReceiptImageUrls.size() > 0) {
-            ledgerReceipts = ledgerReceiptManager.createLedgerReceipts(ledgerDetail, requestReceiptImageUrls);
+            ledgerReceipts = ledgerReceiptManager.createReceipts(
+                    ledgerDetail.getId(),
+                    requestReceiptImageUrls
+            );
         }
 
         // 8. 장부 증빙 자료 등록
@@ -106,15 +111,18 @@ public class LedgerManager {
     @Transactional
     public LedgerDetailInfoView updateLedger(
             final Long userId,
-            final Long ledgerId,
             final Long ledgerDetailId,
             final UpdateLedgerRequest updateLedgerRequest
     ) {
         // 1. 유저 검증
         User user = userService.validateUser(userId);
 
-        // 2. 소속 장부 검증
-        Ledger ledger = validateLedger(ledgerId);
+        // 2. 장부 상세 내역 검증
+        LedgerDetail ledgerDetail = ledgerDetailRepository
+                .findById(ledgerDetailId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+
+        Ledger ledger = ledgerDetail.getLedger();
 
         // 3. 유저 소속 검증
         AgencyUser agencyUser = agencyService.validateAgencyUser(
@@ -127,8 +135,6 @@ public class LedgerManager {
             throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
         }
 
-        // 5. 장부 상세 내역 검증
-        LedgerDetail ledgerDetail = ledgerDetailReader.validateLedgerDetail(ledgerDetailId);
 
         // 6. 장부 총 잔액 업데이트
         final Integer newAmount = ModificationAmountCalculator.calculate(
@@ -153,7 +159,8 @@ public class LedgerManager {
             final Ledger ledger
     ) {
 
-        BigDecimal expectedAmount = new BigDecimal(ledger.getTotalBalance()).add(new BigDecimal(newAmount));
+        BigDecimal expectedAmount = new BigDecimal(ledger.getTotalBalance())
+                .add(new BigDecimal(newAmount));
 
         // 7. 장부 금액 최소 초과 검증
         BigDecimal minValue = BigDecimal.ZERO;
@@ -166,12 +173,5 @@ public class LedgerManager {
 
         ledger.updateTotalBalance(expectedAmount.intValue());
         return ledgerRepository.save(ledger);
-    }
-
-
-    private Ledger validateLedger(final Long id) {
-        return ledgerRepository
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND));
     }
 }
