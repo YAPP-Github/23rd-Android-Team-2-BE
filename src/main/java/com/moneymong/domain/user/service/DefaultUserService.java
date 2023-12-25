@@ -37,7 +37,7 @@ public class DefaultUserService {
 					)
 			);
 
-		return AuthUserInfo.from(user.getId(), DEFAULT_ROLE, user.getNickname());
+		return AuthUserInfo.from(user.getId(), user.getNickname(), DEFAULT_ROLE);
 	}
 
 	/* [회원 저장] USER 객체를 DB에 저장합니다. */
