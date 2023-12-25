@@ -39,16 +39,14 @@ public class LedgerController {
     }
 
     @Operation(summary = "장부 상세 내역 수정 API")
-    @PutMapping("/{id}/ledger-detail/{ledgerDetailId}")
+    @PutMapping("/ledger-detail/{id}")
     public LedgerDetailInfoView updateLedger(
             // @AuthenticationPrincipal ..
-            @PathVariable("id") final Long ledgerId,
-            @PathVariable("ledgerDetailId") final Long ledgerDetailId,
+            @PathVariable("id") final Long ledgerDetailId,
             @RequestBody final UpdateLedgerRequest updateLedgerRequest
     ) {
         return ledgerManager.updateLedger(
                 1L,
-                ledgerId,
                 ledgerDetailId,
                 updateLedgerRequest
         );

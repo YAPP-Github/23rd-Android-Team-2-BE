@@ -20,6 +20,7 @@ public enum ErrorCode {
     INVALID_LEDGER_ACCESS(MoneymongConstant.FORBIDDEN, "LEDGER-002", "유효하지 않은 접근입니다."),
     LEDGER_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-003", "장부가 존재하지 않습니다."),
     LEDGER_DETAIL_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-004", "장부 상세 내역이 존재하지 않습니다."),
+    LEDGER_RECEIPT_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-006", "장부 영수증 내역이 존재하지 않습니다."),
     INVALID_LEDGER_AMOUNT(MoneymongConstant.BAD_REQUEST,"LEDGER-005", "0원 ~ 999,999,999원까지 기입 가능합니다."),
 
     // ---- 이미지 ---- //
