@@ -98,7 +98,10 @@ public class LedgerManager {
         List<LedgerDocument> ledgerDocuments = List.of();
         List<String> requestDocumentImageUrls = createLedgerRequest.getDocumentImageUrls();
         if (requestDocumentImageUrls.size() > 0) {
-            ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(ledgerDetail, requestDocumentImageUrls);
+            ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(
+                    ledgerDetail.getId(),
+                    requestDocumentImageUrls
+            );
         }
         return LedgerDetailInfoView.of(
                 ledgerDetail,

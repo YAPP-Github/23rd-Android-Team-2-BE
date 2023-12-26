@@ -2,18 +2,20 @@ package com.moneymong.domain.ledger.service.manager;
 
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerDocumentInfoView;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
+import com.moneymong.domain.ledger.repository.LedgerDocumentRepository;
+import com.moneymong.domain.ledger.repository.LedgerReceiptRepository;
 import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
 import com.moneymong.domain.ledger.service.reader.LedgerDocumentReader;
 import com.moneymong.domain.ledger.service.reader.LedgerReceiptReader;
 import com.moneymong.domain.user.entity.User;
-import com.moneymong.utils.AmountCalculatorByFundType;
+import com.moneymong.global.exception.custom.NotFoundException;
+import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ public class LedgerDetailManager {
     private final LedgerDetailRepository ledgerDetailRepository;
     private final LedgerReceiptReader ledgerReceiptReader;
     private final LedgerDocumentReader ledgerDocumentReader;
+    private final LedgerReceiptRepository ledgerReceiptRepository;
+    private final LedgerDocumentRepository ledgerDocumentRepository;
 
     @Transactional
     public LedgerDetail createLedgerDetail(
@@ -84,5 +88,19 @@ public class LedgerDetailManager {
                 ledgerDocuments,
                 user
         );
+    }
+
+    @Transactional
+    public void removeLedgerDetail(
+            final Long userId,
+            final Long detailId
+    ) {
+        LedgerDetail ledgerDetail = ledgerDetailRepository
+                .findById(detailId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+
+        ledgerReceiptRepository.deleteByLedgerDetail(ledgerDetail);
+        ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
+        ledgerDetailRepository.delete(ledgerDetail);
     }
 }
