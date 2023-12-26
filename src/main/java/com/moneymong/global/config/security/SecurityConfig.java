@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/favicon.ico").permitAll();
                     auth.requestMatchers("/oauth2/**").permitAll();
+                    auth.requestMatchers("/login/**").permitAll();
                     auth.requestMatchers("/api/v1/tokens").permitAll();
                     auth.requestMatchers("/health").permitAll();
                     auth.anyRequest().authenticated();
