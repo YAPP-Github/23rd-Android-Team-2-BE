@@ -38,3 +38,7 @@ out/
 
 ### ENV ###
 .env
+
+### QueryDsl ###
+/src/main/generated/**
+/src/main/generated/**
