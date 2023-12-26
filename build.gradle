@@ -87,5 +87,6 @@ configurations {
 }
 
 tasks.withType(JavaCompile).configureEach {
+	clean
 	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
 }
