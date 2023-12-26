@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
@@ -25,7 +26,6 @@ public class SecurityConfig {
     private final DefaultOAuth2UserService defaultOAuth2UserService;
     private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
     private final OAuthAuthenticationFailureHandler oAuthAuthenticationFailureHandler;
-
 
     @Bean
     public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
@@ -59,5 +59,22 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, OAuth2AuthorizationRequestRedirectFilter.class)
                 .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> {
+            web.ignoring()
+                    .requestMatchers(
+                            "/api-document/**",
+                            "/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-resources/**",
+                            "/swagger-config/**",
+                            "/webjars/**",
+                            "/swagger/**",
+                            "/favicon.ico"
+                    );
+        };
     }
 }
