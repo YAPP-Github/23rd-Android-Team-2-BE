@@ -1,7 +1,6 @@
 package com.moneymong.domain.user.entity;
 
 import com.moneymong.global.domain.BaseEntity;
-import com.moneymong.utils.Validator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import static com.moneymong.utils.Validator.checkText;
 import static lombok.AccessLevel.PROTECTED;
 
 @Table(name = "user_universities")
@@ -49,13 +49,15 @@ public class UserUniversity extends BaseEntity {
     private int grade;
 
     public void update(String universityName, int grade) {
-        Validator.checkText(universityName, "대학 이름은 필수 입력값입니다.");
+        checkText(universityName, "대학 이름은 필수 입력값입니다.");
 
         this.universityName = universityName;
         this.grade = grade;
     }
 
     public static UserUniversity of(Long userId, String universityName, int grade) {
+        checkText(universityName, "대학 이름은 필수 입력값입니다.");
+
         return UserUniversity.builder()
                 .userId(userId)
                 .universityName(universityName)
