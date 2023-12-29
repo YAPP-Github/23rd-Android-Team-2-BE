@@ -4,7 +4,9 @@ import com.moneymong.domain.user.api.request.CreateUserUniversityRequest;
 import com.moneymong.domain.user.api.request.UpdateUserUniversityRequest;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
+import com.moneymong.global.exception.custom.BadRequestException;
 import com.moneymong.global.exception.custom.NotFoundException;
+import com.moneymong.global.exception.enums.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,10 @@ public class UserUniversityService {
 
     @Transactional
     public void create(Long userId, CreateUserUniversityRequest request) {
+        if (exists(userId)) {
+            throw new BadRequestException(ErrorCode.USER_UNIVERSITY_ALREADY_EXISTS);
+        }
+
         UserUniversity userUniversity = UserUniversity.of(userId, request.getUniversityName(), request.getGrade());
         userUniversityRepository.save(userUniversity);
     }

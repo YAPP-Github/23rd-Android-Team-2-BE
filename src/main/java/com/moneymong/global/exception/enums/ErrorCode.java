@@ -17,6 +17,7 @@ public enum ErrorCode {
 
     // ---- 대학교 ---- //
     USER_UNIVERSITY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "UNIVERSITY-001", "회원의 대학 정보가 존재하지 않습니다."),
+    USER_UNIVERSITY_ALREADY_EXISTS(MoneymongConstant.BAD_REQUEST, "UNIVERSITY-002", "회원의 대학 정보가 이미 존재합니다."),
 
     // ---- 장부 ---- //
     AGENCY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-001", "소속에 가입 후 장부를 사용할 수 있습니다."),

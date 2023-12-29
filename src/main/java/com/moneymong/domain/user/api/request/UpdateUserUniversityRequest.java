@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateUserUniversityRequest {
-    @NotBlank(message = "대학교 이름은 필수 입력값입니다.")
+    @NotBlank
     private String universityName;
 
-    @Min(value = 2, message = "학년은 {value} 이상이어야 합니다.")
-    @Max(value = 5, message = "학년은 {value} 이하여야 합니다. ")
+    @Min(value = 2)
+    @Max(value = 5)
     private int grade;
 }

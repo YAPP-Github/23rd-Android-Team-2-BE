@@ -5,10 +5,10 @@ import com.moneymong.global.exception.custom.BusinessException;
 import com.moneymong.global.exception.dto.ErrorResponse;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.sql.SQLException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -24,6 +24,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(exception.getErrorCode().getStatus().intValue())
                 .body(ErrorResponse.from(exception.getErrorCode()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+            final MethodArgumentNotValidException exception
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.from(ErrorCode.BAD_REQUEST));
     }
 
     @ExceptionHandler(value = { Exception.class, RuntimeException.class, SQLException.class })
