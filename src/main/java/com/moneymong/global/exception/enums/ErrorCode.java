@@ -15,6 +15,9 @@ public enum ErrorCode {
     // ---- 유저 ---- //
     USER_NOT_FOUND(MoneymongConstant.NOT_FOUND, "USER-001", "존재하지 않는 회원입니다."),
 
+    // ---- 대학교 ---- //
+    USER_UNIVERSITY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "UNIVERSITY-001", "회원의 대학 정보가 존재하지 않습니다."),
+
     // ---- 장부 ---- //
     AGENCY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-001", "소속에 가입 후 장부를 사용할 수 있습니다."),
     INVALID_LEDGER_ACCESS(MoneymongConstant.FORBIDDEN, "LEDGER-002", "유효하지 않은 접근입니다."),
