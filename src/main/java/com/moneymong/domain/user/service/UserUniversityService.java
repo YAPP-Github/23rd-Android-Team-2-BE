@@ -2,6 +2,7 @@ package com.moneymong.domain.user.service;
 
 import com.moneymong.domain.user.api.request.CreateUserUniversityRequest;
 import com.moneymong.domain.user.api.request.UpdateUserUniversityRequest;
+import com.moneymong.domain.user.api.response.UserUniversityResponse;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.BadRequestException;
@@ -21,6 +22,14 @@ public class UserUniversityService {
     @Transactional(readOnly = true)
     public boolean exists(Long userId) {
         return userUniversityRepository.existsByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public UserUniversityResponse get(Long userId) {
+        UserUniversity userUniversity = userUniversityRepository.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException(USER_UNIVERSITY_NOT_FOUND));
+
+        return UserUniversityResponse.of(userUniversity.getUniversityName(), userUniversity.getGrade());
     }
 
     @Transactional

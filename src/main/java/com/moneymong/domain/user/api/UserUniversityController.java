@@ -2,6 +2,7 @@ package com.moneymong.domain.user.api;
 
 import com.moneymong.domain.user.api.request.CreateUserUniversityRequest;
 import com.moneymong.domain.user.api.request.UpdateUserUniversityRequest;
+import com.moneymong.domain.user.api.response.UserUniversityResponse;
 import com.moneymong.domain.user.service.UserUniversityService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserUniversityController {
     private final UserUniversityService userUniversityService;
+
+    @Operation(summary = "대학교 정보 조회")
+    @GetMapping
+    public UserUniversityResponse getUserUniversity(
+            @AuthenticationPrincipal JwtAuthentication user
+    ) {
+        return userUniversityService.get(user.getId());
+    }
 
     @Operation(summary = "대학교 정보 생성")
     @PostMapping
