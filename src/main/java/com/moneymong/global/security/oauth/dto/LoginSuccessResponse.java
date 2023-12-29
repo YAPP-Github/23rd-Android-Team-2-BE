@@ -10,13 +10,15 @@ import lombok.Getter;
 public class LoginSuccessResponse {
     private String accessToken;
     private String refreshToken;
-    private boolean loginSuccess;
+    private Boolean loginSuccess;
+    private Boolean schoolInfoExist;
 
-    public static LoginSuccessResponse from(String accessToken, String refreshToken, boolean loginSuccess) {
+    public static LoginSuccessResponse from(String accessToken, String refreshToken, Boolean loginSuccess, Boolean schoolInfoExist) {
         return LoginSuccessResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .loginSuccess(loginSuccess)
+                .schoolInfoExist(schoolInfoExist)
                 .build();
     }
 }
