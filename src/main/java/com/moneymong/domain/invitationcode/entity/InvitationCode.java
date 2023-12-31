@@ -1,7 +1,5 @@
 package com.moneymong.domain.invitationcode.entity;
 
-import com.moneymong.domain.agency.entity.Agency;
-import com.moneymong.domain.ledger.entity.Ledger;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -44,6 +43,10 @@ public class InvitationCode {
                 .agencyId(agencyId)
                 .code(code)
                 .build();
+    }
+
+    public boolean isSameCode(String code) {
+        return Objects.equals(this.code, code);
     }
 
     public void update(String code) {

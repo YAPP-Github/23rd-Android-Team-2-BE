@@ -3,6 +3,8 @@ package com.moneymong.domain.invitationcode.service;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
+import com.moneymong.domain.invitationcode.api.request.CertifyInvitationCodeRequest;
+import com.moneymong.domain.invitationcode.api.response.CertifyInvitationCodeResponse;
 import com.moneymong.domain.invitationcode.api.response.InvitationCodeResponse;
 import com.moneymong.domain.invitationcode.entity.InvitationCode;
 import com.moneymong.domain.invitationcode.repository.InvitationCodeRepository;
@@ -46,6 +48,15 @@ public class InvitationCodeService {
         InvitationCode invitationCode = getInvitationCode(agencyId);
 
         return InvitationCodeResponse.from(invitationCode.getCode());
+    }
+
+    @Transactional(readOnly = true)
+    public CertifyInvitationCodeResponse certify(CertifyInvitationCodeRequest request, Long agencyId) {
+        InvitationCode invitationCode = getInvitationCode(agencyId);
+
+        boolean certifyResult = invitationCode.isSameCode(request.getInvitationCode());
+
+        return CertifyInvitationCodeResponse.from(certifyResult);
     }
 
     private AgencyUser getAgencyUser(Long userId, Long agencyId) {
