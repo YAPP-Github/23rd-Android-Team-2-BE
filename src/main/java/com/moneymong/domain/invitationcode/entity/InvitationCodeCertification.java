@@ -10,7 +10,10 @@ import java.time.ZonedDateTime;
 
 import static lombok.AccessLevel.PROTECTED;
 
-@Table(name = "invitation_code_certification")
+@Table(
+        name = "invitation_code_certification",
+        indexes = @Index(name = "idx_userId_agencyId", columnList = "user_id, agency_id")
+)
 @Entity
 @Getter
 @Builder
