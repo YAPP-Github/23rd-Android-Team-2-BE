@@ -20,10 +20,11 @@ public class InviteCodeController {
     @Operation(summary = "초대코드 인증")
     @PostMapping
     public CertifyInvitationCodeResponse certify(
+            @AuthenticationPrincipal JwtAuthentication user,
             @RequestBody @Valid CertifyInvitationCodeRequest request,
             @PathVariable("agencyId") Long agencyId
     ) {
-        return invitationCodeService.certify(request, agencyId);
+        return invitationCodeService.certify(request, user.getId(), agencyId);
     }
 
     @Operation(summary = "초대코드 조회")

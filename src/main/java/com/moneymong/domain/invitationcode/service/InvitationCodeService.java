@@ -7,6 +7,8 @@ import com.moneymong.domain.invitationcode.api.request.CertifyInvitationCodeRequ
 import com.moneymong.domain.invitationcode.api.response.CertifyInvitationCodeResponse;
 import com.moneymong.domain.invitationcode.api.response.InvitationCodeResponse;
 import com.moneymong.domain.invitationcode.entity.InvitationCode;
+import com.moneymong.domain.invitationcode.entity.InvitationCodeCertification;
+import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificationRepository;
 import com.moneymong.domain.invitationcode.repository.InvitationCodeRepository;
 import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvitationCodeService {
     private final InvitationCodeRepository invitationCodeRepository;
     private final AgencyUserRepository agencyUserRepository;
+    private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
 
     @Transactional
     public InvitationCodeResponse updateCode(Long userId, Long agencyId) {
@@ -50,13 +53,23 @@ public class InvitationCodeService {
         return InvitationCodeResponse.from(invitationCode.getCode());
     }
 
-    @Transactional(readOnly = true)
-    public CertifyInvitationCodeResponse certify(CertifyInvitationCodeRequest request, Long agencyId) {
+    @Transactional
+    public CertifyInvitationCodeResponse certify(CertifyInvitationCodeRequest request, Long userId, Long agencyId) {
         InvitationCode invitationCode = getInvitationCode(agencyId);
 
-        boolean certifyResult = invitationCode.isSameCode(request.getInvitationCode());
+        boolean certified = invitationCode.isSameCode(request.getInvitationCode());
 
-        return CertifyInvitationCodeResponse.from(certifyResult);
+        if (certified) {
+            InvitationCodeCertification certification = getCertification(userId, agencyId);
+            invitationCodeCertificationRepository.save(certification);
+        }
+
+        return CertifyInvitationCodeResponse.from(certified);
+    }
+
+    private InvitationCodeCertification getCertification(Long userId, Long agencyId) {
+        return invitationCodeCertificationRepository.findByUserIdAndAgencyId(userId, agencyId)
+                .orElseGet(() -> InvitationCodeCertification.of(userId, agencyId));
     }
 
     private AgencyUser getAgencyUser(Long userId, Long agencyId) {
