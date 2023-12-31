@@ -1,8 +1,12 @@
 package com.moneymong.domain.invitationcode.api;
 
+import com.moneymong.domain.invitationcode.api.request.CertifyInvitationCodeRequest;
+import com.moneymong.domain.invitationcode.api.response.CertifyInvitationCodeResponse;
 import com.moneymong.domain.invitationcode.api.response.InvitationCodeResponse;
 import com.moneymong.domain.invitationcode.service.InvitationCodeService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +17,16 @@ import org.springframework.web.bind.annotation.*;
 public class InviteCodeController {
 
     private final InvitationCodeService invitationCodeService;
+    @Operation(summary = "초대코드 인증")
+    @PostMapping
+    public CertifyInvitationCodeResponse certify(
+            @RequestBody @Valid CertifyInvitationCodeRequest request,
+            @PathVariable("agencyId") Long agencyId
+    ) {
+        return invitationCodeService.certify(request, agencyId);
+    }
 
+    @Operation(summary = "초대코드 조회")
     @GetMapping
     public InvitationCodeResponse get(
             @AuthenticationPrincipal JwtAuthentication user,
@@ -22,6 +35,7 @@ public class InviteCodeController {
         return invitationCodeService.getCode(user.getId(), agencyId);
     }
 
+    @Operation(summary = "초대코드 재발급")
     @PatchMapping
     public InvitationCodeResponse update(
             @AuthenticationPrincipal JwtAuthentication user,
