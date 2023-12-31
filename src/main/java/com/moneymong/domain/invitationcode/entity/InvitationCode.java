@@ -45,4 +45,8 @@ public class InvitationCode {
                 .code(code)
                 .build();
     }
+
+    public void update(String code) {
+        this.code = code;
+    }
 }
