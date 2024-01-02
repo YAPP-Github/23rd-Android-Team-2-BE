@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,12 +21,13 @@ public enum OAuthProvider {
 		public OAuthUserInfo toUserInfo(OAuth2User oauth2User) {
 			Map<String, Object> attributes = oauth2User.getAttributes();
 			Map<String, Object> properties = oauth2User.getAttribute("properties");
+			Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
 
 			return OAuthUserInfo.from(
 					KAKAO.name,
 					String.valueOf(attributes.get("id")),
 					String.valueOf(properties.get("nickname")),
-					String.valueOf(properties.get("profile_image"))
+					String.valueOf(kakaoAccount.get("email"))
 			);
 		}
 	};

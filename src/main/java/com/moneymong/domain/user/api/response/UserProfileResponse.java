@@ -11,14 +11,14 @@ public class UserProfileResponse {
     private Long id;
     private String userToken;
     private String nickname;
-    private String profileImage;
+    private String email;
 
-    public static UserProfileResponse from(Long id, String userToken, String nickname, String profileImage) {
+    public static UserProfileResponse from(Long id, String userToken, String nickname, String email) {
         return UserProfileResponse.builder()
                 .id(id)
                 .userToken(userToken)
                 .nickname(nickname)
-                .profileImage(profileImage)
+                .email(email)
                 .build();
     }
 }
