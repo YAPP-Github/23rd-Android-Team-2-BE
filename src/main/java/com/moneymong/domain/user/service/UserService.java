@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
+    /**
+     * p3. naming이 잘 못 된 것으로 보이는데요. 검증을 하는 건 아닌 것 같아요
+     * getUser 정도?
+     */
     public User validateUser(final Long userId) {
         return userRepository
                 .findById(userId)

@@ -4,6 +4,13 @@ import com.moneymong.global.constant.MoneymongConstant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+
+/**
+ * p3. 이 클래스의 목적은 알겠는데 고민 해보시면 좋은 이슈가 있습니다.
+ * 예를 들어서 INVALID_LEDGER_AMOUNT 같은 Enum 값을 써야한다 했을 때, 어떤 Exception 과 함께 써야 하는 건가요?
+ * ErrorCode를 만든 초기에야 당연히 알겠지만, 유지보수로 넘어가면 너무 어려워질 것 같아 보이네요.
+ * 해결 방법을 고민해보시면 좋을 것 같아요 :)
+ */
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {

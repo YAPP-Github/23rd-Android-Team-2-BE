@@ -59,6 +59,10 @@ public class SecurityConfig {
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, OAuth2AuthorizationRequestRedirectFilter.class)
                 .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
+                /**
+                 * p5. 정확하진 않은데 anonymous 이것도 비활성화가 필요 할 수 있어요.
+                 */
+                .anonymous(AbstractHttpConfigurer::disable)
                 .build();
     }
 

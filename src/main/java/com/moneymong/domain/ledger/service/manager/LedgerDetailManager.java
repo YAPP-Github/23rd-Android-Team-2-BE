@@ -32,6 +32,11 @@ public class LedgerDetailManager {
     private final LedgerReceiptRepository ledgerReceiptRepository;
     private final LedgerDocumentRepository ledgerDocumentRepository;
 
+    /**
+     * p4. 이것도 파라미터가 너무 많아서 DTO로 정리하던가 아예 Entity를 받던가(근데 이러면 걍 바로 Repository 사용도 가능해보이네요)
+     * 아무튼 여러 방안을 고민해보면 좋을 것 같습니다.
+     * 팀 컨벤션에 가까운 내용이기도 해서 따로 제안을 드리지않을께요..
+     */
     @Transactional
     public LedgerDetail createLedgerDetail(
             final Ledger ledger,

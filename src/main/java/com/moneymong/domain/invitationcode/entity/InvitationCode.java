@@ -29,6 +29,12 @@ public class InvitationCode {
     @Column(nullable = false)
     private String code;
 
+
+    /**
+     * p2. 어떤 Entity는 BaseEntity 를 이용해서 Auditing을 사용하고 있고,
+     * 다른 Entity 는 ZonedDateTime을 쓰면서 Auditing을 사용하지 않고 있고,
+     * 통일이 필요해 보입니다.
+     */
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
 

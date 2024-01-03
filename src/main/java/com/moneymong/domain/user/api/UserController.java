@@ -22,6 +22,12 @@ public class UserController {
     @Operation(summary = "내 정보 조회 API")
     @GetMapping("/me")
     public UserProfileResponse getMyProfile(
+            /**
+             * p5. 이 어노테이션을 잘 몰라서 질문하는 코멘트 입니다.
+             * 이거 Null 처리 안해도 되나요?
+             * auth.anyRequest().authenticated() 이거 걸어두셔서 Filter 단에서 처리되나 흠...
+             * 근데 결국 하다보면 어떤 API는 열어줘야 할 수도 있지 않나요?
+             */
             @AuthenticationPrincipal JwtAuthentication user
     ) {
         return userService.getUserProfile(user.getId());
