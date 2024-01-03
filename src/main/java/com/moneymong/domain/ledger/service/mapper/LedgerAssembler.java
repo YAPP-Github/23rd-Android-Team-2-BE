@@ -13,6 +13,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class LedgerAssembler {
 
+    /**
+     * p2. 왜 필요한지 의문의 드는 메소드
+     * 그냥 LedgerDetail.of을 사용하면 되는게 아닌가 싶습니다.
+     */
     public LedgerDetail toLedgerDetailEntity(
             final Ledger ledger,
             final User user,

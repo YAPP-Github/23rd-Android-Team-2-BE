@@ -65,6 +65,10 @@ public class TokenService {
         Claims claims = jwtTokenProvider.getClaims(accessToken);
 
         Long id = claims.get("userId", Long.class);
+        /**
+         * p2. Role을 JWT 넣어서 JWT Validation만 하게 된다면
+         * 추후 탈퇴, 강퇴, 강등 등 권한이 제거 되었을 때, 실시간 대응이 되지 않습니다.
+         */
         String role = claims.get("role", String.class);
 
         JwtAuthentication principal = new JwtAuthentication(id, accessToken);

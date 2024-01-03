@@ -30,6 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/**
+ * p3. Manager 라는 네이밍과 Service라는 네이밍에 통일성이 없어 보입니다. 이는 팀 내에서 논의해서 맞추셔야 할 것 같아요.
+ * 보편적으로는 Service 라는 네이밍을 많이 사용합니다.
+ */
 public class LedgerManager {
     private final UserService userService;
     private final AgencyService agencyService;
@@ -45,6 +49,10 @@ public class LedgerManager {
             final Long ledgerId,
             final CreateLedgerRequest createLedgerRequest
     ) {
+        /**
+         * p5. 쿼리 최적화가 가능해보이는 메소드인데 지금 단계에선 쿼리 최적화는 고려대상이 아니니 패스 하겠습니다.
+         */
+
         // 1. 유저 검증
         User user = userService.validateUser(userId);
 
