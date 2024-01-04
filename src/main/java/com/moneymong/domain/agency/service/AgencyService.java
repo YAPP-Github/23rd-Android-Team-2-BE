@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AgencyService {
+    private static final int INITIAL_HEAD_COUNT = 1;
     private final AgencyUserRepository agencyUserRepository;
     private final AgencyRepository agencyRepository;
 
@@ -34,7 +35,8 @@ public class AgencyService {
                 request.getName(),
                 request.getAgencyType(),
                 request.getThumbnailImage(),
-                request.getDescription()
+                request.getDescription(),
+                INITIAL_HEAD_COUNT
         );
 
         AgencyUser agencyUser = AgencyUser.of(agency, userId, AgencyUserRole.STAFF);

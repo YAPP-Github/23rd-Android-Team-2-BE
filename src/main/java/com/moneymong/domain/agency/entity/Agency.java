@@ -67,13 +67,13 @@ public class Agency extends BaseEntity {
         this.description = description;
     }
 
-    public static Agency of(String agencyName, AgencyType agencyType, String thumbnailImageUrl, String description) {
+    public static Agency of(String agencyName, AgencyType agencyType, String thumbnailImageUrl, String description, int headCount) {
         return Agency.builder()
                 .agencyName(agencyName)
                 .agencyType(agencyType)
                 .thumbnailImageUrl(thumbnailImageUrl)
                 .description(description)
-                .headCount(1)
+                .headCount(headCount)
                 .build();
     }
 
