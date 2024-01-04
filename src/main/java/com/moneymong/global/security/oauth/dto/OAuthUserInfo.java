@@ -13,14 +13,14 @@ public class OAuthUserInfo {
     private String provider;
     private String oauthId;
     private String nickname;
-    private String profileImgUrl;
+    private String email;
 
-    public static OAuthUserInfo from(String provider, String oauthId, String nickname, String profileImgUrl) {
+    public static OAuthUserInfo from(String provider, String oauthId, String nickname, String email) {
         return OAuthUserInfo.builder()
                 .provider(provider)
                 .oauthId(oauthId)
                 .nickname(nickname)
-                .profileImgUrl(profileImgUrl)
+                .email(email)
                 .build();
     }
 }

@@ -29,10 +29,10 @@ public class DefaultUserService {
 			.orElseGet(() -> save(
 					User.builder()
 							.userToken(UUID.randomUUID().toString())
+							.email(oauthUserInfo.getEmail())
 							.oauthId(oauthUserInfo.getOauthId())
 							.provider(oauthUserInfo.getProvider())
 							.nickname(oauthUserInfo.getNickname())
-							.profileImgUrl(oauthUserInfo.getProfileImgUrl())
 							.build()
 					)
 			);
@@ -54,7 +54,7 @@ public class DefaultUserService {
 						user.getId(),
 						user.getUserToken(),
 						user.getNickname(),
-						user.getProfileImageUrl())
+						user.getEmail())
 				)
 				.orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 	}
