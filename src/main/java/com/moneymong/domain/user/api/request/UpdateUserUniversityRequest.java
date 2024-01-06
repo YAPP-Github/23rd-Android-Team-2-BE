@@ -14,7 +14,7 @@ public class UpdateUserUniversityRequest {
     @NotBlank
     private String universityName;
 
-    @Min(value = 2)
+    @Min(value = 1)
     @Max(value = 5)
     private int grade;
 }
