@@ -2,8 +2,10 @@ package com.moneymong.domain.ledger.repository;
 
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
+import com.moneymong.domain.ledger.entity.enums.FundType;
 import java.time.ZonedDateTime;
 import java.util.List;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public interface LedgerDetailCustom {
@@ -12,5 +14,13 @@ public interface LedgerDetailCustom {
             ZonedDateTime from,
             ZonedDateTime to,
             Pageable pageable
+    );
+
+    List<LedgerDetail> searchByFundType(
+            Ledger ledger,
+            ZonedDateTime from,
+            ZonedDateTime to,
+            FundType fundType,
+            PageRequest pageable
     );
 }

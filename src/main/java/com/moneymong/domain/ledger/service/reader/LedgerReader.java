@@ -3,6 +3,7 @@ package com.moneymong.domain.ledger.service.reader;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
+import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.global.exception.custom.NotFoundException;
@@ -39,6 +40,31 @@ public class LedgerReader {
                 ledger,
                 from,
                 to,
+                PageRequest.of(page, limit)
+        );
+
+        return LedgerInfoView.from(ledger, ledgerDetailPage);
+    }
+
+    public LedgerInfoView searchByFilter(
+            final Long ledgerId,
+            final Integer year,
+            final Integer month,
+            final Integer page,
+            final Integer limit,
+            final FundType fundType
+    ) {
+        Ledger ledger = ledgerRepository.findById(ledgerId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND)
+        );
+
+        ZonedDateTime from = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime to = from.plusMonths(1);
+        List<LedgerDetail> ledgerDetailPage = ledgerDetailRepository.searchByFundType(
+                ledger,
+                from,
+                to,
+                fundType,
                 PageRequest.of(page, limit)
         );
 

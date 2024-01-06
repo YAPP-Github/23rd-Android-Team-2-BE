@@ -1,6 +1,7 @@
 package com.moneymong.domain.ledger.api;
 
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
+import com.moneymong.domain.ledger.api.request.SearchLedgerFilterRequest;
 import com.moneymong.domain.ledger.api.request.SearchLedgerRequest;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
@@ -58,6 +59,7 @@ public class LedgerController {
     @Operation(summary = " 장부 내역 조회 API")
     @GetMapping("/{id}")
     public LedgerInfoView search(
+            // @AuthenticationPrincipal ..
             @PathVariable("id") final Long ledgerId,
             @ParameterObject final SearchLedgerRequest searchLedgerRequest
     ) {
@@ -67,6 +69,23 @@ public class LedgerController {
                 searchLedgerRequest.getMonth(),
                 searchLedgerRequest.getPage(),
                 searchLedgerRequest.getLimit()
+        );
+    }
+
+    @Operation(summary = "장부 내역 필터별 조회 API")
+    @GetMapping("/{id}/filter")
+    public LedgerInfoView searchByFilter(
+            // @AuthenticationPrincipal ..
+            @PathVariable("id") final Long ledgerId,
+            @ParameterObject final SearchLedgerFilterRequest searchLedgerFilterRequest
+    ) {
+        return ledgerReader.searchByFilter(
+                ledgerId,
+                searchLedgerFilterRequest.getYear(),
+                searchLedgerFilterRequest.getMonth(),
+                searchLedgerFilterRequest.getPage(),
+                searchLedgerFilterRequest.getLimit(),
+                searchLedgerFilterRequest.getFundType()
         );
     }
 }
