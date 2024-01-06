@@ -33,10 +33,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.from(ErrorCode.BAD_REQUEST));
+                .body(ErrorResponse.builder()
+                        .result(false)
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .message(exception.getMessage())
+                        .build()
+                );
     }
 
-    @ExceptionHandler(value = { Exception.class, RuntimeException.class, SQLException.class })
+    @ExceptionHandler(value = {Exception.class, RuntimeException.class, SQLException.class})
     public ResponseEntity<ErrorResponse> handleInternalException(
             final Exception exception
     ) {
