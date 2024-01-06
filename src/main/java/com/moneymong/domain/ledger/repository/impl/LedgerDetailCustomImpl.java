@@ -31,7 +31,7 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
 
         return jpaQueryFactory.selectFrom(ledgerDetail)
                 .where(ledgerDetail.ledger.eq(ledger))
-                .where(ledgerDetail.createdAt.between(from, to))
+                .where(ledgerDetail.paymentDate.between(from, to))
                 .orderBy(ledgerDetail.createdAt.desc())
                 .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
@@ -50,7 +50,7 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
         return jpaQueryFactory.selectFrom(ledgerDetail)
                 .where(ledgerDetail.ledger.eq(ledger))
                 .where(ledgerDetail.fundType.eq(fundType))
-                .where(ledgerDetail.createdAt.between(from, to))
+                .where(ledgerDetail.paymentDate.between(from, to))
                 .orderBy(ledgerDetail.createdAt.desc())
                 .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())

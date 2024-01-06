@@ -93,4 +93,21 @@ public class LedgerController {
                 searchLedgerFilterRequest.getFundType()
         );
     }
+
+    @Operation(summary = "그룹에 속한 장부 조회 API")
+    @GetMapping("/agencies/{agencyId}")
+    public LedgerInfoView searchByAgency(
+            @AuthenticationPrincipal JwtAuthentication user,
+            @PathVariable("agencyId") final Long agencyId,
+            @ParameterObject @Valid final SearchLedgerRequest searchLedgerRequest
+    ) {
+        return ledgerReader.searchByAgency(
+                user.getId(),
+                agencyId,
+                searchLedgerRequest.getYear(),
+                searchLedgerRequest.getMonth(),
+                searchLedgerRequest.getPage(),
+                searchLedgerRequest.getLimit()
+        );
+    }
 }

@@ -101,4 +101,40 @@ public class LedgerReader {
 
         return LedgerInfoView.from(ledger, ledgerDetailPage);
     }
+
+
+    public LedgerInfoView searchByAgency(
+            final Long userId,
+            final Long agencyId,
+            final Integer year,
+            final Integer month,
+            final Integer page,
+            final Integer limit
+    ) {
+        // === 유저 ===
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+        // === 장부 ===
+        Ledger ledger = ledgerRepository.findByAgencyId(agencyId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND)
+        );
+
+        // === 소속 ===
+        AgencyUser agencyUser = agencyUserRepository
+                .findByUserIdAndAgencyId(user.getId(), agencyId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+
+        ZonedDateTime from = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime to = from.plusMonths(1);
+        List<LedgerDetail> ledgerDetailPage = ledgerDetailRepository.search(
+                ledger,
+                from,
+                to,
+                PageRequest.of(page, limit)
+        );
+
+        return LedgerInfoView.from(ledger, ledgerDetailPage);
+    }
 }
