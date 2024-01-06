@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "7. [장부 영수증]")
-@RequestMapping("/api/v1/ledger-receipt")
+@RequestMapping("/api/v1/ledger-detail/{detailId}/ledger-receipt")
 @RestController
 @RequiredArgsConstructor
 public class LedgerReceiptController {
