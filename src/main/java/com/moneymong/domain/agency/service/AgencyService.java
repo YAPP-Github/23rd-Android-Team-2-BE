@@ -21,6 +21,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AgencyService {
+
     private static final int INITIAL_HEAD_COUNT = 1;
     private final AgencyUserRepository agencyUserRepository;
     private final AgencyRepository agencyRepository;
@@ -62,4 +63,5 @@ public class AgencyService {
 
         return university.getUniversityName();
     }
+
 }

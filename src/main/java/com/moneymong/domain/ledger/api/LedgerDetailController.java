@@ -22,10 +22,10 @@ public class LedgerDetailController {
     private final LedgerDetailManager ledgerDetailManager;
 
     @Operation(summary = "장부 상세 내역 조회 API")
-    @GetMapping("/{id}")
+    @GetMapping("/{detailId}")
     public LedgerDetailInfoView getLedgerDetailInfo(
             // @AuthenticationPrincipal ..
-            @PathVariable("id") final Long ledgerDetailId
+            @PathVariable("detailId") final Long ledgerDetailId
     ) {
         return ledgerDetailReader.getLedgerDetail(1L, ledgerDetailId);
     }

@@ -10,11 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
 
-    public User validateUser(final Long userId) {
-        return userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
-    }
 }

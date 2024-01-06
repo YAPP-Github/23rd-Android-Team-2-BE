@@ -1,16 +1,19 @@
 package com.moneymong.domain.ledger.api;
 
 import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
+import com.moneymong.domain.ledger.api.request.SearchLedgerFilterRequest;
 import com.moneymong.domain.ledger.api.request.SearchLedgerRequest;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerInfoView;
+import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
 import com.moneymong.domain.ledger.service.manager.LedgerManager;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
+import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,43 +33,63 @@ public class LedgerController {
     @Operation(summary = "장부 내역 등록 API")
     @PostMapping("/{id}")
     public LedgerDetailInfoView createLedger(
-            // @AuthenticationPrincipal ..
+            @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("id") final Long ledgerId,
             @RequestBody final CreateLedgerRequest createLedgerRequest
     ) {
         return ledgerManager.createLedger(
-                1L,
+                user.getId(),
                 ledgerId,
                 createLedgerRequest
         );
     }
 
     @Operation(summary = "장부 상세 내역 수정 API")
-    @PutMapping("/ledger-detail/{id}")
+    @PutMapping("/ledger-detail/{detailId}")
     public LedgerDetailInfoView updateLedger(
-            // @AuthenticationPrincipal ..
-            @PathVariable("id") final Long ledgerDetailId,
+            @AuthenticationPrincipal JwtAuthentication user,
+            @PathVariable("detailId") final Long ledgerDetailId,
             @RequestBody final UpdateLedgerRequest updateLedgerRequest
     ) {
         return ledgerManager.updateLedger(
-                1L,
+                user.getId(),
                 ledgerDetailId,
                 updateLedgerRequest
         );
     }
 
-    @Operation(summary = " 장부 조회 API / 일반적인 조회")
+    @Operation(summary = " 장부 내역 조회 API")
     @GetMapping("/{id}")
     public LedgerInfoView search(
-            @PathVariable("id") final Long id,
+            @AuthenticationPrincipal JwtAuthentication user,
+            @PathVariable("id") final Long ledgerId,
             @ParameterObject final SearchLedgerRequest searchLedgerRequest
     ) {
         return ledgerReader.search(
-                id,
+                user.getId(),
+                ledgerId,
                 searchLedgerRequest.getYear(),
                 searchLedgerRequest.getMonth(),
                 searchLedgerRequest.getPage(),
                 searchLedgerRequest.getLimit()
+        );
+    }
+
+    @Operation(summary = "장부 내역 필터별 조회 API")
+    @GetMapping("/{id}/filter")
+    public LedgerInfoView searchByFilter(
+            @AuthenticationPrincipal JwtAuthentication user,
+            @PathVariable("id") final Long ledgerId,
+            @ParameterObject final SearchLedgerFilterRequest searchLedgerFilterRequest
+    ) {
+        return ledgerReader.searchByFilter(
+                user.getId(),
+                ledgerId,
+                searchLedgerFilterRequest.getYear(),
+                searchLedgerFilterRequest.getMonth(),
+                searchLedgerFilterRequest.getPage(),
+                searchLedgerFilterRequest.getLimit(),
+                searchLedgerFilterRequest.getFundType()
         );
     }
 }
