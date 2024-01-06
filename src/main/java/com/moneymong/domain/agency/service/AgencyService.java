@@ -10,14 +10,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AgencyService {
-    private final AgencyUserRepository agencyUserRepository;
 
-    public AgencyUser validateAgencyUser(
-            final Long userId,
-            final Long agencyId
-    ) {
-        return agencyUserRepository
-                .findByUserIdAndAgencyId(userId, agencyId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
-    }
 }

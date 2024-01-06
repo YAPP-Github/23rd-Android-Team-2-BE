@@ -6,6 +6,7 @@ import com.moneymong.domain.ledger.entity.LedgerDocument;
 import com.moneymong.domain.ledger.entity.LedgerReceipt;
 import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.user.entity.User;
+import com.moneymong.domain.user.repository.UserRepository;
 import com.moneymong.domain.user.service.UserService;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
@@ -17,11 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class LedgerDetailReader {
-    private final UserService userService;
-    private final LedgerDetailRepository ledgerDetailRepository;
     private final LedgerReceiptReader ledgerReceiptReader;
     private final LedgerDocumentReader ledgerDocumentReader;
-
+    private final UserRepository userRepository;
+    private final LedgerDetailRepository ledgerDetailRepository;
 
     @Transactional(readOnly = true)
     public LedgerDetailInfoView getLedgerDetail(
@@ -30,11 +30,14 @@ public class LedgerDetailReader {
     ) {
 
         // 1. 유저 검증
-        User user = userService.validateUser(userId);
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 장부 상세 내역 검증
-        LedgerDetail ledgerDetail = validateLedgerDetail(ledgerDetailId);
-
+        LedgerDetail ledgerDetail = ledgerDetailRepository
+                .findById(ledgerDetailId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
 
         // 3. LedgerId -> 장부 상세 내역 조회
         List<LedgerReceipt> ledgerReceipts = ledgerReceiptReader.getLedgerReceipts(ledgerDetailId);
@@ -46,11 +49,5 @@ public class LedgerDetailReader {
                 ledgerDocuments,
                 ledgerDetail.getUser()
         );
-    }
-
-    public LedgerDetail validateLedgerDetail(final Long id) {
-        return ledgerDetailRepository
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
     }
 }
