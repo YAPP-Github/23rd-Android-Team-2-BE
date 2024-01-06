@@ -4,7 +4,7 @@ import com.moneymong.domain.ledger.api.request.CreateLedgerRequest;
 import com.moneymong.domain.ledger.api.request.SearchLedgerRequest;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.api.response.LedgerInfoView;
+import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
 import com.moneymong.domain.ledger.service.manager.LedgerManager;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,10 +42,10 @@ public class LedgerController {
     }
 
     @Operation(summary = "장부 상세 내역 수정 API")
-    @PutMapping("/ledger-detail/{id}")
+    @PutMapping("/ledger-detail/{detailId}")
     public LedgerDetailInfoView updateLedger(
             // @AuthenticationPrincipal ..
-            @PathVariable("id") final Long ledgerDetailId,
+            @PathVariable("detailId") final Long ledgerDetailId,
             @RequestBody final UpdateLedgerRequest updateLedgerRequest
     ) {
         return ledgerManager.updateLedger(
@@ -55,14 +55,14 @@ public class LedgerController {
         );
     }
 
-    @Operation(summary = " 장부 조회 API / 일반적인 조회")
+    @Operation(summary = " 장부 내역 조회 API")
     @GetMapping("/{id}")
     public LedgerInfoView search(
-            @PathVariable("id") final Long id,
+            @PathVariable("id") final Long ledgerId,
             @ParameterObject final SearchLedgerRequest searchLedgerRequest
     ) {
         return ledgerReader.search(
-                id,
+                ledgerId,
                 searchLedgerRequest.getYear(),
                 searchLedgerRequest.getMonth(),
                 searchLedgerRequest.getPage(),
