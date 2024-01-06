@@ -49,32 +49,24 @@ public class Agency extends BaseEntity {
     )
     private Integer headCount;
 
-    @Column(
-            name = "thumbnail_image_url",
-            length = 2000
-    )
-    private String thumbnailImageUrl;
-
     private String description;
 
     private String universityName;
 
     @Builder
-    private Agency(Long id, String agencyName, AgencyType agencyType, Integer headCount, String thumbnailImageUrl, String description, String universityName) {
+    private Agency(Long id, String agencyName, AgencyType agencyType, Integer headCount, String description, String universityName) {
         this.id = id;
         this.agencyName = agencyName;
         this.agencyType = agencyType;
         this.headCount = headCount;
-        this.thumbnailImageUrl = thumbnailImageUrl;
         this.description = description;
         this.universityName = universityName;
     }
 
-    public static Agency of(String agencyName, AgencyType agencyType, String thumbnailImageUrl, String description, int headCount, String universityName) {
+    public static Agency of(String agencyName, AgencyType agencyType, String description, int headCount, String universityName) {
         return Agency.builder()
                 .agencyName(agencyName)
                 .agencyType(agencyType)
-                .thumbnailImageUrl(thumbnailImageUrl)
                 .description(description)
                 .headCount(headCount)
                 .universityName(universityName)
