@@ -5,6 +5,7 @@ import com.moneymong.domain.agency.api.response.CreateAgencyResponse;
 import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
 import com.moneymong.domain.agency.service.AgencyService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,13 +21,15 @@ public class AgencyController {
 
     private final AgencyService agencyService;
 
+    @Operation(summary = "소속 생성")
     @PostMapping
     public CreateAgencyResponse create(@AuthenticationPrincipal JwtAuthentication user, @RequestBody CreateAgencyRequest request) {
         return agencyService.create(user.getId(), request);
     }
 
+    @Operation(summary = "소속 조회")
     @GetMapping
-    public SearchAgencyResponse get(@AuthenticationPrincipal JwtAuthentication user, @PageableDefault Pageable pageable) {
+    public SearchAgencyResponse getAgencyList(@AuthenticationPrincipal JwtAuthentication user, @PageableDefault Pageable pageable) {
         return agencyService.getAgencyList(user.getId(), pageable);
     }
 }

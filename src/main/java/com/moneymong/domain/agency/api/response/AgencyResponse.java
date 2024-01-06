@@ -13,7 +13,6 @@ public class AgencyResponse {
     private Long id;
     private String name;
     private int headCount;
-    private String thumbnailImageUrl;
     private AgencyType type;
 
     public static AgencyResponse from(Agency agency) {
@@ -21,7 +20,6 @@ public class AgencyResponse {
                 .id(agency.getId())
                 .name(agency.getAgencyName())
                 .headCount(agency.getHeadCount())
-                .thumbnailImageUrl(agency.getThumbnailImageUrl())
                 .type(agency.getAgencyType())
                 .build();
     }
