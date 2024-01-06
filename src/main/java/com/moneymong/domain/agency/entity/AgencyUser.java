@@ -57,5 +57,13 @@ public class AgencyUser extends BaseEntity {
         this.userId = userId;
         this.agencyUserRole = agencyUserRole;
     }
+
+    public static AgencyUser of(Agency agency, Long userId, AgencyUserRole agencyUserRole) {
+        return AgencyUser.builder()
+                .agency(agency)
+                .userId(userId)
+                .agencyUserRole(agencyUserRole)
+                .build();
+    }
 }
 

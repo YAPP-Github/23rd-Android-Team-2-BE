@@ -7,20 +7,24 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import static com.moneymong.utils.Validator.checkText;
 import static lombok.AccessLevel.PROTECTED;
 
 @Table(name = "user_universities")
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor(access = PROTECTED)
 @NoArgsConstructor(access = PROTECTED)
-//@Where(clause = "deleted = false")
-//@SQLDelete(sql = "UPDATE user_university SET deleted = true where id=?")
+@Where(clause = "deleted = false")
+@SQLDelete(sql = "UPDATE user_university SET deleted = true where id=?")
 public class UserUniversity extends BaseEntity {
 
     @Id
@@ -28,11 +32,11 @@ public class UserUniversity extends BaseEntity {
     private Long id;
 
     @Column(
-            name = "user_token",
+            name = "user_id",
             unique = true,
             nullable = false
     )
-    private String userToken;
+    private Long userId;
 
     @Column(
             name = "university_name",
@@ -44,11 +48,20 @@ public class UserUniversity extends BaseEntity {
     @Column(nullable = false)
     private int grade;
 
-    @Builder
-    private UserUniversity(Long id, String userToken, String universityName, int grade) {
-        this.id = id;
-        this.userToken = userToken;
+    public void update(String universityName, int grade) {
+        checkText(universityName, "대학 이름은 필수 입력값입니다.");
+
         this.universityName = universityName;
         this.grade = grade;
+    }
+
+    public static UserUniversity of(Long userId, String universityName, int grade) {
+        checkText(universityName, "대학 이름은 필수 입력값입니다.");
+
+        return UserUniversity.builder()
+                .userId(userId)
+                .universityName(universityName)
+                .grade(grade)
+                .build();
     }
 }

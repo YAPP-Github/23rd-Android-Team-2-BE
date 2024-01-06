@@ -37,14 +37,10 @@ public class User extends BaseEntity {
     private String userToken;
 
     @Column(nullable = false)
-    private String nickname;
+    private String email;
 
-    @Column(
-            name = "profile_image_url",
-            nullable = false,
-            length = 2500
-    )
-    private String profileImageUrl;
+    @Column(nullable = false)
+    private String nickname;
 
     @Column(nullable = false)
     private String provider;
@@ -58,11 +54,11 @@ public class User extends BaseEntity {
     private LocalDate birthDay;
 
     @Builder
-    private User(Long id, String userToken, String nickname, String profileImgUrl, String provider, String oauthId, LocalDate birthDay) {
+    private User(Long id, String userToken, String email, String nickname, String provider, String oauthId, LocalDate birthDay) {
         this.id = id;
         this.userToken = userToken;
+        this.email = email;
         this.nickname = nickname;
-        this.profileImageUrl = profileImgUrl;
         this.provider = provider;
         this.oauthId = oauthId;
         this.birthDay = birthDay;

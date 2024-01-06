@@ -2,6 +2,8 @@ package com.moneymong.global.security.oauth.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moneymong.domain.user.service.UserUniversityService;
+import com.moneymong.global.security.oauth.dto.AuthUserInfo;
 import com.moneymong.global.security.oauth.dto.CustomOAuth2User;
 import com.moneymong.global.security.oauth.dto.LoginSuccessResponse;
 import com.moneymong.global.security.token.dto.Tokens;
@@ -24,19 +26,23 @@ public class OAuthAuthenticationSuccessHandler
 	extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	private final TokenService tokenService;
+	private final UserUniversityService userUniversityService;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 										Authentication authentication) throws IOException {
 
 		if (authentication.getPrincipal() instanceof CustomOAuth2User oauth2User) {
+			AuthUserInfo userInfo = oauth2User.getUserInfo();
+			Tokens tokens = tokenService.createTokens(userInfo);
+			Boolean schoolInfoExists = userUniversityService.exists(userInfo.getUserId());
 			Boolean loginSuccess = true;
-			Tokens tokens = tokenService.createTokens(oauth2User.getUserInfo());
 
 			LoginSuccessResponse loginSuccessResponse = LoginSuccessResponse.from(
 					tokens.getAccessToken(),
 					tokens.getRefreshToken(),
-					loginSuccess
+					loginSuccess,
+					schoolInfoExists
 			);
 
 			response.setStatus(HttpStatus.OK.value());
