@@ -1,5 +1,8 @@
 package com.moneymong.domain.ledger.service.manager;
 
+import com.moneymong.domain.agency.entity.AgencyUser;
+import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
+import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.entity.Ledger;
@@ -14,6 +17,8 @@ import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
 import com.moneymong.domain.ledger.service.reader.LedgerDocumentReader;
 import com.moneymong.domain.ledger.service.reader.LedgerReceiptReader;
 import com.moneymong.domain.user.entity.User;
+import com.moneymong.domain.user.repository.UserRepository;
+import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZonedDateTime;
@@ -26,9 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LedgerDetailManager {
     private final LedgerAssembler ledgerAssembler;
-    private final LedgerDetailRepository ledgerDetailRepository;
     private final LedgerReceiptReader ledgerReceiptReader;
     private final LedgerDocumentReader ledgerDocumentReader;
+    private final UserRepository userRepository;
+    private final AgencyUserRepository agencyUserRepository;
+    private final LedgerDetailRepository ledgerDetailRepository;
     private final LedgerReceiptRepository ledgerReceiptRepository;
     private final LedgerDocumentRepository ledgerDocumentRepository;
 
@@ -43,6 +50,7 @@ public class LedgerDetailManager {
             final String description,
             final ZonedDateTime paymentDate
     ) {
+
         LedgerDetail ledgerDetail = ledgerAssembler.toLedgerDetailEntity(
                 ledger,
                 user,
@@ -95,9 +103,25 @@ public class LedgerDetailManager {
             final Long userId,
             final Long detailId
     ) {
+        // === 유저 ===
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
         LedgerDetail ledgerDetail = ledgerDetailRepository
                 .findById(detailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+
+
+        // === 소속 ===
+        AgencyUser agencyUser = agencyUserRepository
+                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+
+        // === 권한 ===
+        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
+            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
+        }
 
         ledgerReceiptRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
