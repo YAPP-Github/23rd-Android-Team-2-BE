@@ -11,6 +11,7 @@ import com.moneymong.domain.ledger.service.reader.LedgerReader;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,7 +36,7 @@ public class LedgerController {
     public LedgerDetailInfoView createLedger(
             @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("id") final Long ledgerId,
-            @RequestBody final CreateLedgerRequest createLedgerRequest
+            @RequestBody @Valid final CreateLedgerRequest createLedgerRequest
     ) {
         return ledgerManager.createLedger(
                 user.getId(),
@@ -49,7 +50,7 @@ public class LedgerController {
     public LedgerDetailInfoView updateLedger(
             @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("detailId") final Long ledgerDetailId,
-            @RequestBody final UpdateLedgerRequest updateLedgerRequest
+            @RequestBody @Valid final UpdateLedgerRequest updateLedgerRequest
     ) {
         return ledgerManager.updateLedger(
                 user.getId(),
@@ -63,7 +64,7 @@ public class LedgerController {
     public LedgerInfoView search(
             @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("id") final Long ledgerId,
-            @ParameterObject final SearchLedgerRequest searchLedgerRequest
+            @ParameterObject @Valid final SearchLedgerRequest searchLedgerRequest
     ) {
         return ledgerReader.search(
                 user.getId(),
@@ -80,7 +81,7 @@ public class LedgerController {
     public LedgerInfoView searchByFilter(
             @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("id") final Long ledgerId,
-            @ParameterObject final SearchLedgerFilterRequest searchLedgerFilterRequest
+            @ParameterObject @Valid final SearchLedgerFilterRequest searchLedgerFilterRequest
     ) {
         return ledgerReader.searchByFilter(
                 user.getId(),
@@ -90,6 +91,23 @@ public class LedgerController {
                 searchLedgerFilterRequest.getPage(),
                 searchLedgerFilterRequest.getLimit(),
                 searchLedgerFilterRequest.getFundType()
+        );
+    }
+
+    @Operation(summary = "그룹에 속한 장부 조회 API")
+    @GetMapping("/agencies/{agencyId}")
+    public LedgerInfoView searchByAgency(
+            @AuthenticationPrincipal JwtAuthentication user,
+            @PathVariable("agencyId") final Long agencyId,
+            @ParameterObject @Valid final SearchLedgerRequest searchLedgerRequest
+    ) {
+        return ledgerReader.searchByAgency(
+                user.getId(),
+                agencyId,
+                searchLedgerRequest.getYear(),
+                searchLedgerRequest.getMonth(),
+                searchLedgerRequest.getPage(),
+                searchLedgerRequest.getLimit()
         );
     }
 }
