@@ -10,16 +10,16 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @NoArgsConstructor
 public class UpdateLedgerRequest {
-    @NotBlank
-    @Length(min = 1, max = 20)
+    @NotBlank(message = "storeInfo를 입력해주세요.")
+    @Length(min = 1, max = 20, message = "storeInfo 1자 - 20자 입력해주세요.")
     private String storeInfo;
 
-    @NotNull
+    @NotNull(message = "amount를 입력해주세요.")
     private Integer amount;
 
-    @NotBlank
+    @NotBlank(message = "description를 입력해주세요.")
     private String description;
 
-    @NotNull
+    @NotNull(message = "paymentDate를 입력해주세요.")
     private ZonedDateTime paymentDate;
 }

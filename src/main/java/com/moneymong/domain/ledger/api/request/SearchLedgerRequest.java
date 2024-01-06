@@ -16,18 +16,18 @@ import org.springframework.context.annotation.FilterType;
 @AllArgsConstructor
 public class SearchLedgerRequest {
 
-    @NotNull
+    @NotNull(message = "year를 입력해주세요.")
     @Min(value = 2024)
     Integer year;
 
-    @Min(value = 1)
-    @Max(value = 12)
+    @Min(value = 1, message = "month 1 이상 입력해주세요.")
+    @Max(value = 12, message = "month 12 이하 입력해주세요.")
     Integer month;
 
-    @NotNull
-    @Min(value = 0)
+    @NotNull(message = "page를 입력해주세요.")
+    @Min(value = 0, message = "page 0이상 입력해주세요.")
     Integer page;
 
-    @NotNull
+    @NotNull(message = "limit를 입력해주세요.")
     Integer limit;
 }

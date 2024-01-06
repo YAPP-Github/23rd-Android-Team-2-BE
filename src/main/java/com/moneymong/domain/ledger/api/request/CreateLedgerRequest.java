@@ -15,25 +15,25 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateLedgerRequest {
-    @NotBlank
-    @Length(min = 1, max = 20)
+    @NotBlank(message = "storeInfo를 입력해주세요.")
+    @Length(min = 1, max = 20, message = "storeInfo 1자 - 20자 입력해주세요.")
     private String storeInfo;
 
-    @NotNull
+    @NotNull(message = "fundType(INCOME, EXPENSE)를 입력해주세요.")
     private FundType fundType;
 
-    @NotNull
+    @NotNull(message = "amount를 입력해주세요.")
     private Integer amount;
 
-    @NotBlank
+    @NotBlank(message = "description를 입력해주세요.")
     private String description;
 
-    @NotNull
+    @NotNull(message = "paymentDate를 입력해주세요.")
     private ZonedDateTime paymentDate;
 
-    @Size(min = 1, max = 12)
+    @Size(min = 1, max = 12, message = "영수증 1개 - 12개 입력해주세요.")
     private List<String> receiptImageUrls;
 
-    @Size(min = 1, max = 12)
+    @Size(min = 1, max = 12, message = "증빙 자료 1개 - 12개 입력해주세요.")
     private List<String> documentImageUrls;
 }
