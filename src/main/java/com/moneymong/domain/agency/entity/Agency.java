@@ -14,7 +14,10 @@ import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
-@Table(name = "agencies")
+@Table(
+        name = "agencies",
+        indexes = @Index(name = "idx_universityName", columnList = "deleted, university_name")
+)
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
@@ -51,6 +54,7 @@ public class Agency extends BaseEntity {
 
     private String description;
 
+    @Column(name = "university_name")
     private String universityName;
 
     @Builder
