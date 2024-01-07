@@ -15,7 +15,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SearchLedgerFilterRequest {
     @NotNull(message = "year를 입력해주세요.")
-    @Min(value = 2024)
     Integer year;
 
     @Min(value = 1, message = "month 1 이상 입력해주세요.")

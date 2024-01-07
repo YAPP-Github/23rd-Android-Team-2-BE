@@ -17,7 +17,6 @@ import org.springframework.context.annotation.FilterType;
 public class SearchLedgerRequest {
 
     @NotNull(message = "year를 입력해주세요.")
-    @Min(value = 2024)
     Integer year;
 
     @Min(value = 1, message = "month 1 이상 입력해주세요.")

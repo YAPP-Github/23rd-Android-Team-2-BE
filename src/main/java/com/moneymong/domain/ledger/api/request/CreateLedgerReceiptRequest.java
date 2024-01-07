@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateLedgerReceiptRequest {
-    @Size(min = 1, max = 12, message = "영수증 1개 - 12개 입력해주세요.")
+    @Size(max = 12, message = "영수증 12개 이하 입력해주세요.")
     private List<String> receiptImageUrls;
 }

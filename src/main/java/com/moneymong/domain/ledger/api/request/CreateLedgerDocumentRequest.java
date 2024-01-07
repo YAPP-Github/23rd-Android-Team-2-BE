@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateLedgerDocumentRequest {
-    @Size(min = 1, max = 12, message = "증빙 자료 1개 - 12개 입력해주세요.")
+    @Size(max = 12, message = "증빙 자료 12개 이하 입력해주세요.")
     private List<String> documentImageUrls;
 }
