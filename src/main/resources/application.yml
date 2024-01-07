@@ -60,3 +60,9 @@ cloud:
       auto: false
     stack:
       auto: false
+
+# P6spy
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
