@@ -24,8 +24,8 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping(consumes = {MULTIPART_FORM_DATA_VALUE, APPLICATION_JSON_VALUE})
-    public ImageResponse upload(@RequestPart("file") MultipartFile multipartFile, @ModelAttribute("dirName") String dirName) {
-        ImageResponse response = imageService.upload(multipartFile, dirName);
+    public ImageResponse upload(@RequestPart("file") MultipartFile multipartFile) {
+        ImageResponse response = imageService.upload(multipartFile);
         return response;
     }
 

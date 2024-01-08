@@ -21,11 +21,11 @@ public class ImageService {
 
     private final ImageStorageHandler imageStorageHandler;
 
-    public ImageResponse upload(MultipartFile multipartFile, String dirName) {
+    public ImageResponse upload(MultipartFile multipartFile) {
         File file = convertMultipartFileToFile(multipartFile)
                .orElseThrow();
 
-        return imageStorageHandler.upload(file, dirName);
+        return imageStorageHandler.upload(file);
     }
 
     public void remove(ImageDeleteRequest deleteRequest) {
