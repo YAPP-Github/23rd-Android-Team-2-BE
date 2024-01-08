@@ -23,8 +23,8 @@ public class NcpStorageHandler implements ImageStorageHandler{
     private String bucket;
 
     @Override
-    public ImageResponse upload(File file, String dirName) {
-        String key = generateRandomFileName(file, dirName);
+    public ImageResponse upload(File file) {
+        String key = generateRandomFileName(file);
         String path = putImage(file, key);
         removeFile(file);
 
@@ -46,8 +46,8 @@ public class NcpStorageHandler implements ImageStorageHandler{
         return amazonS3.doesObjectExist(bucket, key);
     }
 
-    private String generateRandomFileName(File file, String dirName) {
-        return ROOT_DIRNAME + "/" + dirName + "/" + UUID.randomUUID().toString().substring(0, 8) + "-" + file.getName();
+    private String generateRandomFileName(File file) {
+        return ROOT_DIRNAME + "/" + UUID.randomUUID().toString().substring(0, 8) + "-" + file.getName();
     }
 
     private String putImage(File uploadFile, String fileName) {

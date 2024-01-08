@@ -6,7 +6,7 @@ import java.io.File;
 
 public interface ImageStorageHandler {
 
-    ImageResponse upload(File file, String dirName);
+    ImageResponse upload(File file);
 
     void remove(String key);
 
