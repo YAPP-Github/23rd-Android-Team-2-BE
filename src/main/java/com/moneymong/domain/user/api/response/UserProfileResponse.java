@@ -1,5 +1,6 @@
 package com.moneymong.domain.user.api.response;
 
+import com.moneymong.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,12 +14,12 @@ public class UserProfileResponse {
     private String nickname;
     private String email;
 
-    public static UserProfileResponse from(Long id, String userToken, String nickname, String email) {
+    public static UserProfileResponse from(User user) {
         return UserProfileResponse.builder()
-                .id(id)
-                .userToken(userToken)
-                .nickname(nickname)
-                .email(email)
+                .id(user.getId())
+                .userToken(user.getUserToken())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
                 .build();
     }
 }
