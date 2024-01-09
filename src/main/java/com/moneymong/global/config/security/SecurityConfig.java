@@ -1,7 +1,5 @@
 package com.moneymong.global.config.security;
 
-import com.moneymong.global.security.oauth.handler.OAuthAuthenticationFailureHandler;
-import com.moneymong.global.security.oauth.handler.OAuthAuthenticationSuccessHandler;
 import com.moneymong.global.security.token.filter.ExceptionHandlerFilter;
 import com.moneymong.global.security.token.filter.JwtAuthenticationEntryPoint;
 import com.moneymong.global.security.token.filter.JwtAuthenticationFilter;
@@ -12,21 +10,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
-    private final DefaultOAuth2UserService defaultOAuth2UserService;
-    private final OAuthAuthenticationSuccessHandler oAuthAuthenticationSuccessHandler;
-    private final OAuthAuthenticationFailureHandler oAuthAuthenticationFailureHandler;
 
     @Bean
     public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
@@ -40,29 +34,16 @@ public class SecurityConfig {
                 .anonymous(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/favicon.ico").permitAll();
-                    auth.requestMatchers("/oauth2/**").permitAll();
-                    auth.requestMatchers("/login/**").permitAll();
+                    auth.requestMatchers("/api/v1/users").permitAll();
                     auth.requestMatchers("/api/v1/tokens").permitAll();
                     auth.requestMatchers("/health").permitAll();
                     auth.anyRequest().authenticated();
                 })
-                .oauth2Login(oAuth2LoginConfigurer ->
-                        oAuth2LoginConfigurer
-                                .authorizationEndpoint(authorizationEndpointConfig ->
-                                        authorizationEndpointConfig
-                                                .baseUri("/oauth2/authorization")
-                                )
-                                .userInfoEndpoint(userInfoEndpointConfig ->
-                                        userInfoEndpointConfig
-                                                .userService(defaultOAuth2UserService)
-                                )
-                                .successHandler(oAuthAuthenticationSuccessHandler)
-                                .failureHandler(oAuthAuthenticationFailureHandler)
-                )
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .addFilterBefore(jwtAuthenticationFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
                 .build();
+
     }
 
     @Bean

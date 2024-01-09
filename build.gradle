@@ -53,7 +53,6 @@ dependencies {
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	// QueryDSL
@@ -64,7 +63,7 @@ dependencies {
 
 	// P6spy
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
-
+	
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
