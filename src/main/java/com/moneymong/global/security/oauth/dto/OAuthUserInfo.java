@@ -15,12 +15,12 @@ public class OAuthUserInfo {
     private String nickname;
     private String email;
 
-    public static OAuthUserInfo from(String provider, String oauthId, String nickname, String email) {
+    public static OAuthUserInfo from(OAuthUserDataResponse oAuthUserDataResponse) {
         return OAuthUserInfo.builder()
-                .provider(provider)
-                .oauthId(oauthId)
-                .nickname(nickname)
-                .email(email)
+                .provider(oAuthUserDataResponse.getProvider())
+                .oauthId(oAuthUserDataResponse.getOauthId())
+                .nickname(oAuthUserDataResponse.getNickname())
+                .email(oAuthUserDataResponse.getEmail())
                 .build();
     }
 }
