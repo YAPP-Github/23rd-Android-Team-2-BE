@@ -1,4 +1,4 @@
-package com.moneymong.global.security.oauth.dto;
+package com.moneymong.domain.user.api.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,10 +10,10 @@ import lombok.Getter;
 public class LoginSuccessResponse {
     private String accessToken;
     private String refreshToken;
-    private Boolean loginSuccess;
-    private Boolean schoolInfoExist;
+    private boolean loginSuccess;
+    private boolean schoolInfoExist;
 
-    public static LoginSuccessResponse from(String accessToken, String refreshToken, Boolean loginSuccess, Boolean schoolInfoExist) {
+    public static LoginSuccessResponse of(String accessToken, String refreshToken, boolean loginSuccess, boolean schoolInfoExist) {
         return LoginSuccessResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
