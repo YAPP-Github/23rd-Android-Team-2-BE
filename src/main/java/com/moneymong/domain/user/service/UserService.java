@@ -26,15 +26,13 @@ public class UserService {
 		User user = userRepository
 			.findByUserIdByProviderAndOauthId(oauthUserInfo.getProvider(), oauthUserInfo.getOauthId())
 			.orElseGet(() -> save(
-					User.builder()
-							.userToken(UUID.randomUUID().toString())
-							.email(oauthUserInfo.getEmail())
-							.oauthId(oauthUserInfo.getOauthId())
-							.provider(oauthUserInfo.getProvider())
-							.nickname(oauthUserInfo.getNickname())
-							.build()
+					User.of(UUID.randomUUID().toString(),
+							oauthUserInfo.getEmail(),
+							oauthUserInfo.getNickname(),
+							oauthUserInfo.getProvider(),
+							oauthUserInfo.getOauthId()
 					)
-			);
+			));
 
 		return AuthUserInfo.from(user.getId(), user.getNickname(), DEFAULT_ROLE);
 	}
@@ -47,22 +45,17 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public UserProfileResponse getUserProfile(Long userId) {
 		return userRepository.findById(userId)
-				.map(user -> UserProfileResponse.from(
-						user.getId(),
-						user.getUserToken(),
-						user.getNickname(),
-						user.getEmail())
-				)
+				.map(UserProfileResponse::from)
 				.orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 	}
 
 	@Transactional
 	public void delete(String userToken) {
 		userRepository.findByUserToken(userToken)
-			.ifPresentOrElse(userRepository::delete,
-				() -> {
-					throw new NotFoundException(ErrorCode.USER_NOT_FOUND);
-				});
+			.ifPresentOrElse(
+					userRepository::delete,
+					() -> { throw new NotFoundException(ErrorCode.USER_NOT_FOUND); }
+			);
 	}
 
 }

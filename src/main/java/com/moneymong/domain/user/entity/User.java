@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Table(name = "users")
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @Where(clause = "deleted = false")
 @SQLDelete(sql = "UPDATE users SET deleted = true where id=?")
@@ -53,14 +56,13 @@ public class User extends BaseEntity {
 
     private LocalDate birthDay;
 
-    @Builder
-    private User(Long id, String userToken, String email, String nickname, String provider, String oauthId, LocalDate birthDay) {
-        this.id = id;
-        this.userToken = userToken;
-        this.email = email;
-        this.nickname = nickname;
-        this.provider = provider;
-        this.oauthId = oauthId;
-        this.birthDay = birthDay;
+    public static User of(String userToken, String email, String nickname, String provider, String oauthId) {
+        return User.builder()
+                .userToken(userToken)
+                .email(email)
+                .nickname(nickname)
+                .provider(provider)
+                .oauthId(oauthId)
+                .build();
     }
 }
