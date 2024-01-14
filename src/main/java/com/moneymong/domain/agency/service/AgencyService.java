@@ -1,14 +1,15 @@
 package com.moneymong.domain.agency.service;
 
 import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
-import com.moneymong.domain.agency.api.response.AgencyResponse;
-import com.moneymong.domain.agency.api.response.CreateAgencyResponse;
-import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
+import com.moneymong.domain.agency.api.response.*;
 import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
+import com.moneymong.domain.agency.exception.BlockedAgencyUserException;
 import com.moneymong.domain.agency.repository.AgencyRepository;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
+import com.moneymong.domain.invitationcode.exception.CertificationNotExistException;
+import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificationRepository;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.user.entity.UserUniversity;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.*;
+
 @Service
 @RequiredArgsConstructor
 public class AgencyService {
@@ -32,6 +35,7 @@ public class AgencyService {
     private final AgencyRepository agencyRepository;
     private final UserUniversityRepository userUniversityRepository;
     private final LedgerRepository ledgerRepository;
+    private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
 
     public SearchAgencyResponse getAgencyList(Long userId, Pageable pageable) {
         String universityName = getUniversityName(userId);
@@ -80,4 +84,33 @@ public class AgencyService {
         return university.getUniversityName();
     }
 
+    public AgencyUserResponses getAgencyUserList(Long userId, Long agencyId) {
+        AgencyUserRole agencyUserRole = validateAgencyUserRole(userId, agencyId);
+
+        validateCertificationExists(userId, agencyId, agencyUserRole);
+
+        List<AgencyUserResponse> agencyUsers = agencyUserRepository.findByAgencyId(agencyId);
+
+        return AgencyUserResponses.from(agencyUsers);
+    }
+
+    private AgencyUserRole validateAgencyUserRole(Long userId, Long agencyId) {
+        AgencyUser agencyUser = agencyUserRepository.findByUserIdAndAgencyId(userId, agencyId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_USER_NOT_FOUND));
+
+        AgencyUserRole role = agencyUser.getAgencyUserRole();
+
+        if (isBlockedUser(role)) {
+            throw new BlockedAgencyUserException(ErrorCode.BLOCKED_AGENCY_USER);
+        }
+
+        return role;
+    }
+
+    private void validateCertificationExists(Long userId, Long agencyId, AgencyUserRole agencyUserRole) {
+        if (isMemberUser(agencyUserRole)) {
+            invitationCodeCertificationRepository.findByUserIdAndAgencyId(userId, agencyId)
+                    .orElseThrow(() -> new CertificationNotExistException(ErrorCode.INVITATION_CODE_NOT_CERTIFIED_USER));
+        }
+    }
 }

@@ -22,6 +22,7 @@ public enum ErrorCode {
     // ---- 소속 멤버 ---- //
     AGENCY_USER_NOT_FOUND(MoneymongConstant.NOT_FOUND, "AGENCY-USER-001", "소속에 유저가 존재하지 않습니다."),
     INVALID_AGENCY_USER_ACCESS(MoneymongConstant.FORBIDDEN, "AGENCY-USER-002", "유효하지 않은 접근입니다."),
+    BLOCKED_AGENCY_USER(MoneymongConstant.FORBIDDEN, "AGENCY-USER-003", "소속에서 강제퇴장된 유저입니다."),
 
     // ---- 장부 ---- //
     AGENCY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-001", "소속에 가입 후 장부를 사용할 수 있습니다."),
@@ -45,7 +46,8 @@ public enum ErrorCode {
     INVALID_PROVIDER(MoneymongConstant.BAD_REQUEST, "LOGIN-001", "유효하지 않은 로그인 수단입니다."),
 
     // ---- 초대코드 ---- //
-    INVITATION_CODE_NOT_FOUND(MoneymongConstant.NOT_FOUND, "INVITATION-001", "초대코드가 존재하지 않습니다"),
+    INVITATION_CODE_NOT_FOUND(MoneymongConstant.NOT_FOUND, "INVITATION-001", "초대코드가 존재하지 않습니다."),
+    INVITATION_CODE_NOT_CERTIFIED_USER(MoneymongConstant.FORBIDDEN, "INVITATION-002", "초대코드 미인증 유저입니다."),
 
     // ---- 네트워크 ---- //
     HTTP_CLIENT_REQUEST_FAILED(MoneymongConstant.INTERNAL_SERVER_ERROR, "NETWORK-001", "서버 요청에 실패하였습니다.");
