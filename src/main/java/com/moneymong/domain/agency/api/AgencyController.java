@@ -1,6 +1,7 @@
 package com.moneymong.domain.agency.api;
 
 import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
+import com.moneymong.domain.agency.api.response.AgencyUserResponses;
 import com.moneymong.domain.agency.api.response.CreateAgencyResponse;
 import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
 import com.moneymong.domain.agency.service.AgencyService;
@@ -27,9 +28,15 @@ public class AgencyController {
         return agencyService.create(user.getId(), request);
     }
 
-    @Operation(summary = "소속 조회")
+    @Operation(summary = "소속 목록 조회")
     @GetMapping
     public SearchAgencyResponse getAgencyList(@AuthenticationPrincipal JwtAuthentication user, @PageableDefault Pageable pageable) {
         return agencyService.getAgencyList(user.getId(), pageable);
+    }
+
+    @Operation(summary = "소속 내 멤버 목록 조회")
+    @GetMapping("/{agencyId}/agencyUser")
+    public AgencyUserResponses getAgencyUserList(@AuthenticationPrincipal JwtAuthentication user, @PathVariable("agencyId") Long agencyId) {
+        return agencyService.getAgencyUserList(user.getId(), agencyId);
     }
 }
