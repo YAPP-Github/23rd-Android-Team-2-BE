@@ -83,7 +83,7 @@ public class InvitationCodeService {
     }
 
     private void validateStaffUserRole(AgencyUserRole userRole) {
-        if (!AgencyUserRole.isStaff(userRole)) {
+        if (!AgencyUserRole.isStaffUser(userRole)) {
             throw new InvalidAccessException(ErrorCode.INVALID_AGENCY_USER_ACCESS);
         }
     }
