@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.util.Assert;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -64,6 +65,11 @@ public class AgencyUser extends BaseEntity {
                 .userId(userId)
                 .agencyUserRole(agencyUserRole)
                 .build();
+    }
+
+    public void updateAgencyUserRole(AgencyUserRole role) {
+        Assert.notNull(role, "변경할 권한을 입력해주세요.");
+        this.agencyUserRole = role;
     }
 }
 
