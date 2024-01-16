@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.from(exception.getErrorCode()));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, IllegalArgumentException.class})
     public ResponseEntity<ErrorResponses> handleMethodArgumentNotValidException(
             final MethodArgumentNotValidException exception
     ) {
