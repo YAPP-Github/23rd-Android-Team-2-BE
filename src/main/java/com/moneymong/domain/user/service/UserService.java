@@ -2,7 +2,9 @@ package com.moneymong.domain.user.service;
 
 import com.moneymong.domain.user.api.response.UserProfileResponse;
 import com.moneymong.domain.user.entity.User;
+import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserRepository;
+import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.security.oauth.dto.AuthUserInfo;
@@ -20,6 +22,7 @@ public class UserService {
 	public static final String DEFAULT_ROLE = "ROLE_USER";
 
 	private final UserRepository userRepository;
+	private final UserUniversityRepository userUniversityRepository;
 
 	@Transactional
 	public AuthUserInfo getOrRegister(OAuthUserInfo oauthUserInfo) {
@@ -44,9 +47,13 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserProfileResponse getUserProfile(Long userId) {
-		return userRepository.findById(userId)
-				.map(UserProfileResponse::from)
+		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+
+		UserUniversity userUniversity = userUniversityRepository.findByUserId(userId)
+				.orElseThrow(() -> new NotFoundException(ErrorCode.USER_UNIVERSITY_NOT_FOUND));
+
+		return UserProfileResponse.from(user, userUniversity);
 	}
 
 	@Transactional
