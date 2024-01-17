@@ -110,4 +110,12 @@ public class LedgerController {
                 searchLedgerRequest.getLimit()
         );
     }
+
+    @Operation(summary = "그룹에 속한 장부의 존재 여부 API")
+    @GetMapping("/agencies/{agencyId}/exist")
+    public boolean existByAgency(
+            @PathVariable("agencyId") final Long agencyId
+    ) {
+        return ledgerReader.exists(agencyId);
+    }
 }
