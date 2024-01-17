@@ -137,4 +137,8 @@ public class LedgerReader {
 
         return LedgerInfoView.from(ledger, ledgerDetailPage);
     }
+
+    public boolean exists(Long agencyId) {
+        return ledgerRepository.existsByAgencyId(agencyId);
+    }
 }
