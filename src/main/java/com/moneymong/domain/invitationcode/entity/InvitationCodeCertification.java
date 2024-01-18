@@ -31,6 +31,10 @@ public class InvitationCodeCertification {
     @Column(nullable = false)
     private Long agencyId;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CertificationStatus status;
+
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
 
@@ -42,5 +46,9 @@ public class InvitationCodeCertification {
                 .userId(userId)
                 .agencyId(agencyId)
                 .build();
+    }
+
+    public void revoke() {
+        this.status = CertificationStatus.REVOKE;
     }
 }
