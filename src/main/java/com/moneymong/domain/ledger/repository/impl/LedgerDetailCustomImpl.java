@@ -4,7 +4,6 @@ import static com.moneymong.domain.ledger.entity.QLedgerDetail.*;
 
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
-import com.moneymong.domain.ledger.entity.QLedgerDetail;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerDetailCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
