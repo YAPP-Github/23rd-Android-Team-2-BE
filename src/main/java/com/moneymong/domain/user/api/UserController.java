@@ -24,7 +24,9 @@ public class UserController {
 
     @Operation(summary = "로그인 및 가입")
     @PostMapping
-    public LoginSuccessResponse login(@RequestBody @Valid LoginRequest loginRequest) {
+    public LoginSuccessResponse login(
+            @RequestBody @Valid LoginRequest loginRequest
+    ) {
         return userFacadeService.login(loginRequest);
     }
 
@@ -34,5 +36,13 @@ public class UserController {
             @AuthenticationPrincipal JwtAuthentication user
     ) {
         return userService.getUserProfile(user.getId());
+    }
+
+    @Operation(summary = "회원 탈퇴")
+    @DeleteMapping("/me")
+    public void deleteUser(
+            @AuthenticationPrincipal JwtAuthentication user
+    ) {
+        userService.delete(user.getId());
     }
 }

@@ -57,8 +57,8 @@ public class UserService {
 	}
 
 	@Transactional
-	public void delete(String userToken) {
-		userRepository.findByUserToken(userToken)
+	public void delete(Long userId) {
+		userRepository.findById(userId)
 			.ifPresentOrElse(
 					userRepository::delete,
 					() -> { throw new NotFoundException(ErrorCode.USER_NOT_FOUND); }
