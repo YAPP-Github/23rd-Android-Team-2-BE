@@ -139,6 +139,10 @@ public class LedgerReader {
     }
 
     public boolean exists(Long agencyId) {
-        return ledgerRepository.existsByAgencyId(agencyId);
+        Ledger ledger = ledgerRepository.findByAgencyId(agencyId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND)
+        );
+
+        return ledgerDetailRepository.existsByLedger(ledger);
     }
 }
