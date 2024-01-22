@@ -18,8 +18,7 @@ public class TokenController {
 	@PostMapping
 	public TokenResponse refreshAccessToken(@RequestBody RefreshAccessTokenRequest refreshAccessTokenRequest) {
 		String refreshToken = refreshAccessTokenRequest.getRefreshToken();
-		String accessToken = tokenService.getAccessTokensByRefreshToken(refreshToken);
-		return new TokenResponse(accessToken);
+		return tokenService.getAccessTokensByRefreshToken(refreshToken);
 	}
 
 	@DeleteMapping
