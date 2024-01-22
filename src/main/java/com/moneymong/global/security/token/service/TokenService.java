@@ -56,9 +56,9 @@ public class TokenService {
         return refreshTokenRepository.save(refreshToken).getToken();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public TokenResponse getAccessTokensByRefreshToken(String refreshToken) {
-        RefreshToken token = refreshTokenRepository.findById(refreshToken)
+        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
         validateExpiration(token);
@@ -66,13 +66,12 @@ public class TokenService {
         ZonedDateTime oneWeekLater = ZonedDateTime.now().plusWeeks(1);
 
         if (token.getExpiredAt().isBefore(oneWeekLater)) {
-            String renewalRefreshToken = createRefreshToken(token.getUserId(), token.getRole());
+            String renewalRefreshToken = UUID.randomUUID().toString();
 
             token.renew(renewalRefreshToken, ZonedDateTime.now().plusSeconds(refreshTokenExpireSeconds));
         }
 
         String accessToken = createAccessToken(token.getUserId(), token.getRole());
-
         return new TokenResponse(accessToken, token.getToken());
     }
 
