@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.ZonedDateTime;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -21,10 +23,19 @@ public class RefreshToken {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
+    private ZonedDateTime expiredAt;
+
     @Builder
-    private RefreshToken(String token, Long userId, String role) {
+    private RefreshToken(String token, Long userId, String role, ZonedDateTime expiredAt) {
         this.token = token;
         this.userId = userId;
         this.role = role;
+        this.expiredAt = expiredAt;
+    }
+
+    public void renew(String token, ZonedDateTime expiredAt) {
+        this.token = token;
+        this.expiredAt = expiredAt;
     }
 }
