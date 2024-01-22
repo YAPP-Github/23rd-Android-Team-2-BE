@@ -6,6 +6,7 @@ import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.invitationcode.api.request.CertifyInvitationCodeRequest;
 import com.moneymong.domain.invitationcode.api.response.CertifyInvitationCodeResponse;
 import com.moneymong.domain.invitationcode.api.response.InvitationCodeResponse;
+import com.moneymong.domain.invitationcode.entity.CertificationStatus;
 import com.moneymong.domain.invitationcode.entity.InvitationCode;
 import com.moneymong.domain.invitationcode.entity.InvitationCodeCertification;
 import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificationRepository;
@@ -69,7 +70,7 @@ public class InvitationCodeService {
 
     private InvitationCodeCertification getCertification(Long userId, Long agencyId) {
         return invitationCodeCertificationRepository.findByUserIdAndAgencyId(userId, agencyId)
-                .orElseGet(() -> InvitationCodeCertification.of(userId, agencyId));
+                .orElseGet(() -> InvitationCodeCertification.of(userId, agencyId, CertificationStatus.DONE));
     }
 
     private AgencyUser getAgencyUser(Long userId, Long agencyId) {

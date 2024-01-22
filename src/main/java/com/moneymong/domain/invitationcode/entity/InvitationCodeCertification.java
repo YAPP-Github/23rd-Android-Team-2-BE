@@ -41,10 +41,11 @@ public class InvitationCodeCertification {
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
     
-    public static InvitationCodeCertification of(Long userId, Long agencyId) {
+    public static InvitationCodeCertification of(Long userId, Long agencyId, CertificationStatus status) {
         return InvitationCodeCertification.builder()
                 .userId(userId)
                 .agencyId(agencyId)
+                .status(status)
                 .build();
     }
 
