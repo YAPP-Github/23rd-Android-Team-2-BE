@@ -9,16 +9,16 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LedgerDocumentInfoView {
     private Long id;
-    private String documentImageIrl;
+    private String documentImageUrl;
 
     public static LedgerDocumentInfoView from(
             final Long id,
-            final String documentImageIrl
+            final String documentImageUrl
     ) {
         return LedgerDocumentInfoView
                 .builder()
                 .id(id)
-                .documentImageIrl(documentImageIrl)
+                .documentImageUrl(documentImageUrl)
                 .build();
     }
 }
