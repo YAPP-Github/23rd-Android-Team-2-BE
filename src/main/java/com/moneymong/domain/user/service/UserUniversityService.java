@@ -49,4 +49,12 @@ public class UserUniversityService {
         UserUniversity userUniversity = UserUniversity.of(userId, request.getUniversityName(), request.getGrade());
         userUniversityRepository.save(userUniversity);
     }
+
+    /**
+     * 개발 편의를 위해 생성한 메소드입니다.
+     */
+    @Transactional
+    public void delete(Long id) {
+        userUniversityRepository.deleteByUserId(id);
+    }
 }

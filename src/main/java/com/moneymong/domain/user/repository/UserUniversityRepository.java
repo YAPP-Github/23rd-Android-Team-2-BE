@@ -9,4 +9,6 @@ public interface UserUniversityRepository extends JpaRepository<UserUniversity, 
     boolean existsByUserId(Long userId);
 
     Optional<UserUniversity> findByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

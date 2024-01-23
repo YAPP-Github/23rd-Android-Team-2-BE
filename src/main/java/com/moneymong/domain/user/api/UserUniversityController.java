@@ -44,4 +44,12 @@ public class UserUniversityController {
     ) {
         userUniversityService.update(user.getId(), request);
     }
+
+    @Operation(summary = "대학교 정보 삭제")
+    @DeleteMapping
+    public void updateUserUniversity(
+            @AuthenticationPrincipal JwtAuthentication user
+    ) {
+        userUniversityService.delete(user.getId());
+    }
 }

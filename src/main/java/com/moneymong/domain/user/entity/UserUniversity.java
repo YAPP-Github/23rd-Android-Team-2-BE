@@ -11,8 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import static com.moneymong.utils.Validator.checkText;
 import static lombok.AccessLevel.PROTECTED;
@@ -23,9 +21,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor(access = PROTECTED)
 @NoArgsConstructor(access = PROTECTED)
-@Where(clause = "deleted = false")
-@SQLDelete(sql = "UPDATE user_university SET deleted = true where id=?")
-public class UserUniversity extends BaseEntity {
+public class UserUniversity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
