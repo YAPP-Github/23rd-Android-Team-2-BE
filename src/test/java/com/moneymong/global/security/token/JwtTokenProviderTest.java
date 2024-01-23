@@ -3,7 +3,7 @@ package com.moneymong.global.security.token;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.moneymong.global.security.token.exception.ExpireTokenException;
+import com.moneymong.global.security.token.exception.ExpiredTokenException;
 import com.moneymong.global.security.token.exception.InvalidTokenException;
 import com.moneymong.global.security.token.service.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +60,7 @@ class JwtTokenProviderTest {
 
         // when & then
         assertThatThrownBy(() -> jwtTokenProvider.validateToken(accessToken))
-                .isInstanceOf(ExpireTokenException.class);
+                .isInstanceOf(ExpiredTokenException.class);
     }
 
     @Test

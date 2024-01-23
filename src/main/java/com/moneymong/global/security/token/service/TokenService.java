@@ -2,10 +2,12 @@ package com.moneymong.global.security.token.service;
 
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.security.oauth.dto.AuthUserInfo;
+import com.moneymong.global.security.token.api.response.TokenResponse;
 import com.moneymong.global.security.token.dto.Tokens;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthenticationToken;
 import com.moneymong.global.security.token.entity.RefreshToken;
+import com.moneymong.global.security.token.exception.ExpiredTokenException;
 import com.moneymong.global.security.token.exception.RefreshTokenNotFoundException;
 import com.moneymong.global.security.token.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
@@ -15,6 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -47,16 +50,37 @@ public class TokenService {
                 .token(UUID.randomUUID().toString())
                 .userId(userId)
                 .role(role)
+                .expiredAt(ZonedDateTime.now().plusSeconds(refreshTokenExpireSeconds))
                 .build();
 
         return refreshTokenRepository.save(refreshToken).getToken();
     }
 
-    @Transactional(readOnly = true)
-    public String getAccessTokensByRefreshToken(String refreshToken) {
-        return refreshTokenRepository.findById(refreshToken)
-                .map(token -> createAccessToken(token.getUserId(), token.getRole()))
+    @Transactional
+    public TokenResponse getAccessTokensByRefreshToken(String refreshToken) {
+        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+
+        validateExpiration(token);
+
+        ZonedDateTime oneWeekLater = ZonedDateTime.now().plusWeeks(1);
+
+        if (token.getExpiredAt().isBefore(oneWeekLater)) {
+            String renewalRefreshToken = UUID.randomUUID().toString();
+
+            token.renew(renewalRefreshToken, ZonedDateTime.now().plusSeconds(refreshTokenExpireSeconds));
+        }
+
+        String accessToken = createAccessToken(token.getUserId(), token.getRole());
+        return new TokenResponse(accessToken, token.getToken());
+    }
+
+    private void validateExpiration(RefreshToken token) {
+        ZonedDateTime expiredAt = token.getExpiredAt();
+
+        if (expiredAt.isBefore(ZonedDateTime.now())) {
+            throw new ExpiredTokenException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+        }
     }
 
     public JwtAuthenticationToken getAuthenticationByAccessToken(String accessToken) {

@@ -41,6 +41,7 @@ public enum ErrorCode {
     INVALID_TOKEN(MoneymongConstant.UNAUTHORIZED, "TOKEN-001", "유효하지 않은 토큰입니다."),
     TOKEN_EXPIRED(MoneymongConstant.UNAUTHORIZED, "TOKEN-002", "만료된 토큰입니다."),
     REFRESH_TOKEN_NOT_FOUND(MoneymongConstant.NOT_FOUND, "TOKEN-003", "리프레시 토큰을 찾을 수 없습니다."),
+    REFRESH_TOKEN_EXPIRED(MoneymongConstant.UNAUTHORIZED, "TOKEN-004", "만료된 리프레시 토큰입니다."),
 
     // ---- 로그인 ---- //
     INVALID_PROVIDER(MoneymongConstant.BAD_REQUEST, "LOGIN-001", "유효하지 않은 로그인 수단입니다."),
