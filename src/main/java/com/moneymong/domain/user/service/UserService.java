@@ -9,6 +9,7 @@ import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.security.oauth.dto.AuthUserInfo;
 import com.moneymong.global.security.oauth.dto.OAuthUserInfo;
+import com.moneymong.global.security.token.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final UserUniversityRepository userUniversityRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	@Transactional
 	public AuthUserInfo getOrRegister(OAuthUserInfo oauthUserInfo) {
@@ -63,6 +65,9 @@ public class UserService {
 					userRepository::delete,
 					() -> { throw new NotFoundException(ErrorCode.USER_NOT_FOUND); }
 			);
+
+		refreshTokenRepository.findByUserId(userId)
+				.ifPresent(refreshTokenRepository::delete);
 	}
 
 }

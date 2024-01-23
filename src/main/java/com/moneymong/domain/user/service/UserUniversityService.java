@@ -54,7 +54,8 @@ public class UserUniversityService {
      * 개발 편의를 위해 생성한 메소드입니다.
      */
     @Transactional
-    public void delete(Long id) {
-        userUniversityRepository.deleteByUserId(id);
+    public void delete(Long userId) {
+        userUniversityRepository.findByUserId(userId)
+                        .ifPresent(userUniversityRepository::delete);
     }
 }
