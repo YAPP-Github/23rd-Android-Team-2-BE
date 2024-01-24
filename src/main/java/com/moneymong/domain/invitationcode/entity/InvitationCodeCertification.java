@@ -1,5 +1,6 @@
 package com.moneymong.domain.invitationcode.entity;
 
+import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor(access = PROTECTED)
 @NoArgsConstructor(access = PROTECTED)
-public class InvitationCodeCertification {
+public class InvitationCodeCertification extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +35,6 @@ public class InvitationCodeCertification {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CertificationStatus status;
-
-    @Column(name = "created_at")
-    private ZonedDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
     
     public static InvitationCodeCertification of(Long userId, Long agencyId, CertificationStatus status) {
         return InvitationCodeCertification.builder()

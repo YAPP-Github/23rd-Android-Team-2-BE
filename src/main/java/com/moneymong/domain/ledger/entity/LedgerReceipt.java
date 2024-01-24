@@ -1,5 +1,6 @@
 package com.moneymong.domain.ledger.entity;
 
+import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,8 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "ledger_receipts")
 @Entity
-public class LedgerReceipt {
+public class LedgerReceipt extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,12 +40,6 @@ public class LedgerReceipt {
     )
     private String receiptImageUrl;
 
-    @Column(name = "created_at")
-    private ZonedDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
-
     public static LedgerReceipt of(
             final LedgerDetail ledgerDetail,
             final String receiptImageUrl
@@ -55,8 +48,6 @@ public class LedgerReceipt {
                 .builder()
                 .ledgerDetail(ledgerDetail)
                 .receiptImageUrl(receiptImageUrl)
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now())
                 .build();
     }
 }

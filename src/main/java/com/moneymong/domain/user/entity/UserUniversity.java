@@ -1,6 +1,7 @@
 package com.moneymong.domain.user.entity;
 
 import com.moneymong.global.domain.BaseEntity;
+import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor(access = PROTECTED)
 @NoArgsConstructor(access = PROTECTED)
-public class UserUniversity {
+public class UserUniversity extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

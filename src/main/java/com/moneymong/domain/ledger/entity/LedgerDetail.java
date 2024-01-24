@@ -2,6 +2,7 @@ package com.moneymong.domain.ledger.entity;
 
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.user.entity.User;
+import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "ledger_details")
 @Entity
-public class LedgerDetail {
+public class LedgerDetail extends TimeBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,12 +61,6 @@ public class LedgerDetail {
 
     @Column(name = "payment_date")
     private ZonedDateTime paymentDate;
-
-    @Column(name = "created_at")
-    private ZonedDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
 
     public void update(
             final User user,
@@ -106,8 +100,6 @@ public class LedgerDetail {
                 .balance(balance)
                 .description(description)
                 .paymentDate(paymentDate)
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now())
                 .build();
     }
 }

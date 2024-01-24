@@ -1,5 +1,6 @@
 package com.moneymong.domain.invitationcode.entity;
 
+import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor(access = PROTECTED)
 @NoArgsConstructor(access = PROTECTED)
-public class InvitationCode {
+public class InvitationCode extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

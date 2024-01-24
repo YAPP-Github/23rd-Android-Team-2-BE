@@ -1,5 +1,6 @@
 package com.moneymong.global.security.token.entity;
 
+import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class RefreshToken {
+public class RefreshToken extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
