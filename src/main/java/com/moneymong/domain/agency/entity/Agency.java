@@ -80,4 +80,12 @@ public class Agency extends BaseEntity {
     public void addAgencyUser(AgencyUser agencyUser) {
         this.agencyUsers.add(agencyUser);
     }
+
+    public void increaseHeadCount() {
+        this.headCount ++;
+    }
+
+    public void decreaseHeadCount() {
+        this.headCount --;
+    }
 }

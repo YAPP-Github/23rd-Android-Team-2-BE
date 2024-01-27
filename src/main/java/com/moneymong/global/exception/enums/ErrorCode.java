@@ -23,6 +23,7 @@ public enum ErrorCode {
     AGENCY_USER_NOT_FOUND(MoneymongConstant.NOT_FOUND, "AGENCY-USER-001", "소속에 유저가 존재하지 않습니다."),
     INVALID_AGENCY_USER_ACCESS(MoneymongConstant.FORBIDDEN, "AGENCY-USER-002", "유효하지 않은 접근입니다."),
     BLOCKED_AGENCY_USER(MoneymongConstant.FORBIDDEN, "AGENCY-USER-003", "소속에서 강제퇴장된 유저입니다."),
+    ALREADY_EXIST_AGENCY_USER(MoneymongConstant.BAD_REQUEST, "AGENCY-USER-004", "이미 가입된 유저입니다."),
 
     // ---- 장부 ---- //
     AGENCY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "LEDGER-001", "소속에 가입 후 장부를 사용할 수 있습니다."),

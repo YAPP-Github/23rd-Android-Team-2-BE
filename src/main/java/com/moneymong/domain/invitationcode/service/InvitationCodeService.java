@@ -3,6 +3,7 @@ package com.moneymong.domain.invitationcode.service;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
+import com.moneymong.domain.agency.service.AgencyUserService;
 import com.moneymong.domain.invitationcode.api.request.CertifyInvitationCodeRequest;
 import com.moneymong.domain.invitationcode.api.response.CertifyInvitationCodeResponse;
 import com.moneymong.domain.invitationcode.api.response.InvitationCodeResponse;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class InvitationCodeService {
     private final InvitationCodeRepository invitationCodeRepository;
     private final AgencyUserRepository agencyUserRepository;
+    private final AgencyUserService agencyUserService;
     private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
 
     @Transactional
@@ -63,6 +65,8 @@ public class InvitationCodeService {
         if (certified) {
             InvitationCodeCertification certification = getCertification(userId, agencyId);
             invitationCodeCertificationRepository.save(certification);
+
+            agencyUserService.join(agencyId, userId);
         }
 
         return CertifyInvitationCodeResponse.from(certified);

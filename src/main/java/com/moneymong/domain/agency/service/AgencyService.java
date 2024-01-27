@@ -8,14 +8,19 @@ import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.exception.BlockedAgencyUserException;
 import com.moneymong.domain.agency.repository.AgencyRepository;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
+import com.moneymong.domain.invitationcode.entity.CertificationStatus;
+import com.moneymong.domain.invitationcode.entity.InvitationCode;
+import com.moneymong.domain.invitationcode.entity.InvitationCodeCertification;
 import com.moneymong.domain.invitationcode.exception.CertificationNotExistException;
 import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificationRepository;
+import com.moneymong.domain.invitationcode.repository.InvitationCodeRepository;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.user.entity.UserUniversity;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
+import com.moneymong.utils.RandomCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +40,7 @@ public class AgencyService {
     private final AgencyRepository agencyRepository;
     private final UserUniversityRepository userUniversityRepository;
     private final LedgerRepository ledgerRepository;
+    private final InvitationCodeRepository invitationCodeRepository;
     private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
 
     public SearchAgencyResponse getAgencyList(Long userId, Pageable pageable) {
@@ -73,6 +79,9 @@ public class AgencyService {
         // === 장부 ===
         Ledger ledger = Ledger.of(agency, 0);
         ledgerRepository.save(ledger);
+
+        invitationCodeRepository.save(InvitationCode.of(agency.getId(), RandomCodeGenerator.generateCode()));
+        invitationCodeCertificationRepository.save(InvitationCodeCertification.of(userId, agency.getId(), CertificationStatus.DONE));
 
         return new CreateAgencyResponse(agency.getId());
     }

@@ -2,8 +2,11 @@ package com.moneymong.domain.agency.service;
 
 import com.moneymong.domain.agency.api.request.BlockAgencyUserRequest;
 import com.moneymong.domain.agency.api.request.UpdateAgencyUserRoleRequest;
+import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
+import com.moneymong.domain.agency.exception.AlreadyAgencyUserExistException;
+import com.moneymong.domain.agency.repository.AgencyRepository;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.invitationcode.entity.InvitationCodeCertification;
 import com.moneymong.domain.invitationcode.repository.InvitationCodeCertificationRepository;
@@ -20,6 +23,7 @@ import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.BLOCKED;
 @RequiredArgsConstructor
 public class AgencyUserService {
 
+    private final AgencyRepository agencyRepository;
     private final AgencyUserRepository agencyUserRepository;
     private final InvitationCodeCertificationRepository invitationCodeCertificationRepository;
 
@@ -47,10 +51,29 @@ public class AgencyUserService {
         InvitationCodeCertification certification = getCertification(agencyId, request);
 
         certification.revoke();
+
+        Agency agency = getAgency(agencyId);
+
+        agency.decreaseHeadCount();
     }
 
-    private AgencyUser getAgencyUser(Long request, Long agencyId) {
-        return agencyUserRepository.findByUserIdAndAgencyId(request, agencyId)
+    @Transactional
+    public void join(Long agencyId, Long userId) {
+        checkIfUserAlreadyJoined(agencyId, userId);
+
+        Agency agency = getAgency(agencyId);
+        agency.increaseHeadCount();
+
+        agencyUserRepository.save(AgencyUser.of(agency, userId, AgencyUserRole.MEMBER));
+    }
+
+    private Agency getAgency(Long agencyId) {
+        return agencyRepository.findById(agencyId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+    }
+
+    private AgencyUser getAgencyUser(Long userId, Long agencyId) {
+        return agencyUserRepository.findByUserIdAndAgencyId(userId, agencyId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_USER_NOT_FOUND));
     }
 
@@ -63,5 +86,12 @@ public class AgencyUserService {
         if (!AgencyUserRole.isStaffUser(staffUser.getAgencyUserRole())) {
             throw new InvalidAccessException(ErrorCode.INVALID_AGENCY_USER_ACCESS);
         }
+    }
+
+    private void checkIfUserAlreadyJoined(Long agencyId, Long userId) {
+        agencyUserRepository.findByUserIdAndAgencyId(userId, agencyId)
+                .ifPresent(agencyUser -> {
+                    throw new AlreadyAgencyUserExistException(ErrorCode.ALREADY_EXIST_AGENCY_USER);
+                });
     }
 }
