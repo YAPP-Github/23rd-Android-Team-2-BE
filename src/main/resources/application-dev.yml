@@ -21,8 +21,7 @@ spring:
 datasource:
   db:
     pool-name: moneymong
-#    jdbc-url: jdbc:mysql://moneymong-db:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
-    jdbc-url: jdbc:mysql://49.50.162.109:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
+    jdbc-url: jdbc:mysql://moneymong-db:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
     username: root
     password: ${DB_ROOT_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
