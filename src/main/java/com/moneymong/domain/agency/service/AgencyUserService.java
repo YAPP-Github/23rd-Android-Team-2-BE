@@ -72,8 +72,8 @@ public class AgencyUserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
     }
 
-    private AgencyUser getAgencyUser(Long request, Long agencyId) {
-        return agencyUserRepository.findByUserIdAndAgencyId(request, agencyId)
+    private AgencyUser getAgencyUser(Long userId, Long agencyId) {
+        return agencyUserRepository.findByUserIdAndAgencyId(userId, agencyId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_USER_NOT_FOUND));
     }
 
