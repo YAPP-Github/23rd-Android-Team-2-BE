@@ -12,6 +12,11 @@ spring:
       kakao:
         host: https://kapi.kakao.com
 
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
 # db 설정
 datasource:
   db:
