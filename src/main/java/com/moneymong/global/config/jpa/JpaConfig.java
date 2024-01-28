@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -27,6 +29,10 @@ import java.util.Map;
         basePackages = {
                 "com.moneymong"
         },
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.REGEX,
+                pattern = "com.moneymong.global.security.token.*"
+        ),
         entityManagerFactoryRef = "moneyMongEntityManagerFactory",
         transactionManagerRef = "moneyMongTransactionManager"
 )
