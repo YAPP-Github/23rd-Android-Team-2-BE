@@ -1,45 +1,42 @@
 package com.moneymong.global.security.token.entity;
 
 import com.moneymong.global.domain.TimeBaseEntity;
-import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.ZonedDateTime;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
 
 import static lombok.AccessLevel.PROTECTED;
 
-@Entity
+@RedisHash(value = "refreshToken")
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class RefreshToken extends TimeBaseEntity {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String token;
-
-    @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
+    @Indexed
+    private String token;
+
     private String role;
 
-    @Column(nullable = false)
-    private ZonedDateTime expiredAt;
+    @TimeToLive
+    private long expiredAt;
 
     @Builder
-    private RefreshToken(String token, Long userId, String role, ZonedDateTime expiredAt) {
+    private RefreshToken(String token, Long userId, String role, long expiredAt) {
         this.token = token;
         this.userId = userId;
         this.role = role;
         this.expiredAt = expiredAt;
     }
 
-    public void renew(String token, ZonedDateTime expiredAt) {
+    public void renew(String token, long expiredAt) {
         this.token = token;
         this.expiredAt = expiredAt;
     }

@@ -17,20 +17,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class TokenService {
 
+    private static final long ONE_WEEK_IN_MILLI_SECONDS = 604800000L;
+
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.expiry-seconds.refresh-token}")
-    private int refreshTokenExpireSeconds;
+    private long refreshTokenExpireSeconds;
 
-    @Transactional
     public Tokens createTokens(AuthUserInfo authUserInfo) {
         Long userId = authUserInfo.getUserId();
         String role = authUserInfo.getRole();
@@ -46,29 +46,29 @@ public class TokenService {
     }
 
     private String createRefreshToken(Long userId, String role) {
+        long expiredAtInMillis = System.currentTimeMillis() + refreshTokenExpireSeconds * 1000;
+
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(UUID.randomUUID().toString())
                 .userId(userId)
                 .role(role)
-                .expiredAt(ZonedDateTime.now().plusSeconds(refreshTokenExpireSeconds))
+                .expiredAt(expiredAtInMillis)
                 .build();
 
         return refreshTokenRepository.save(refreshToken).getToken();
     }
 
-    @Transactional
     public TokenResponse getAccessTokensByRefreshToken(String refreshToken) {
         RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
         validateExpiration(token);
 
-        ZonedDateTime oneWeekLater = ZonedDateTime.now().plusWeeks(1);
-
-        if (token.getExpiredAt().isBefore(oneWeekLater)) {
+        if (token.getExpiredAt() < System.currentTimeMillis() + ONE_WEEK_IN_MILLI_SECONDS) {
             String renewalRefreshToken = UUID.randomUUID().toString();
+            token.renew(renewalRefreshToken, refreshTokenExpireSeconds);
 
-            token.renew(renewalRefreshToken, ZonedDateTime.now().plusSeconds(refreshTokenExpireSeconds));
+            refreshTokenRepository.save(token);
         }
 
         String accessToken = createAccessToken(token.getUserId(), token.getRole());
@@ -76,9 +76,10 @@ public class TokenService {
     }
 
     private void validateExpiration(RefreshToken token) {
-        ZonedDateTime expiredAt = token.getExpiredAt();
+        long expiredAt = token.getExpiredAt();
+        long currentTime = System.currentTimeMillis();
 
-        if (expiredAt.isBefore(ZonedDateTime.now())) {
+        if (expiredAt < currentTime) {
             throw new ExpiredTokenException(ErrorCode.REFRESH_TOKEN_EXPIRED);
         }
     }
@@ -97,9 +98,8 @@ public class TokenService {
         return new JwtAuthenticationToken(principal, null, authorities);
     }
 
-    @Transactional
     public void deleteRefreshToken(String refreshToken) {
-        refreshTokenRepository.findById(refreshToken)
+        refreshTokenRepository.findByToken(refreshToken)
                 .ifPresent(refreshTokenRepository::delete);
     }
 
