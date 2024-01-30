@@ -54,5 +54,5 @@ jwt:
   issuer: MONEYMONG
   secret-key: ${JWT_SECRET_KEY}
   expiry-seconds:
-    access-token: 31557600
+    access-token: 1800
     refresh-token: 1209600
