@@ -26,9 +26,9 @@ spring:
 management:
   endpoints:
     web:
-      base-path: /
       exposure:
-        include: health
+        include: "*"
+        exclude: env, beans
 
 # swagger
 springdoc:
