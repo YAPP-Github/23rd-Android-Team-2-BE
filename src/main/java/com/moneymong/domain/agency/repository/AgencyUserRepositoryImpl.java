@@ -1,6 +1,7 @@
 package com.moneymong.domain.agency.repository;
 
 import com.moneymong.domain.agency.api.response.AgencyUserResponse;
+import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -33,6 +34,15 @@ public class AgencyUserRepositoryImpl implements AgencyUserRepositoryCustom {
                 .where(eqAgencyId(agencyId), notBlocked())
                 .join(user)
                 .on(agencyUser.userId.eq(user.id))
+                .fetch();
+    }
+
+    @Override
+    public List<Agency> findAgencyListByUserId(Long userId) {
+        return queryFactory.select(agency)
+                .from(agencyUser)
+                .join(agencyUser.agency, agency)
+                .where(agencyUser.userId.eq(userId))
                 .fetch();
     }
 

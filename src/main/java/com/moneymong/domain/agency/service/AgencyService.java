@@ -122,4 +122,12 @@ public class AgencyService {
                     .orElseThrow(() -> new CertificationNotExistException(ErrorCode.INVITATION_CODE_NOT_CERTIFIED_USER));
         }
     }
+
+    public List<AgencyResponse> getMyAgency(Long userId) {
+        List<Agency> agencyList = agencyUserRepository.findAgencyListByUserId(userId);
+
+        return agencyList.stream()
+                .map(AgencyResponse::from)
+                .toList();
+    }
 }

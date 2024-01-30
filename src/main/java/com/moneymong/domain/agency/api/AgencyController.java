@@ -3,6 +3,7 @@ package com.moneymong.domain.agency.api;
 import com.moneymong.domain.agency.api.request.BlockAgencyUserRequest;
 import com.moneymong.domain.agency.api.request.CreateAgencyRequest;
 import com.moneymong.domain.agency.api.request.UpdateAgencyUserRoleRequest;
+import com.moneymong.domain.agency.api.response.AgencyResponse;
 import com.moneymong.domain.agency.api.response.AgencyUserResponses;
 import com.moneymong.domain.agency.api.response.CreateAgencyResponse;
 import com.moneymong.domain.agency.api.response.SearchAgencyResponse;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "3. [소속]")
 @RequestMapping("/api/v1/agencies")
@@ -71,5 +74,11 @@ public class AgencyController {
             @RequestBody BlockAgencyUserRequest request
     ) {
         agencyUserService.blockUser(user.getId(), agencyId, request);
+    }
+
+    @Operation(summary = "내가 속한 소속 목록 조회")
+    @GetMapping("/me")
+    public List<AgencyResponse> getMyAgency(@AuthenticationPrincipal JwtAuthentication user) {
+        return agencyService.getMyAgency(user.getId());
     }
 }
