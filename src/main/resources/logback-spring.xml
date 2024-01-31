@@ -1,0 +1,23 @@
+<configuration packagingData="true">
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{yyyyMMdd HH:mm:ss.SSS}){magenta} %clr([%thread]){blue} %clr(%-5level){} %clr([%logger{0}:%line]){cyan} : %msg %n"/>
+
+    <property name="AWS_LOG_PATTERN"
+              value="[%thread] [%date] [%level] [%file:%line] - %msg%n"/>
+
+    <springProfile name="local">
+        <include resource="appender/moneymong-console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_APPENDER"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev">
+        <include resource="appender/moneymong-console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_APPENDER"/>
+        </root>
+    </springProfile>
+
+</configuration>
