@@ -1,6 +1,5 @@
 package com.moneymong.domain.user.entity;
 
-import com.moneymong.global.domain.BaseEntity;
 import com.moneymong.global.domain.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
