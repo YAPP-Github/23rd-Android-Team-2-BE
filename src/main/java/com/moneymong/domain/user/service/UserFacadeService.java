@@ -11,6 +11,7 @@ import com.moneymong.global.security.token.dto.Tokens;
 import com.moneymong.global.security.token.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class UserFacadeService {
         return LoginSuccessResponse.of(tokens.getAccessToken(), tokens.getRefreshToken(), loginSuccess, schoolInfoExists);
     }
 
+    @Transactional
     public void delete(Long userId) {
         userService.delete(userId);
         userUniversityService.delete(userId);
