@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.BLOCKED;
 
 @Service
@@ -65,6 +67,23 @@ public class AgencyUserService {
         agency.increaseHeadCount();
 
         agencyUserRepository.save(AgencyUser.of(agency, userId, AgencyUserRole.MEMBER));
+    }
+
+    @Transactional
+    public void deleteAll(Long userId) {
+        List<AgencyUser> agencyUsers = agencyUserRepository.findAllByUserId(userId);
+        agencyUsers.forEach(this::deleteAgencyUserFromAgency);
+
+        agencyUserRepository.deleteAll(agencyUsers);
+    }
+
+    private void deleteAgencyUserFromAgency(AgencyUser agencyUser) {
+        Agency agency = agencyUser.getAgency();
+        agency.decreaseHeadCount();
+
+        if (agency.getHeadCount() == 0) {
+            agencyRepository.delete(agency);
+        }
     }
 
     private Agency getAgency(Long agencyId) {
