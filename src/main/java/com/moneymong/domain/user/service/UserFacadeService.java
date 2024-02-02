@@ -1,5 +1,6 @@
 package com.moneymong.domain.user.service;
 
+import com.moneymong.domain.agency.service.AgencyUserService;
 import com.moneymong.domain.user.api.request.LoginRequest;
 import com.moneymong.global.security.oauth.dto.AuthUserInfo;
 import com.moneymong.domain.user.api.response.LoginSuccessResponse;
@@ -18,6 +19,7 @@ public class UserFacadeService {
     private final TokenService tokenService;
     private final OAuthService oAuthService;
     private final UserUniversityService userUniversityService;
+    private final AgencyUserService agencyUserService;
 
     public LoginSuccessResponse login(LoginRequest loginRequest) {
         OAuthUserDataResponse oAuthUserData = oAuthService.login(loginRequest);
@@ -32,5 +34,11 @@ public class UserFacadeService {
         boolean schoolInfoExists = userUniversityService.exists(registerResult.getUserId());
 
         return LoginSuccessResponse.of(tokens.getAccessToken(), tokens.getRefreshToken(), loginSuccess, schoolInfoExists);
+    }
+
+    public void delete(Long userId) {
+        userService.delete(userId);
+        userUniversityService.delete(userId);
+        agencyUserService.deleteAll(userId);
     }
 }

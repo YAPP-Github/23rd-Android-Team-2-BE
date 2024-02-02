@@ -43,6 +43,6 @@ public class UserController {
     public void deleteUser(
             @AuthenticationPrincipal JwtAuthentication user
     ) {
-        userService.delete(user.getId());
+        userFacadeService.delete(user.getId());
     }
 }
