@@ -1,6 +1,7 @@
 package com.moneymong.domain.ledger.service.reader;
 
 import com.moneymong.domain.agency.entity.AgencyUser;
+import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
 import com.moneymong.domain.ledger.entity.Ledger;
@@ -10,6 +11,7 @@ import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.repository.UserRepository;
+import com.moneymong.global.exception.custom.BadRequestException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZoneId;
@@ -19,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.isBlockedUser;
 
 @RequiredArgsConstructor
 @Service
@@ -51,6 +55,8 @@ public class LedgerReader {
         AgencyUser agencyUser = agencyUserRepository
                 .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+
+        ensureAgencyUserNotBlocked(agencyUser.getAgencyUserRole());
 
         ZonedDateTime from = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         ZonedDateTime to = from.plusMonths(1);
@@ -89,6 +95,8 @@ public class LedgerReader {
                 .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
 
+        ensureAgencyUserNotBlocked(agencyUser.getAgencyUserRole());
+
         ZonedDateTime from = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         ZonedDateTime to = from.plusMonths(1);
         List<LedgerDetail> ledgerDetailPage = ledgerDetailRepository.searchByFundType(
@@ -126,6 +134,8 @@ public class LedgerReader {
                 .findByUserIdAndAgencyId(user.getId(), agencyId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
 
+        ensureAgencyUserNotBlocked(agencyUser.getAgencyUserRole());
+
         ZonedDateTime from = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         ZonedDateTime to = from.plusMonths(1);
         List<LedgerDetail> ledgerDetailPage = ledgerDetailRepository.search(
@@ -144,5 +154,11 @@ public class LedgerReader {
         );
 
         return ledgerDetailRepository.existsByLedger(ledger);
+    }
+
+    private void ensureAgencyUserNotBlocked(AgencyUserRole role) {
+        if (isBlockedUser(role)) {
+            throw new BadRequestException(ErrorCode.BLOCKED_AGENCY_USER);
+        }
     }
 }
