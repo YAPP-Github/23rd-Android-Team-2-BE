@@ -4,6 +4,7 @@ import com.moneymong.domain.agency.entity.AgencyUser;
 import com.moneymong.domain.agency.entity.enums.AgencyUserRole;
 import com.moneymong.domain.agency.repository.AgencyUserRepository;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
+import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoViewDetail;
 import com.moneymong.domain.ledger.entity.Ledger;
 import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.enums.FundType;
@@ -17,12 +18,15 @@ import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.isBlockedUser;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Service
@@ -67,7 +71,7 @@ public class LedgerReader {
                 PageRequest.of(page, limit)
         );
 
-        return LedgerInfoView.from(ledger, ledgerDetailPage);
+        return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetailPage));
     }
 
     @Transactional(readOnly = true)
@@ -107,7 +111,7 @@ public class LedgerReader {
                 PageRequest.of(page, limit)
         );
 
-        return LedgerInfoView.from(ledger, ledgerDetailPage);
+        return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetailPage));
     }
 
 
@@ -145,7 +149,7 @@ public class LedgerReader {
                 PageRequest.of(page, limit)
         );
 
-        return LedgerInfoView.from(ledger, ledgerDetailPage);
+        return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetailPage));
     }
 
     public boolean exists(Long agencyId) {
@@ -160,5 +164,23 @@ public class LedgerReader {
         if (isBlockedUser(role)) {
             throw new BadRequestException(ErrorCode.BLOCKED_AGENCY_USER);
         }
+    }
+
+    private List<LedgerInfoViewDetail> convertToLedgerInfoViewDetail(List<LedgerDetail> ledgerDetails) {
+        return IntStream.range(0, ledgerDetails.size())
+                .mapToObj(index -> createLedgerInfoViewDetail(ledgerDetails.get(index), index + 1))
+                .collect(toList());
+    }
+
+    private LedgerInfoViewDetail createLedgerInfoViewDetail(LedgerDetail ledgerDetail, int order) {
+        return LedgerInfoViewDetail.builder()
+                .id(ledgerDetail.getId())
+                .storeInfo(ledgerDetail.getStoreInfo())
+                .fundType(ledgerDetail.getFundType())
+                .amount(ledgerDetail.getAmount())
+                .balance(ledgerDetail.getBalance())
+                .order(order)
+                .paymentDate(ledgerDetail.getPaymentDate())
+                .build();
     }
 }
