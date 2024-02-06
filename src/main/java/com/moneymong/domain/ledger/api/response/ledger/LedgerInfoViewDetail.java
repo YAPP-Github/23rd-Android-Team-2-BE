@@ -13,7 +13,8 @@ public class LedgerInfoViewDetail {
     final Long id;
     final String storeInfo;
     final FundType fundType;
-    final Integer amount;
-    final Integer balance;
+    final int amount;
+    final int balance;
+    final int order;
     final ZonedDateTime paymentDate;
 }
