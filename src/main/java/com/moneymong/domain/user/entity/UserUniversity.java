@@ -12,7 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.moneymong.utils.Validator.checkText;
+import static com.moneymong.utils.TextValidator.checkText;
 import static lombok.AccessLevel.PROTECTED;
 
 @Table(name = "user_universities")
@@ -20,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Builder
 @AllArgsConstructor(access = PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@NoArgsConstructor
 public class UserUniversity extends TimeBaseEntity {
 
     @Id
