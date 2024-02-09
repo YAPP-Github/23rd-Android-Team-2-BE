@@ -1,0 +1,58 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+    show-sql: true
+    properties:
+      format_sql: true
+      hibernate.hbm2ddl.auto: update
+
+  security:
+    oauth2:
+      kakao:
+        host: https://kapi.kakao.com
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: ${REDIS_PORT}
+
+# db 설정
+datasource:
+  db:
+    pool-name: moneymong
+    jdbc-url: jdbc:mysql://moneymong-db:3306/moneymong?useSSL=false&&allowPublicKeyRetrieval=true
+    username: root
+    password: ${DB_ROOT_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    maximum-pool-size: 5
+    connection-timeout: 3000
+    cache-prep-stmts: true
+    prep-stmt-cache-size: 250
+    prep-stmt-cache-sql-limit: 2048
+    use-server-prep-stmts: true
+    use-local-session-state: true
+    cache-result-set-metadata: true
+    maintain-time-stats: false
+    leak-detection-threshold: 5000
+    autocommit: false
+    connection-init-sql: "SET NAMES 'utf8mb4'"
+    read-only: false
+    data-source-properties:
+      useCursors: false
+      sendStringParametersAsUnicode: false
+      characterEncoding: utf8
+      zeroDateTimeBehavior: convertToNull
+      useSSL: false
+      autoReconnect: true
+      autoReconnectForPools: true
+      usePipelineAuth: false
+      useBatchMultiSend: false
+
+# security
+jwt:
+  issuer: MONEYMONG
+  secret-key: ${JWT_SECRET_KEY}
+  expiry-seconds:
+    access-token: 1800
+    refresh-token: 1209600

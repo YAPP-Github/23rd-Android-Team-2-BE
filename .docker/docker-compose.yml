@@ -11,7 +11,7 @@ services:
     ports:
       - ${DOCKER_DB_PORT}
     volumes:
-      - ./mysqldata:/var/lib/mysql
+      - ./mysqldata:/var/lib/mysql2
     restart: always
 
   server:
