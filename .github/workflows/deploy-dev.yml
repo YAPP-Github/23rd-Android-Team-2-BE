@@ -3,7 +3,7 @@ name: deploy to dev
 on:
   push:
     branches:
-      - main
+      - dev
 
 # 권한 설정
 permissions:
