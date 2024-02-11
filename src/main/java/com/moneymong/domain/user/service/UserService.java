@@ -53,7 +53,7 @@ public class UserService {
 				.orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
 		UserUniversity userUniversity = userUniversityRepository.findByUserId(userId)
-				.orElseGet(() -> UserUniversity.of(userId, null, 0));
+				.orElseGet(UserUniversity::new);
 
 		return UserProfileResponse.from(user, userUniversity);
 	}
