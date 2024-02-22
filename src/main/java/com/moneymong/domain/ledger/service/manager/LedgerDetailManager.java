@@ -23,6 +23,8 @@ import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import com.moneymong.utils.AmountCalculatorByFundType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +62,12 @@ public class LedgerDetailManager {
                 balance,
                 description,
                 paymentDate
+        );
+
+        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
+                ledger,
+                paymentDate,
+                AmountCalculatorByFundType.calculate(fundType, amount)
         );
 
         return ledgerDetailRepository.save(ledgerDetail);
@@ -112,6 +120,7 @@ public class LedgerDetailManager {
                 .findById(detailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
 
+        Ledger ledger = ledgerDetail.getLedger();
 
         // === 소속 ===
         AgencyUser agencyUser = agencyUserRepository
@@ -126,5 +135,16 @@ public class LedgerDetailManager {
         ledgerReceiptRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDetailRepository.delete(ledgerDetail);
+
+        Integer newAmount = AmountCalculatorByFundType.calculate(ledgerDetail.getFundType(), ledgerDetail.getAmount());
+
+        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
+                ledger,
+                ledgerDetail.getPaymentDate(),
+                -newAmount
+        );
+
+        // update total balance
+        ledger.updateTotalBalance(ledger.getTotalBalance() - newAmount);
     }
 }
