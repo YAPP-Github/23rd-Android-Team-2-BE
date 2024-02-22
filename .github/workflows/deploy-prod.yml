@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - refactor/**
 
 # 권한 설정
 permissions:
