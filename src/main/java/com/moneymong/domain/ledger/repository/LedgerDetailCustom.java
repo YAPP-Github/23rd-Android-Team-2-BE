@@ -23,4 +23,10 @@ public interface LedgerDetailCustom {
             FundType fundType,
             PageRequest pageable
     );
+
+    void bulkUpdateLedgerDetailBalance(
+            Ledger ledger,
+            ZonedDateTime paymentDate,
+            int amount
+    );
 }
