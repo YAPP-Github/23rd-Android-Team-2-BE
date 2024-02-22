@@ -5,6 +5,8 @@ import com.moneymong.domain.ledger.entity.LedgerDetail;
 import com.moneymong.domain.ledger.entity.enums.FundType;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -29,4 +31,6 @@ public interface LedgerDetailCustom {
             ZonedDateTime paymentDate,
             int amount
     );
+
+    Optional<LedgerDetail> findMostRecentLedgerDetail(ZonedDateTime paymentDate);
 }

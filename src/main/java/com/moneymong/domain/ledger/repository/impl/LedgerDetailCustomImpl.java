@@ -9,6 +9,8 @@ import com.moneymong.domain.ledger.repository.LedgerDetailCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,5 +66,15 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
                 )
                 .set(ledgerDetail.balance, ledgerDetail.balance.add(amount))
                 .execute();
+    }
+
+    @Override
+    public Optional<LedgerDetail> findMostRecentLedgerDetail(ZonedDateTime paymentDate) {
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(ledgerDetail)
+                .where(ledgerDetail.paymentDate.lt(paymentDate))
+                .orderBy(ledgerDetail.paymentDate.desc())
+                .limit(1)
+                .fetchOne());
     }
 }
