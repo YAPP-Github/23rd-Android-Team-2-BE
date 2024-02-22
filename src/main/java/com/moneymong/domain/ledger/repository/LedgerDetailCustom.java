@@ -32,5 +32,5 @@ public interface LedgerDetailCustom {
             int amount
     );
 
-    Optional<LedgerDetail> findMostRecentLedgerDetail(ZonedDateTime paymentDate);
+    Optional<LedgerDetail> findMostRecentLedgerDetail(Ledger ledger, ZonedDateTime paymentDate);
 }

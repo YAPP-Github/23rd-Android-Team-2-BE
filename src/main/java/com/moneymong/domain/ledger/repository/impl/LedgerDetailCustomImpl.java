@@ -69,10 +69,13 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
     }
 
     @Override
-    public Optional<LedgerDetail> findMostRecentLedgerDetail(ZonedDateTime paymentDate) {
+    public Optional<LedgerDetail> findMostRecentLedgerDetail(Ledger ledger, ZonedDateTime paymentDate) {
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(ledgerDetail)
-                .where(ledgerDetail.paymentDate.lt(paymentDate))
+                .where(
+                        ledgerDetail.ledger.eq(ledger),
+                        ledgerDetail.paymentDate.lt(paymentDate)
+                )
                 .orderBy(ledgerDetail.paymentDate.desc())
                 .limit(1)
                 .fetchOne());

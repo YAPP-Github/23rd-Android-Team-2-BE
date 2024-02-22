@@ -149,6 +149,7 @@ public class LedgerManager {
 
         ledger = updateLedgerTotalBalance(newAmount, ledger);
 
+        // newAmount
         ledgerDetailRepository.bulkUpdateLedgerDetailBalance(ledger, updateLedgerRequest.getPaymentDate(), newAmount);
 
         // 장부 상세 내역 정보 업데이트
@@ -156,7 +157,8 @@ public class LedgerManager {
                 user,
                 ledger,
                 ledgerDetail,
-                updateLedgerRequest
+                updateLedgerRequest,
+                newAmount
         );
     }
 
