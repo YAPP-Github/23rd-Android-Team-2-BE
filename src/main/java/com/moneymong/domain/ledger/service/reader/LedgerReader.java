@@ -167,8 +167,10 @@ public class LedgerReader {
     }
 
     private List<LedgerInfoViewDetail> convertToLedgerInfoViewDetail(List<LedgerDetail> ledgerDetails) {
-        return IntStream.range(0, ledgerDetails.size())
-                .mapToObj(index -> createLedgerInfoViewDetail(ledgerDetails.get(index), index + 1))
+        int count = ledgerDetails.size();
+
+        return IntStream.iterate(count, i -> i > 0, i -> i - 1)
+                .mapToObj(index -> createLedgerInfoViewDetail(ledgerDetails.get(count - index), index))
                 .collect(toList());
     }
 
