@@ -23,6 +23,10 @@ import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import com.moneymong.utils.AmountCalculatorByFundType;
+import com.moneymong.utils.ModificationAmountCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +66,27 @@ public class LedgerDetailManager {
                 paymentDate
         );
 
+        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
+                ledger,
+                paymentDate,
+                AmountCalculatorByFundType.calculate(fundType, amount)
+        );
+
+        /**
+         * 가장 오래된 장부 내역인 경우 잔고를 amount 값으로 설정한다.
+         * 이전 내역이 있는 경우, 가장 가까운 시일에 생성된 장부 내역을 기준으로 잔고를 저장한다.
+         */
+        Optional<LedgerDetail> mostRecentLedgerDetail = ledgerDetailRepository.findMostRecentLedgerDetail(ledger, paymentDate);
+
+        if (mostRecentLedgerDetail.isPresent()) {
+            LedgerDetail recentDetail = mostRecentLedgerDetail.get();
+
+            int newAmount = recentDetail.getBalance() + AmountCalculatorByFundType.calculate(fundType, amount);
+            ledgerDetail.updateBalance(newAmount);
+        }else {
+            ledgerDetail.updateBalance(AmountCalculatorByFundType.calculate(fundType, amount));
+        }
+
         return ledgerDetailRepository.save(ledgerDetail);
     }
 
@@ -70,7 +95,8 @@ public class LedgerDetailManager {
             final User user,
             final Ledger ledger,
             final LedgerDetail ledgerDetail,
-            final UpdateLedgerRequest updateLedgerRequest
+            final UpdateLedgerRequest updateLedgerRequest,
+            final Integer newAmount
     ) {
         // 1. 장부 상세 내역 업데이트
         ledgerDetail.update(
@@ -78,7 +104,7 @@ public class LedgerDetailManager {
                 updateLedgerRequest.getStoreInfo(),
                 ledgerDetail.getFundType(),
                 updateLedgerRequest.getAmount(),
-                ledger.getTotalBalance(),
+                ledgerDetail.getBalance() + newAmount,
                 updateLedgerRequest.getDescription(),
                 updateLedgerRequest.getPaymentDate()
         );
@@ -112,6 +138,7 @@ public class LedgerDetailManager {
                 .findById(detailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
 
+        Ledger ledger = ledgerDetail.getLedger();
 
         // === 소속 ===
         AgencyUser agencyUser = agencyUserRepository
@@ -126,5 +153,16 @@ public class LedgerDetailManager {
         ledgerReceiptRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDetailRepository.delete(ledgerDetail);
+
+        Integer newAmount = AmountCalculatorByFundType.calculate(ledgerDetail.getFundType(), ledgerDetail.getAmount());
+
+        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
+                ledger,
+                ledgerDetail.getPaymentDate(),
+                -newAmount
+        );
+
+        // update total balance
+        ledger.updateTotalBalance(ledger.getTotalBalance() - newAmount);
     }
 }

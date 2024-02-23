@@ -9,6 +9,8 @@ import com.moneymong.domain.ledger.repository.LedgerDetailCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class LedgerDetailCustomImpl implements LedgerDetailCustom {
     private final JPAQueryFactory jpaQueryFactory;
-
 
     @Override
     public List<LedgerDetail> search(
@@ -31,7 +32,7 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
         return jpaQueryFactory.selectFrom(ledgerDetail)
                 .where(ledgerDetail.ledger.eq(ledger))
                 .where(ledgerDetail.paymentDate.between(from, to))
-                .orderBy(ledgerDetail.createdAt.desc())
+                .orderBy(ledgerDetail.paymentDate.desc())
                 .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -50,9 +51,33 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
                 .where(ledgerDetail.ledger.eq(ledger))
                 .where(ledgerDetail.fundType.eq(fundType))
                 .where(ledgerDetail.paymentDate.between(from, to))
-                .orderBy(ledgerDetail.createdAt.desc())
+                .orderBy(ledgerDetail.paymentDate.desc())
                 .offset((long) pageable.getPageNumber() * pageable.getPageSize())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    @Override
+    public void bulkUpdateLedgerDetailBalance(Ledger ledger, ZonedDateTime paymentDate, int amount) {
+        jpaQueryFactory.update(ledgerDetail)
+                .where(
+                        ledgerDetail.ledger.eq(ledger),
+                        ledgerDetail.paymentDate.goe(paymentDate)
+                )
+                .set(ledgerDetail.balance, ledgerDetail.balance.add(amount))
+                .execute();
+    }
+
+    @Override
+    public Optional<LedgerDetail> findMostRecentLedgerDetail(Ledger ledger, ZonedDateTime paymentDate) {
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(ledgerDetail)
+                .where(
+                        ledgerDetail.ledger.eq(ledger),
+                        ledgerDetail.paymentDate.lt(paymentDate)
+                )
+                .orderBy(ledgerDetail.paymentDate.desc())
+                .limit(1)
+                .fetchOne());
     }
 }

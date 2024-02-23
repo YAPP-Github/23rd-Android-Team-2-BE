@@ -80,6 +80,10 @@ public class LedgerDetail extends TimeBaseEntity {
         this.paymentDate = paymentDate;
     }
 
+    public void updateBalance(int balance) {
+        this.balance = balance;
+    }
+
     public static LedgerDetail of(
             final Ledger ledger,
             final User user,
