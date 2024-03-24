@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.moneymong.utils.AmountCalculatorByFundType;
-import com.moneymong.utils.ModificationAmountCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,12 +65,6 @@ public class LedgerDetailManager {
                 paymentDate
         );
 
-        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
-                ledger,
-                paymentDate,
-                AmountCalculatorByFundType.calculate(fundType, amount)
-        );
-
         /**
          * 가장 오래된 장부 내역인 경우 잔고를 amount 값으로 설정한다.
          * 이전 내역이 있는 경우, 가장 가까운 시일에 생성된 장부 내역을 기준으로 잔고를 저장한다.
@@ -86,6 +79,12 @@ public class LedgerDetailManager {
         }else {
             ledgerDetail.updateBalance(AmountCalculatorByFundType.calculate(fundType, amount));
         }
+
+        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
+                ledger,
+                paymentDate,
+                AmountCalculatorByFundType.calculate(fundType, amount)
+        );
 
         return ledgerDetailRepository.save(ledgerDetail);
     }

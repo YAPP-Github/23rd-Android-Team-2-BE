@@ -102,7 +102,7 @@ public class LedgerController {
             @ParameterObject @Valid final SearchLedgerRequest searchLedgerRequest
     ) {
         return ledgerReader.searchByAgency(
-                18L,
+                user.getId(),
                 agencyId,
                 searchLedgerRequest.getYear(),
                 searchLedgerRequest.getMonth(),
