@@ -128,6 +128,10 @@ public class LedgerManager {
                 .findById(ledgerDetailId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
 
+        if (!updateLedgerRequest.getPaymentDate().equals(ledgerDetail.getPaymentDate())) {
+            throw new IllegalStateException();
+        }
+
         Ledger ledger = ledgerDetail.getLedger();
 
         // === 소속 ===
