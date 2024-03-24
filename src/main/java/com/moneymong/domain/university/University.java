@@ -25,10 +25,4 @@ public class University {
             nullable = false
     )
     private String schoolName;
-
-    @Column(
-            name = "department_name",
-            nullable = false
-    )
-    private String departmentName;
 }
