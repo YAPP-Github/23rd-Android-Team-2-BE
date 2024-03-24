@@ -1,7 +1,7 @@
 package com.moneymong.domain.ledger.api;
 
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
-import com.moneymong.domain.ledger.service.manager.LedgerDetailManager;
+import com.moneymong.domain.ledger.service.manager.LedgerDetailService;
 import com.moneymong.domain.ledger.service.reader.LedgerDetailReader;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LedgerDetailController {
 
     private final LedgerDetailReader ledgerDetailReader;
-    private final LedgerDetailManager ledgerDetailManager;
+    private final LedgerDetailService ledgerDetailService;
 
     @Operation(summary = "장부 상세 내역 조회 API")
     @GetMapping("/{detailId}")
@@ -41,7 +41,7 @@ public class LedgerDetailController {
             @AuthenticationPrincipal JwtAuthentication user,
             @PathVariable("detailId") final Long detailId
     ) {
-        ledgerDetailManager.removeLedgerDetail(
+        ledgerDetailService.removeLedgerDetail(
                 user.getId(),
                 detailId
         );

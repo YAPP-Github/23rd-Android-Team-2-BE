@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class LedgerManager {
-    private final LedgerDetailManager ledgerDetailManager;
+    private final LedgerDetailService ledgerDetailService;
     private final LedgerReceiptManager ledgerReceiptManager;
     private final LedgerDocumentManager ledgerDocumentManager;
     private final UserRepository userRepository;
@@ -74,7 +74,7 @@ public class LedgerManager {
         );
 
         // 장부 내역 등록
-        LedgerDetail ledgerDetail = ledgerDetailManager.createLedgerDetail(
+        LedgerDetail ledgerDetail = ledgerDetailService.createLedgerDetail(
                 updateLedger,
                 user,
                 createLedgerRequest.getStoreInfo(),
@@ -157,7 +157,7 @@ public class LedgerManager {
         ledgerDetailRepository.bulkUpdateLedgerDetailBalance(ledger, updateLedgerRequest.getPaymentDate(), newAmount);
 
         // 장부 상세 내역 정보 업데이트
-        return ledgerDetailManager.updateLedgerDetail(
+        return ledgerDetailService.updateLedgerDetail(
                 user,
                 ledger,
                 ledgerDetail,

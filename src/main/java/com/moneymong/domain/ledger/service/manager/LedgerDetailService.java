@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class LedgerDetailManager {
+public class LedgerDetailService {
     private final LedgerAssembler ledgerAssembler;
     private final LedgerReceiptReader ledgerReceiptReader;
     private final LedgerDocumentReader ledgerDocumentReader;
