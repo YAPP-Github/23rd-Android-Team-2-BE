@@ -6,7 +6,7 @@ import com.moneymong.domain.ledger.api.request.SearchLedgerRequest;
 import com.moneymong.domain.ledger.api.request.UpdateLedgerRequest;
 import com.moneymong.domain.ledger.api.response.LedgerDetailInfoView;
 import com.moneymong.domain.ledger.api.response.ledger.LedgerInfoView;
-import com.moneymong.domain.ledger.service.manager.LedgerManager;
+import com.moneymong.domain.ledger.service.manager.LedgerService;
 import com.moneymong.domain.ledger.service.reader.LedgerReader;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class LedgerController {
-    private final LedgerManager ledgerManager;
+    private final LedgerService ledgerService;
     private final LedgerReader ledgerReader;
 
     @Operation(summary = "장부 내역 등록 API")
@@ -38,7 +38,7 @@ public class LedgerController {
             @PathVariable("id") final Long ledgerId,
             @RequestBody @Valid final CreateLedgerRequest createLedgerRequest
     ) {
-        return ledgerManager.createLedger(
+        return ledgerService.createLedger(
                 user.getId(),
                 ledgerId,
                 createLedgerRequest
@@ -52,7 +52,7 @@ public class LedgerController {
             @PathVariable("detailId") final Long ledgerDetailId,
             @RequestBody @Valid final UpdateLedgerRequest updateLedgerRequest
     ) {
-        return ledgerManager.updateLedger(
+        return ledgerService.updateLedger(
                 user.getId(),
                 ledgerDetailId,
                 updateLedgerRequest

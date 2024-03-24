@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LedgerManager {
+public class LedgerService {
     private final LedgerDetailService ledgerDetailService;
     private final LedgerReceiptManager ledgerReceiptManager;
     private final LedgerDocumentManager ledgerDocumentManager;
