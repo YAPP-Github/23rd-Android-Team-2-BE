@@ -91,11 +91,11 @@ public class LedgerDetailService {
 
     @Transactional
     public LedgerDetailInfoView updateLedgerDetail(
-            final User user,
-            final Ledger ledger,
-            final LedgerDetail ledgerDetail,
-            final UpdateLedgerRequest updateLedgerRequest,
-            final Integer newAmount
+            User user,
+            Ledger ledger,
+            LedgerDetail ledgerDetail,
+            UpdateLedgerRequest updateLedgerRequest,
+            Integer newAmount
     ) {
         // 1. 장부 상세 내역 업데이트
         ledgerDetail.update(
@@ -108,7 +108,25 @@ public class LedgerDetailService {
                 updateLedgerRequest.getPaymentDate()
         );
 
-        LedgerDetail newLedgerDetail = ledgerDetailRepository.save(ledgerDetail);
+        removeLedgerDetail(user.getId(), ledgerDetail.getId());
+
+        LedgerDetail newLedgerDetail = LedgerDetail.of(
+                ledger,
+                user,
+                ledgerDetail.getStoreInfo(),
+                ledgerDetail.getFundType(),
+                ledgerDetail.getAmount(),
+                ledgerDetail.getBalance(),
+                ledgerDetail.getDescription(),
+                ledgerDetail.getPaymentDate()
+        );
+
+        createLedgerDetail(ledger, user, ledgerDetail.getStoreInfo(),
+                ledgerDetail.getFundType(),
+                ledgerDetail.getAmount(),
+                ledgerDetail.getBalance(),
+                ledgerDetail.getDescription(),
+                ledgerDetail.getPaymentDate());
 
         // 2. 장부 상세 내역 조회
         final Long ledgerDetailId = ledgerDetail.getId();
@@ -129,25 +147,17 @@ public class LedgerDetailService {
             final Long detailId
     ) {
         // === 유저 ===
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
 
-        LedgerDetail ledgerDetail = ledgerDetailRepository
-                .findById(detailId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+        LedgerDetail ledgerDetail = getLedgerDetail(detailId);
 
         Ledger ledger = ledgerDetail.getLedger();
 
         // === 소속 ===
-        AgencyUser agencyUser = agencyUserRepository
-                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+        AgencyUser agencyUser = getAgencyUser(user, ledgerDetail);
 
         // === 권한 ===
-        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
-            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
-        }
+        validateStaffUserRole(agencyUser.getAgencyUserRole());
 
         ledgerReceiptRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
@@ -163,5 +173,29 @@ public class LedgerDetailService {
 
         // update total balance
         ledger.updateTotalBalance(ledger.getTotalBalance() - newAmount);
+    }
+
+    private void validateStaffUserRole(AgencyUserRole userRole) {
+        if (!AgencyUserRole.isStaffUser(userRole)) {
+            throw new InvalidAccessException(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        }
+    }
+
+    private AgencyUser getAgencyUser(User user, LedgerDetail ledgerDetail) {
+        return agencyUserRepository
+                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+    }
+
+    private LedgerDetail getLedgerDetail(Long detailId) {
+        return ledgerDetailRepository
+                .findById(detailId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+    }
+
+    private User getUser(Long userId) {
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }

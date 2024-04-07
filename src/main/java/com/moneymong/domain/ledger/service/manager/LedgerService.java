@@ -46,18 +46,14 @@ public class LedgerService {
             final CreateLedgerRequest createLedgerRequest
     ) {
         // === 유저 ===
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
 
         Ledger ledger = ledgerRepository
                 .findById(ledgerId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND));
 
         // === 소속 ===
-        AgencyUser agencyUser = agencyUserRepository
-                .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+        AgencyUser agencyUser = getAgencyUser(userId, ledger);
 
         // === 권한 ===
         if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
@@ -88,7 +84,7 @@ public class LedgerService {
         // 장부 영수증 등록
         List<LedgerReceipt> ledgerReceipts = List.of();
         List<String> requestReceiptImageUrls = createLedgerRequest.getReceiptImageUrls();
-        if (requestReceiptImageUrls.size() > 0) {
+        if (!requestReceiptImageUrls.isEmpty()) {
             ledgerReceipts = ledgerReceiptManager.createReceipts(
                     ledgerDetail.getId(),
                     requestReceiptImageUrls
@@ -98,12 +94,14 @@ public class LedgerService {
         // 장부 증빙 자료 등록
         List<LedgerDocument> ledgerDocuments = List.of();
         List<String> requestDocumentImageUrls = createLedgerRequest.getDocumentImageUrls();
-        if (requestDocumentImageUrls.size() > 0) {
+
+        if (!requestDocumentImageUrls.isEmpty()) {
             ledgerDocuments = ledgerDocumentManager.createLedgerDocuments(
                     ledgerDetail.getId(),
                     requestDocumentImageUrls
             );
         }
+
         return LedgerDetailInfoView.of(
                 ledgerDetail,
                 ledgerReceipts,
@@ -119,30 +117,18 @@ public class LedgerService {
             final UpdateLedgerRequest updateLedgerRequest
     ) {
         // === 유저 ===
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
 
         // === 장부 ===
-        LedgerDetail ledgerDetail = ledgerDetailRepository
-                .findById(ledgerDetailId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
-
-        if (!updateLedgerRequest.getPaymentDate().equals(ledgerDetail.getPaymentDate())) {
-            throw new IllegalStateException();
-        }
+        LedgerDetail ledgerDetail = getLedgerDetail(ledgerDetailId);
 
         Ledger ledger = ledgerDetail.getLedger();
 
         // === 소속 ===
-        AgencyUser agencyUser = agencyUserRepository
-                .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+        AgencyUser agencyUser = getAgencyUser(userId, ledger);
 
         // === 권한 ===
-        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
-            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
-        }
+        validateStaffUserRole(agencyUser.getAgencyUserRole());
 
         // 장부 총 잔액 업데이트
         final Integer newAmount = ModificationAmountCalculator.calculate(
@@ -185,5 +171,29 @@ public class LedgerService {
 
         ledger.updateTotalBalance(expectedAmount.intValue());
         return ledgerRepository.save(ledger);
+    }
+
+    private void validateStaffUserRole(AgencyUserRole userRole) {
+        if (!AgencyUserRole.isStaffUser(userRole)) {
+            throw new InvalidAccessException(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        }
+    }
+
+    private User getUser(Long userId) {
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private AgencyUser getAgencyUser(Long userId, Ledger ledger) {
+        return agencyUserRepository
+                .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+    }
+
+    private LedgerDetail getLedgerDetail(Long ledgerDetailId) {
+        return ledgerDetailRepository
+                .findById(ledgerDetailId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
     }
 }
