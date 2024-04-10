@@ -2,6 +2,8 @@ package com.moneymong.domain.ledger.entity;
 
 import com.moneymong.domain.agency.entity.Agency;
 import com.moneymong.global.domain.TimeBaseEntity;
+import com.moneymong.global.exception.custom.BadRequestException;
+import com.moneymong.global.exception.enums.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Getter
 @Builder
@@ -38,8 +42,20 @@ public class Ledger extends TimeBaseEntity {
     @Column(name = "total_balance")
     private Integer totalBalance;
 
-    public void updateTotalBalance(final Integer amount) {
-        this.totalBalance = amount;
+    public void updateTotalBalance(int newAmount) {
+        BigDecimal expectedAmount = new BigDecimal(this.getTotalBalance())
+                .add(new BigDecimal(newAmount));
+
+        // 장부 금액 최소 초과 검증
+        BigDecimal minValue = new BigDecimal("-999999999");
+        BigDecimal maxValue = new BigDecimal("999999999");
+        if (!(expectedAmount.compareTo(minValue) >= 0 &&
+                expectedAmount.compareTo(maxValue) <= 0)
+        ) {
+            throw new BadRequestException(ErrorCode.INVALID_LEDGER_AMOUNT);
+        }
+
+        this.totalBalance = expectedAmount.intValue();
     }
 
     public static Ledger of(
