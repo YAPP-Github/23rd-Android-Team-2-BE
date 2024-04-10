@@ -163,7 +163,7 @@ public class LedgerDetailService {
         ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDetailRepository.delete(ledgerDetail);
 
-        Integer newAmount = AmountCalculatorByFundType.calculate(ledgerDetail.getFundType(), ledgerDetail.getAmount());
+        int newAmount = AmountCalculatorByFundType.calculate(ledgerDetail.getFundType(), ledgerDetail.getAmount());
 
         ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
                 ledger,

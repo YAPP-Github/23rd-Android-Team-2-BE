@@ -14,13 +14,11 @@ import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.repository.UserRepository;
-import com.moneymong.global.exception.custom.BadRequestException;
 import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.utils.AmountCalculatorByFundType;
 import com.moneymong.utils.ModificationAmountCalculator;
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -126,7 +124,7 @@ public class LedgerService {
         validateStaffUserRole(agencyUser.getAgencyUserRole());
 
         // 장부 총 잔액 업데이트
-        final Integer newAmount = ModificationAmountCalculator.calculate(
+        final int newAmount = ModificationAmountCalculator.calculate(
                 ledgerDetail.getFundType(),
                 ledgerDetail.getAmount(),
                 updateLedgerRequest.getAmount()
