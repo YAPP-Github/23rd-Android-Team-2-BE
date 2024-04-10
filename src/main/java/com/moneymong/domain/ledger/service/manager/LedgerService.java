@@ -48,35 +48,30 @@ public class LedgerService {
         // === 유저 ===
         User user = getUser(userId);
 
-        Ledger ledger = ledgerRepository
-                .findById(ledgerId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND));
+        Ledger ledger = getLedger(ledgerId);
 
         // === 소속 ===
         AgencyUser agencyUser = getAgencyUser(userId, ledger);
 
         // === 권한 ===
-        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
-            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
-        }
+        validateStaffUserRole(agencyUser.getAgencyUserRole());
 
         // 장부 totalBalance 업데이트
-        Ledger updateLedger = updateLedgerTotalBalance(
-                AmountCalculatorByFundType.calculate(
-                        createLedgerRequest.getFundType(),
-                        createLedgerRequest.getAmount()
-                ),
-                ledger
+        int newAmount = AmountCalculatorByFundType.calculate(
+                createLedgerRequest.getFundType(),
+                createLedgerRequest.getAmount()
         );
+
+        ledger.updateTotalBalance(newAmount);
 
         // 장부 내역 등록
         LedgerDetail ledgerDetail = ledgerDetailService.createLedgerDetail(
-                updateLedger,
+                ledger,
                 user,
                 createLedgerRequest.getStoreInfo(),
                 createLedgerRequest.getFundType(),
                 createLedgerRequest.getAmount(),
-                updateLedger.getTotalBalance(),
+                ledger.getTotalBalance(),
                 createLedgerRequest.getDescription(),
                 createLedgerRequest.getPaymentDate()
         );
@@ -137,10 +132,22 @@ public class LedgerService {
                 updateLedgerRequest.getAmount()
         );
 
-        ledger = updateLedgerTotalBalance(newAmount, ledger);
+        ledger.updateTotalBalance(newAmount);
 
         // newAmount
         ledgerDetailRepository.bulkUpdateLedgerDetailBalance(ledger, updateLedgerRequest.getPaymentDate(), newAmount);
+
+        ledgerDetailService.removeLedgerDetail(userId, ledgerDetailId);
+        ledgerDetailService.createLedgerDetail(
+                ledger,
+                user,
+                updateLedgerRequest.getStoreInfo(),
+                ledgerDetail.getFundType(),
+                updateLedgerRequest.getAmount(),
+                null,
+                updateLedgerRequest.getDescription(),
+                updateLedgerRequest.getPaymentDate()
+        );
 
         // 장부 상세 내역 정보 업데이트
         return ledgerDetailService.updateLedgerDetail(
@@ -150,27 +157,6 @@ public class LedgerService {
                 updateLedgerRequest,
                 newAmount
         );
-    }
-
-    private Ledger updateLedgerTotalBalance(
-            final Integer newAmount,
-            final Ledger ledger
-    ) {
-
-        BigDecimal expectedAmount = new BigDecimal(ledger.getTotalBalance())
-                .add(new BigDecimal(newAmount));
-
-        // 장부 금액 최소 초과 검증
-        BigDecimal minValue = new BigDecimal("-999999999");
-        BigDecimal maxValue = new BigDecimal("999999999");
-        if (!(expectedAmount.compareTo(minValue) >= 0 &&
-                expectedAmount.compareTo(maxValue) <= 0)
-        ) {
-            throw new BadRequestException(ErrorCode.INVALID_LEDGER_AMOUNT);
-        }
-
-        ledger.updateTotalBalance(expectedAmount.intValue());
-        return ledgerRepository.save(ledger);
     }
 
     private void validateStaffUserRole(AgencyUserRole userRole) {
@@ -183,6 +169,12 @@ public class LedgerService {
         return userRepository
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private Ledger getLedger(Long ledgerId) {
+        return ledgerRepository
+                .findById(ledgerId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND));
     }
 
     private AgencyUser getAgencyUser(Long userId, Ledger ledger) {
