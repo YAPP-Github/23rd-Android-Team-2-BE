@@ -18,7 +18,6 @@ import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.utils.AmountCalculatorByFundType;
-import com.moneymong.utils.ModificationAmountCalculator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -123,37 +122,24 @@ public class LedgerService {
         // === 권한 ===
         validateStaffUserRole(agencyUser.getAgencyUserRole());
 
-        // 장부 총 잔액 업데이트
-        final int newAmount = ModificationAmountCalculator.calculate(
-                ledgerDetail.getFundType(),
-                ledgerDetail.getAmount(),
-                updateLedgerRequest.getAmount()
-        );
-
-        ledger.updateTotalBalance(newAmount);
-
-        // newAmount
-        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(ledger, updateLedgerRequest.getPaymentDate(), newAmount);
-
-        ledgerDetailService.removeLedgerDetail(userId, ledgerDetailId);
         ledgerDetailService.createLedgerDetail(
                 ledger,
                 user,
                 updateLedgerRequest.getStoreInfo(),
                 ledgerDetail.getFundType(),
                 updateLedgerRequest.getAmount(),
-                null,
+                ledger.getTotalBalance(),
                 updateLedgerRequest.getDescription(),
                 updateLedgerRequest.getPaymentDate()
         );
 
-        // 장부 상세 내역 정보 업데이트
+        ledgerDetailService.removeLedgerDetail(userId, ledgerDetailId);
+
         return ledgerDetailService.updateLedgerDetail(
                 user,
                 ledger,
                 ledgerDetail,
-                updateLedgerRequest,
-                newAmount
+                updateLedgerRequest
         );
     }
 
