@@ -11,8 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 
-import static com.moneymong.utils.TextValidator.checkText;
 import static lombok.AccessLevel.PROTECTED;
 
 @Table(name = "user_universities")
@@ -45,14 +45,14 @@ public class UserUniversity extends TimeBaseEntity {
     private int grade;
 
     public void update(String universityName, int grade) {
-        checkText(universityName, "대학 이름은 필수 입력값입니다.");
+        Assert.hasText(universityName, "대학 이름은 필수 입력값입니다.");
 
         this.universityName = universityName;
         this.grade = grade;
     }
 
     public static UserUniversity of(Long userId, String universityName, int grade) {
-        checkText(universityName, "대학 이름은 필수 입력값입니다.");
+        Assert.hasText(universityName, "대학 이름은 필수 입력값입니다.");
 
         return UserUniversity.builder()
                 .userId(userId)
