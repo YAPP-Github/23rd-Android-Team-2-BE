@@ -11,6 +11,8 @@ spring:
     oauth2:
       kakao:
         host: https://kapi.kakao.com
+      apple:
+        host: https://appleid.apple.com
 
   data:
     redis:
