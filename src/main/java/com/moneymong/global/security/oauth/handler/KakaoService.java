@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -58,6 +59,11 @@ public class KakaoService implements OAuthAuthenticationHandler {
 
         } catch (RestClientException e) {
             log.warn("[KakaoService] failed to get OAuth User Data = {}", request.getAccessToken());
+
+            if (e instanceof RestClientResponseException) {
+                throw new HttpClientException(ErrorCode.INVALID_OAUTH_TOKEN);
+            }
+
             throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
         }
     }
