@@ -12,6 +12,7 @@ import lombok.Getter;
 public class UserProfileResponse {
     private Long id;
     private String userToken;
+    private String provider;
     private String nickname;
     private String email;
     private String universityName;
@@ -21,6 +22,7 @@ public class UserProfileResponse {
         return UserProfileResponse.builder()
                 .id(user.getId())
                 .userToken(user.getUserToken())
+                .provider(user.getProvider())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .universityName(userUniversity.getUniversityName())
