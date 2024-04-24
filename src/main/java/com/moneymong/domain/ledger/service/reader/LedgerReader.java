@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.isBlockedUser;
 import static java.util.stream.Collectors.toList;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class LedgerReader {
@@ -36,7 +37,64 @@ public class LedgerReader {
     private final LedgerRepository ledgerRepository;
     private final LedgerDetailRepository ledgerDetailRepository;
 
-    @Transactional(readOnly = true)
+    public LedgerInfoView searchLedgersByPeriod(
+            long userId,
+            long ledgerId,
+            int startYear,
+            int startMonth,
+            int endYear,
+            int endMonth,
+            int page,
+            int limit
+    ) {
+        Ledger ledger = getLedger(ledgerId);
+        AgencyUser agencyUser = getAgencyUser(userId, ledger);
+
+        ensureAgencyUserNotBlocked(agencyUser.getAgencyUserRole());
+
+        ZonedDateTime from = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime to = ZonedDateTime.of(endYear, endMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+
+        List<LedgerDetail> ledgerDetails = ledgerDetailRepository.searchByPeriod(
+                ledger,
+                from,
+                to,
+                PageRequest.of(page, limit)
+        );
+
+        return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails));
+    }
+
+    public LedgerInfoView searchLedgersByPeriodAndFundType(
+            long userId,
+            long ledgerId,
+            int startYear,
+            int startMonth,
+            int endYear,
+            int endMonth,
+            int page,
+            int limit,
+            FundType fundType
+    ) {
+        Ledger ledger = getLedger(ledgerId);
+        AgencyUser agencyUser = getAgencyUser(userId, ledger);
+
+        ensureAgencyUserNotBlocked(agencyUser.getAgencyUserRole());
+
+        ZonedDateTime from = ZonedDateTime.of(startYear, startMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime to = ZonedDateTime.of(endYear, endMonth, 1, 0, 0, 0, 0, ZoneId.systemDefault());
+
+        List<LedgerDetail> ledgerDetails = ledgerDetailRepository.searchByPeriodAndFundType(
+                ledger,
+                from,
+                to,
+                fundType,
+                PageRequest.of(page, limit)
+        );
+
+        return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetails));
+    }
+
     public LedgerInfoView search(
             final Long userId,
             final Long ledgerId,
@@ -46,19 +104,13 @@ public class LedgerReader {
             final Integer limit
     ) {
         // === 유저 ===
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
 
         // === 장부 ===
-        Ledger ledger = ledgerRepository.findById(ledgerId).orElseThrow(
-                () -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND)
-        );
+        Ledger ledger = getLedger(ledgerId);
 
         // === 소속 ===
-        AgencyUser agencyUser = agencyUserRepository
-                .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+        AgencyUser agencyUser = getAgencyUser(userId, ledger);
 
         ensureAgencyUserNotBlocked(agencyUser.getAgencyUserRole());
 
@@ -74,7 +126,6 @@ public class LedgerReader {
         return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetailPage));
     }
 
-    @Transactional(readOnly = true)
     public LedgerInfoView searchByFilter(
             final Long userId,
             final Long ledgerId,
@@ -85,19 +136,13 @@ public class LedgerReader {
             final FundType fundType
     ) {
         // === 유저 ===
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
 
         // === 장부 ===
-        Ledger ledger = ledgerRepository.findById(ledgerId).orElseThrow(
-                () -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND)
-        );
+        Ledger ledger = getLedger(ledgerId);
 
         // === 소속 ===
-        AgencyUser agencyUser = agencyUserRepository
-                .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+        AgencyUser agencyUser = getAgencyUser(userId, ledger);
 
         ensureAgencyUserNotBlocked(agencyUser.getAgencyUserRole());
 
@@ -114,7 +159,6 @@ public class LedgerReader {
         return LedgerInfoView.from(ledger, convertToLedgerInfoViewDetail(ledgerDetailPage));
     }
 
-
     public LedgerInfoView searchByAgency(
             final Long userId,
             final Long agencyId,
@@ -124,9 +168,7 @@ public class LedgerReader {
             final Integer limit
     ) {
         // === 유저 ===
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
 
         // === 장부 ===
         Ledger ledger = ledgerRepository.findByAgencyId(agencyId).orElseThrow(
@@ -158,6 +200,24 @@ public class LedgerReader {
         );
 
         return ledgerDetailRepository.existsByLedger(ledger);
+    }
+
+    private User getUser(Long userId) {
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private Ledger getLedger(Long ledgerId) {
+        return ledgerRepository.findById(ledgerId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.LEDGER_NOT_FOUND)
+        );
+    }
+
+    private AgencyUser getAgencyUser(Long userId, Ledger ledger) {
+        return agencyUserRepository
+                .findByUserIdAndAgencyId(userId, ledger.getAgency().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
     }
 
     private void ensureAgencyUserNotBlocked(AgencyUserRole role) {
