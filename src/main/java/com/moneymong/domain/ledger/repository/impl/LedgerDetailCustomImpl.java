@@ -28,7 +28,6 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
             ZonedDateTime to,
             Pageable pageable
     ) {
-
         return jpaQueryFactory.selectFrom(ledgerDetail)
                 .where(ledgerDetail.ledger.eq(ledger))
                 .where(ledgerDetail.paymentDate.between(from, to))
@@ -46,7 +45,40 @@ public class LedgerDetailCustomImpl implements LedgerDetailCustom {
             FundType fundType,
             PageRequest pageable
     ) {
+        return jpaQueryFactory.selectFrom(ledgerDetail)
+                .where(ledgerDetail.ledger.eq(ledger))
+                .where(ledgerDetail.fundType.eq(fundType))
+                .where(ledgerDetail.paymentDate.between(from, to))
+                .orderBy(ledgerDetail.paymentDate.desc())
+                .offset((long) pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
 
+    @Override
+    public List<LedgerDetail> searchByPeriod(
+            Ledger ledger,
+            ZonedDateTime from,
+            ZonedDateTime to,
+            PageRequest pageable
+    ) {
+        return jpaQueryFactory.selectFrom(ledgerDetail)
+                .where(ledgerDetail.ledger.eq(ledger))
+                .where(ledgerDetail.paymentDate.between(from, to))
+                .orderBy(ledgerDetail.paymentDate.desc())
+                .offset((long) pageable.getPageNumber() * pageable.getPageSize())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public List<LedgerDetail> searchByPeriodAndFundType(
+            Ledger ledger,
+            ZonedDateTime from,
+            ZonedDateTime to,
+            FundType fundType,
+            PageRequest pageable
+    ) {
         return jpaQueryFactory.selectFrom(ledgerDetail)
                 .where(ledgerDetail.ledger.eq(ledger))
                 .where(ledgerDetail.fundType.eq(fundType))

@@ -26,6 +26,21 @@ public interface LedgerDetailCustom {
             PageRequest pageable
     );
 
+    List<LedgerDetail> searchByPeriod(
+            Ledger ledger,
+            ZonedDateTime from,
+            ZonedDateTime to,
+            PageRequest pageable
+    );
+
+    List<LedgerDetail> searchByPeriodAndFundType(
+            Ledger ledger,
+            ZonedDateTime from,
+            ZonedDateTime to,
+            FundType fundType,
+            PageRequest pageable
+    );
+
     void bulkUpdateLedgerDetailBalance(
             Ledger ledger,
             ZonedDateTime paymentDate,
