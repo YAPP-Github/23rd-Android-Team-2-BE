@@ -53,14 +53,6 @@ public class LedgerService {
         // === 권한 ===
         validateStaffUserRole(agencyUser.getAgencyUserRole());
 
-        // 장부 totalBalance 업데이트
-        int newAmount = AmountCalculatorByFundType.calculate(
-                createLedgerRequest.getFundType(),
-                createLedgerRequest.getAmount()
-        );
-
-        ledger.updateTotalBalance(newAmount);
-
         // 장부 내역 등록
         LedgerDetail ledgerDetail = ledgerDetailService.createLedgerDetail(
                 ledger,
