@@ -46,6 +46,7 @@ public enum ErrorCode {
 
     // ---- 로그인 ---- //
     INVALID_PROVIDER(MoneymongConstant.BAD_REQUEST, "LOGIN-001", "유효하지 않은 로그인 수단입니다."),
+    INVALID_OAUTH_TOKEN(MoneymongConstant.BAD_REQUEST, "LOGIN-002", "유효하지 않은 OAuth 토큰입니다."),
 
     // ---- 초대코드 ---- //
     INVITATION_CODE_NOT_FOUND(MoneymongConstant.NOT_FOUND, "INVITATION-001", "초대코드가 존재하지 않습니다."),

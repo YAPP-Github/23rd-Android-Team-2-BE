@@ -27,10 +27,12 @@ import java.util.Optional;
 
 import com.moneymong.utils.AmountCalculatorByFundType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class LedgerDetailService {
     private final LedgerAssembler ledgerAssembler;
@@ -65,6 +67,8 @@ public class LedgerDetailService {
                 paymentDate
         );
 
+        int newAmount = AmountCalculatorByFundType.calculate(fundType, amount);
+
         /**
          * 가장 오래된 장부 내역인 경우 잔고를 amount 값으로 설정한다.
          * 이전 내역이 있는 경우, 가장 가까운 시일에 생성된 장부 내역을 기준으로 잔고를 저장한다.
@@ -74,16 +78,18 @@ public class LedgerDetailService {
         if (mostRecentLedgerDetail.isPresent()) {
             LedgerDetail recentDetail = mostRecentLedgerDetail.get();
 
-            int newAmount = recentDetail.getBalance() + AmountCalculatorByFundType.calculate(fundType, amount);
-            ledgerDetail.updateBalance(newAmount);
+            int newBalance = recentDetail.getBalance() + newAmount;
+            ledgerDetail.updateBalance(newBalance);
         }else {
-            ledgerDetail.updateBalance(AmountCalculatorByFundType.calculate(fundType, amount));
+            ledgerDetail.updateBalance(newAmount);
         }
+
+        ledger.updateTotalBalance(newAmount);
 
         ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
                 ledger,
                 paymentDate,
-                AmountCalculatorByFundType.calculate(fundType, amount)
+                newAmount
         );
 
         return ledgerDetailRepository.save(ledgerDetail);
@@ -91,32 +97,30 @@ public class LedgerDetailService {
 
     @Transactional
     public LedgerDetailInfoView updateLedgerDetail(
-            final User user,
-            final Ledger ledger,
-            final LedgerDetail ledgerDetail,
-            final UpdateLedgerRequest updateLedgerRequest,
-            final Integer newAmount
+            User user,
+            Ledger ledger,
+            LedgerDetail ledgerDetail,
+            UpdateLedgerRequest updateLedgerRequest
     ) {
-        // 1. 장부 상세 내역 업데이트
-        ledgerDetail.update(
-                user,
-                updateLedgerRequest.getStoreInfo(),
-                ledgerDetail.getFundType(),
-                updateLedgerRequest.getAmount(),
-                ledgerDetail.getBalance() + newAmount,
-                updateLedgerRequest.getDescription(),
-                updateLedgerRequest.getPaymentDate()
-        );
 
-        LedgerDetail newLedgerDetail = ledgerDetailRepository.save(ledgerDetail);
+//        LedgerDetail createdLedgerDetail = createLedgerDetail(ledger,
+//                user,
+//                updateLedgerRequest.getStoreInfo(),
+//                ledgerDetail.getFundType(),
+//                updateLedgerRequest.getAmount(),
+//                ledger.getTotalBalance(),
+//                updateLedgerRequest.getDescription(),
+//                updateLedgerRequest.getPaymentDate()
+//        );
+
+        long ledgerDetailId = ledgerDetail.getId();
 
         // 2. 장부 상세 내역 조회
-        final Long ledgerDetailId = ledgerDetail.getId();
         List<LedgerReceipt> ledgerReceipts = ledgerReceiptReader.getLedgerReceipts(ledgerDetailId);
         List<LedgerDocument> ledgerDocuments = ledgerDocumentReader.getLedgerDocuments(ledgerDetailId);
 
         return LedgerDetailInfoView.of(
-                newLedgerDetail,
+                ledgerDetail,
                 ledgerReceipts,
                 ledgerDocuments,
                 user
@@ -129,31 +133,23 @@ public class LedgerDetailService {
             final Long detailId
     ) {
         // === 유저 ===
-        User user = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+        User user = getUser(userId);
 
-        LedgerDetail ledgerDetail = ledgerDetailRepository
-                .findById(detailId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+        LedgerDetail ledgerDetail = getLedgerDetail(detailId);
 
         Ledger ledger = ledgerDetail.getLedger();
 
         // === 소속 ===
-        AgencyUser agencyUser = agencyUserRepository
-                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+        AgencyUser agencyUser = getAgencyUser(user, ledgerDetail);
 
         // === 권한 ===
-        if (!agencyUser.getAgencyUserRole().equals(AgencyUserRole.STAFF)) {
-            throw new InvalidAccessException(ErrorCode.INVALID_LEDGER_ACCESS);
-        }
+        validateStaffUserRole(agencyUser.getAgencyUserRole());
 
         ledgerReceiptRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDocumentRepository.deleteByLedgerDetail(ledgerDetail);
         ledgerDetailRepository.delete(ledgerDetail);
 
-        Integer newAmount = AmountCalculatorByFundType.calculate(ledgerDetail.getFundType(), ledgerDetail.getAmount());
+        int newAmount = AmountCalculatorByFundType.calculate(ledgerDetail.getFundType(), ledgerDetail.getAmount());
 
         ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
                 ledger,
@@ -161,7 +157,30 @@ public class LedgerDetailService {
                 -newAmount
         );
 
-        // update total balance
-        ledger.updateTotalBalance(ledger.getTotalBalance() - newAmount);
+        ledger.updateTotalBalance(-newAmount);
+    }
+
+    private void validateStaffUserRole(AgencyUserRole userRole) {
+        if (!AgencyUserRole.isStaffUser(userRole)) {
+            throw new InvalidAccessException(ErrorCode.INVALID_AGENCY_USER_ACCESS);
+        }
+    }
+
+    private AgencyUser getAgencyUser(User user, LedgerDetail ledgerDetail) {
+        return agencyUserRepository
+                .findByUserIdAndAgencyId(user.getId(), ledgerDetail.getLedger().getAgency().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.AGENCY_NOT_FOUND));
+    }
+
+    private LedgerDetail getLedgerDetail(Long detailId) {
+        return ledgerDetailRepository
+                .findById(detailId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.LEDGER_DETAIL_NOT_FOUND));
+    }
+
+    private User getUser(Long userId) {
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }
