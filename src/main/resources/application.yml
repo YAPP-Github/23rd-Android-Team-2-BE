@@ -32,7 +32,7 @@ management:
 
 # swagger
 springdoc:
-  packages-to-scan: com.moneymong.domain
+  packages-to-scan: com.moneymong
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
   swagger-ui:
