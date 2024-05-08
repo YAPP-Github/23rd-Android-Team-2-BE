@@ -7,4 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class OAuthUserDataRequest {
     private String accessToken;
+    private String name;
 }

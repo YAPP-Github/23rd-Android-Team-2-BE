@@ -10,4 +10,6 @@ public class LoginRequest {
 
     @NotBlank
     private String accessToken;
+
+    private String name;
 }

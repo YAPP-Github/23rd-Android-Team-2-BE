@@ -64,71 +64,72 @@ public class AppleService implements OAuthAuthenticationHandler {
 
     @Override
     public OAuthUserDataResponse getOAuthUserData(OAuthUserDataRequest request) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<?> httpRequest = new HttpEntity<>(null, httpHeaders);
-
-        MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
-        parameterMap.add("client_id", clientId);
-        parameterMap.add("client_secret", generateClientSecret());
-        parameterMap.add("grant_type", "authorization_code");
-        parameterMap.add("code", request.getAccessToken());
-
-        URI uri = UriComponentsBuilder
-                .fromUriString(host + "/auth/token")
-                .queryParams(parameterMap)
-                .build()
-                .toUri();
-
-        try {
-            AppleUserData userData = restTemplate.postForObject(
-                    uri,
-                    httpRequest,
-                    AppleUserData.class
-            );
-
-            assert userData != null;
-
-            String idToken = userData.getIdToken();
-            return decodePayload(idToken);
-        } catch (RestClientException e) {
-            log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken());
-            throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
-        }
+        return decodePayload(request);  //TODO 서버의 공개키로 검증한다.
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//        HttpEntity<?> httpRequest = new HttpEntity<>(null, httpHeaders);
+//
+//        MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
+//        parameterMap.add("client_id", clientId);
+//        parameterMap.add("client_secret", createClientSecret());
+//        parameterMap.add("grant_type", "authorization_code");
+//        parameterMap.add("code", request.getAccessToken());
+//
+//        URI uri = UriComponentsBuilder
+//                .fromUriString(host + "/auth/oauth2/v2/token")
+//                .queryParams(parameterMap)
+//                .build()
+//                .toUri();
+//
+//        try {
+//            AppleUserData userData = restTemplate.postForObject(
+//                    uri,
+//                    httpRequest,
+//                    AppleUserData.class
+//            );
+//
+//            assert userData != null;
+//
+//            String idToken = userData.getIdToken();
+//            return decodePayload(idToken);
+//        } catch (RestClientException e) {
+//            log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken());
+//            throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
+//        }
     }
 
-    private String generateClientSecret() {
-        ZonedDateTime expiration = ZonedDateTime.now().plusMinutes(5);
+//    private String createClientSecret() {
+//        ZonedDateTime expiration = ZonedDateTime.now().plusMinutes(5);
+//
+//        return Jwts.builder()
+//                .setHeaderParam(JwsHeader.KEY_ID, keyId)
+//                .setIssuer(teamId)
+//                .setAudience(host)
+//                .setSubject(clientId)
+//                .setExpiration(Date.from(expiration.withZoneSameInstant(ZoneId.systemDefault()).toInstant()))
+//                .setIssuedAt(new Date())
+//                .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
+//                .compact();
+//    }
 
-        return Jwts.builder()
-                .setHeaderParam(JwsHeader.KEY_ID, keyId)
-                .setIssuer(teamId)
-                .setAudience(host)
-                .setSubject(clientId)
-                .setExpiration(Date.from(expiration.withZoneSameInstant(ZoneId.systemDefault()).toInstant()))
-                .setIssuedAt(new Date())
-                .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
-                .compact();
-    }
+//    private PrivateKey getPrivateKey() {
+//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+//
+//        try {
+//            byte[] privateKeyBytes = Base64.getDecoder().decode(privateKey);
+//
+//            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
+//            return converter.getPrivateKey(privateKeyInfo);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error converting private key from String", e);
+//        }
+//    }
 
-    private PrivateKey getPrivateKey() {
-        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-
+    private OAuthUserDataResponse decodePayload(OAuthUserDataRequest request) {
         try {
-            byte[] privateKeyBytes = Base64.getDecoder().decode(privateKey);
-
-            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
-            return converter.getPrivateKey(privateKeyInfo);
-        } catch (Exception e) {
-            throw new RuntimeException("Error converting private key from String", e);
-        }
-    }
-
-    private OAuthUserDataResponse decodePayload(String idToken) {
-        try {
-            DecodedJWT decoded = JWT.decode(idToken);
+            DecodedJWT decoded = JWT.decode(request.getAccessToken());
             Map<String, Claim> claims = decoded.getClaims();
 
             String providerUid = decoded.getSubject();
@@ -138,6 +139,7 @@ public class AppleService implements OAuthAuthenticationHandler {
                     .provider(getAuthProvider().toString())
                     .oauthId(providerUid)
                     .email(email)
+                    .nickname(request.getName())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Error decoding payload", e);

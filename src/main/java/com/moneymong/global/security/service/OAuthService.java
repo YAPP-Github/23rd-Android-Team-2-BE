@@ -27,7 +27,10 @@ public class OAuthService {
 
         OAuthAuthenticationHandler oAuthHandler = this.oAuthAuthenticationHandlers.get(oAuthProvider);
 
-        OAuthUserDataRequest request = new OAuthUserDataRequest(loginRequest.getAccessToken());
+        OAuthUserDataRequest request = new OAuthUserDataRequest(
+                loginRequest.getAccessToken(),
+                loginRequest.getName()
+        );
 
         return oAuthHandler.getOAuthUserData(request);
     }
