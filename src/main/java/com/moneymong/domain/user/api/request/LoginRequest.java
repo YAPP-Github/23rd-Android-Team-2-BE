@@ -8,8 +8,9 @@ public class LoginRequest {
     @NotBlank
     private String provider;
 
-    @NotBlank
     private String accessToken;
 
     private String name;
+
+    private String code;
 }

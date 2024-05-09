@@ -7,5 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class OAuthUserDataRequest {
     private String accessToken;
+    private String code; // Apple Authorization Code
     private String name;
 }
