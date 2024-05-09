@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev
-
+      - feat/**
 # 권한 설정
 permissions:
   contents: read

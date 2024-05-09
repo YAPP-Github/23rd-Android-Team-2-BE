@@ -1,9 +1,6 @@
 package com.moneymong.global.security.oauth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
@@ -14,6 +11,7 @@ public class OAuthUserInfo {
     private String oauthId;
     private String nickname;
     private String email;
+    private String appleRefreshToken;
 
     public static OAuthUserInfo from(OAuthUserDataResponse oAuthUserDataResponse) {
         return OAuthUserInfo.builder()
@@ -21,6 +19,7 @@ public class OAuthUserInfo {
                 .oauthId(oAuthUserDataResponse.getOauthId())
                 .nickname(oAuthUserDataResponse.getNickname())
                 .email(oAuthUserDataResponse.getEmail())
+                .appleRefreshToken(oAuthUserDataResponse.getAppleRefreshToken())
                 .build();
     }
 }
