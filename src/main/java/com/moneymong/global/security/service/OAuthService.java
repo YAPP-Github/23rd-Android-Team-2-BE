@@ -37,10 +37,10 @@ public class OAuthService {
         return oAuthHandler.getOAuthUserData(request);
     }
 
-    public void revoke(UserDeleteRequest deleteRequest) {
+    public void revoke(UserDeleteRequest deleteRequest, Long userId) {
         OAuthProvider oAuthProvider = OAuthProvider.get(deleteRequest.getProvider());
         OAuthAuthenticationHandler oAuthHandler = this.oAuthAuthenticationHandlers.get(oAuthProvider);
 
-        oAuthHandler.unlink(deleteRequest.getToken());
+        oAuthHandler.unlink(userId);
     }
 }

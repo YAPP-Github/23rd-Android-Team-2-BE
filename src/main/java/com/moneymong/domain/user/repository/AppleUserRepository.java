@@ -3,5 +3,8 @@ package com.moneymong.domain.user.repository;
 import com.moneymong.domain.user.entity.AppleUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface AppleUserRepository extends JpaRepository<AppleUser, Long> {
+    Optional<AppleUser> findAppleUserByUserId(Long userId);
 }

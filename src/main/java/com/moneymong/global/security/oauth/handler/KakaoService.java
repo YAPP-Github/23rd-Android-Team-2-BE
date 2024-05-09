@@ -69,7 +69,7 @@ public class KakaoService implements OAuthAuthenticationHandler {
     }
 
     @Override
-    public void unlink(String token) {
+    public void unlink(Long userId) {
 
     }
 }

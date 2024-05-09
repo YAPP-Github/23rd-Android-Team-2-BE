@@ -47,7 +47,7 @@ public class UserFacadeService {
 
     @Transactional
     public void revoke(UserDeleteRequest deleteRequest, Long userId) {
-        oAuthService.revoke(deleteRequest);
+        oAuthService.revoke(deleteRequest, userId);
         delete(userId);
     }
 }

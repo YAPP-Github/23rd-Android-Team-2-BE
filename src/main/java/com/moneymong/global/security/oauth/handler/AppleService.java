@@ -2,6 +2,8 @@ package com.moneymong.global.security.oauth.handler;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.moneymong.domain.user.entity.AppleUser;
+import com.moneymong.domain.user.repository.AppleUserRepository;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.security.oauth.dto.AppleUserData;
 import com.moneymong.global.security.oauth.dto.OAuthUserDataRequest;
@@ -32,6 +34,7 @@ import java.security.Security;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 
@@ -41,6 +44,7 @@ import java.util.Map;
 public class AppleService implements OAuthAuthenticationHandler {
 
     private final RestTemplate restTemplate;
+    private final AppleUserRepository appleUserRepository;
 
     @Value("${spring.security.oauth2.apple.host}")
     private String host;
@@ -65,7 +69,7 @@ public class AppleService implements OAuthAuthenticationHandler {
     @Override
     public OAuthUserDataResponse getOAuthUserData(OAuthUserDataRequest request) {
         if (request.getCode() == null) {
-            return decodePayload(request.getAccessToken(), request.getName());
+            return decodePayload(request.getAccessToken(), request.getName(), null);
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -98,7 +102,7 @@ public class AppleService implements OAuthAuthenticationHandler {
             String idToken = userData.getIdToken();
 
             log.info("[AppleService] refreshToken = {}", refreshToken);
-            return decodePayload(idToken, request.getName());
+            return decodePayload(idToken, request.getName(), refreshToken);
         } catch (RestClientException e) {
             log.info("[AppleService] error message = {}", e.getMessage());
             log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken());
@@ -107,8 +111,34 @@ public class AppleService implements OAuthAuthenticationHandler {
     }
 
     @Override
-    public void unlink(String token) {
+    public void unlink(Long userId) {
+        AppleUser appleUser = appleUserRepository.findAppleUserByUserId(userId)
+                .orElseThrow(() -> new RuntimeException());
 
+        String refreshToken = appleUser.getAppleRefreshToken();
+        String clientSecret = createClientSecret();
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("token", refreshToken);
+        params.add("token_type_hint", "refresh_token");
+
+        URI uri = UriComponentsBuilder
+                .fromUriString(host + "/auth/oauth2/v2/revoke")
+                .build()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(params, headers);
+
+        try {
+            restTemplate.postForEntity(uri, httpEntity, AppleUserData.class);
+        } catch (RestClientException e) {
+            throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
+        }
     }
 
     private String createClientSecret() {
@@ -139,7 +169,7 @@ public class AppleService implements OAuthAuthenticationHandler {
         }
     }
 
-    private OAuthUserDataResponse decodePayload(String idToken, String nickname) {
+    private OAuthUserDataResponse decodePayload(String idToken, String nickname, String refreshToken) {
         try {
             DecodedJWT decoded = JWT.decode(idToken);
             Map<String, Claim> claims = decoded.getClaims();
@@ -152,6 +182,7 @@ public class AppleService implements OAuthAuthenticationHandler {
                     .oauthId(providerUid)
                     .email(email)
                     .nickname(nickname)
+                    .appleRefreshToken(refreshToken)
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Error decoding payload", e);
