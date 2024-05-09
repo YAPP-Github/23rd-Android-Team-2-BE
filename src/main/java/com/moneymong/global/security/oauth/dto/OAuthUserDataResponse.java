@@ -14,4 +14,5 @@ public class OAuthUserDataResponse {
     private String oauthId;
     private String email;
     private String nickname;
+    private String appleRefreshToken;
 }
