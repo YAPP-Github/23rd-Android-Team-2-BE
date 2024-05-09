@@ -64,72 +64,82 @@ public class AppleService implements OAuthAuthenticationHandler {
 
     @Override
     public OAuthUserDataResponse getOAuthUserData(OAuthUserDataRequest request) {
-        return decodePayload(request);  //TODO 서버의 공개키로 검증한다.
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//
-//        HttpEntity<?> httpRequest = new HttpEntity<>(null, httpHeaders);
-//
-//        MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
-//        parameterMap.add("client_id", clientId);
-//        parameterMap.add("client_secret", createClientSecret());
-//        parameterMap.add("grant_type", "authorization_code");
-//        parameterMap.add("code", request.getAccessToken());
-//
-//        URI uri = UriComponentsBuilder
-//                .fromUriString(host + "/auth/oauth2/v2/token")
-//                .queryParams(parameterMap)
-//                .build()
-//                .toUri();
-//
-//        try {
-//            AppleUserData userData = restTemplate.postForObject(
-//                    uri,
-//                    httpRequest,
-//                    AppleUserData.class
-//            );
-//
-//            assert userData != null;
-//
-//            String idToken = userData.getIdToken();
-//            return decodePayload(idToken);
-//        } catch (RestClientException e) {
-//            log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken());
-//            throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
-//        }
+        if (request.getCode() == null) {
+            return decodePayload(request.getAccessToken(), request.getName());
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<?> httpRequest = new HttpEntity<>(null, httpHeaders);
+
+        MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
+        parameterMap.add("client_id", clientId);
+        parameterMap.add("client_secret", createClientSecret());
+        parameterMap.add("grant_type", "authorization_code");
+        parameterMap.add("code", request.getCode());
+
+        URI uri = UriComponentsBuilder
+                .fromUriString(host + "/auth/oauth2/v2/token")
+                .queryParams(parameterMap)
+                .build()
+                .toUri();
+
+        try {
+            AppleUserData userData = restTemplate.postForObject(
+                    uri,
+                    httpRequest,
+                    AppleUserData.class
+            );
+
+            assert userData != null;
+
+            String refreshToken = userData.getRefreshToken();
+            String idToken = userData.getIdToken();
+
+            return decodePayload(idToken, request.getName());
+        } catch (RestClientException e) {
+            log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken());
+            throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
+        }
     }
 
-//    private String createClientSecret() {
-//        ZonedDateTime expiration = ZonedDateTime.now().plusMinutes(5);
-//
-//        return Jwts.builder()
-//                .setHeaderParam(JwsHeader.KEY_ID, keyId)
-//                .setIssuer(teamId)
-//                .setAudience(host)
-//                .setSubject(clientId)
-//                .setExpiration(Date.from(expiration.withZoneSameInstant(ZoneId.systemDefault()).toInstant()))
-//                .setIssuedAt(new Date())
-//                .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
-//                .compact();
-//    }
+    @Override
+    public void unlink(String token) {
 
-//    private PrivateKey getPrivateKey() {
-//        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-//        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-//
-//        try {
-//            byte[] privateKeyBytes = Base64.getDecoder().decode(privateKey);
-//
-//            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
-//            return converter.getPrivateKey(privateKeyInfo);
-//        } catch (Exception e) {
-//            throw new RuntimeException("Error converting private key from String", e);
-//        }
-//    }
+    }
 
-    private OAuthUserDataResponse decodePayload(OAuthUserDataRequest request) {
+    private String createClientSecret() {
+        ZonedDateTime expiration = ZonedDateTime.now().plusMinutes(5);
+
+        return Jwts.builder()
+                .setHeaderParam(JwsHeader.KEY_ID, keyId)
+                .setIssuer(teamId)
+                .setAudience(host)
+                .setSubject(clientId)
+                .setExpiration(Date.from(expiration.withZoneSameInstant(ZoneId.systemDefault()).toInstant()))
+                .setIssuedAt(new Date())
+                .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
+                .compact();
+    }
+
+    private PrivateKey getPrivateKey() {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+
         try {
-            DecodedJWT decoded = JWT.decode(request.getAccessToken());
+            byte[] privateKeyBytes = Base64.getDecoder().decode(privateKey);
+
+            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
+            return converter.getPrivateKey(privateKeyInfo);
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting private key from String", e);
+        }
+    }
+
+    private OAuthUserDataResponse decodePayload(String idToken, String nickname) {
+        try {
+            DecodedJWT decoded = JWT.decode(idToken);
             Map<String, Claim> claims = decoded.getClaims();
 
             String providerUid = decoded.getSubject();
@@ -139,7 +149,7 @@ public class AppleService implements OAuthAuthenticationHandler {
                     .provider(getAuthProvider().toString())
                     .oauthId(providerUid)
                     .email(email)
-                    .nickname(request.getName())
+                    .nickname(nickname)
                     .build();
         } catch (Exception e) {
             throw new RuntimeException("Error decoding payload", e);

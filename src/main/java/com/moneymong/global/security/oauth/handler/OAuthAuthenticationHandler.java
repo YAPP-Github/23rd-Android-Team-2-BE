@@ -8,4 +8,6 @@ public interface OAuthAuthenticationHandler {
     OAuthProvider getAuthProvider();
 
     OAuthUserDataResponse getOAuthUserData(OAuthUserDataRequest request);
+
+    void unlink(String token);
 }

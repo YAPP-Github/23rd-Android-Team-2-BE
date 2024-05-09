@@ -1,6 +1,7 @@
 package com.moneymong.global.security.service;
 
 import com.moneymong.domain.user.api.request.LoginRequest;
+import com.moneymong.domain.user.api.request.UserDeleteRequest;
 import com.moneymong.global.security.oauth.dto.OAuthUserDataRequest;
 import com.moneymong.global.security.oauth.dto.OAuthUserDataResponse;
 import com.moneymong.global.security.oauth.handler.OAuthAuthenticationHandler;
@@ -29,9 +30,17 @@ public class OAuthService {
 
         OAuthUserDataRequest request = new OAuthUserDataRequest(
                 loginRequest.getAccessToken(),
+                loginRequest.getCode(),
                 loginRequest.getName()
         );
 
         return oAuthHandler.getOAuthUserData(request);
+    }
+
+    public void revoke(UserDeleteRequest deleteRequest) {
+        OAuthProvider oAuthProvider = OAuthProvider.get(deleteRequest.getProvider());
+        OAuthAuthenticationHandler oAuthHandler = this.oAuthAuthenticationHandlers.get(oAuthProvider);
+
+        oAuthHandler.unlink(deleteRequest.getToken());
     }
 }

@@ -67,4 +67,9 @@ public class KakaoService implements OAuthAuthenticationHandler {
             throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
         }
     }
+
+    @Override
+    public void unlink(String token) {
+
+    }
 }
