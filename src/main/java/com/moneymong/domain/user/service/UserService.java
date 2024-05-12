@@ -46,7 +46,6 @@ public class UserService {
 	@Transactional
 	public User registerUser(OAuthUserInfo oauthUserInfo) {
 		User newUser = User.of(
-				UUID.randomUUID().toString(),
 				oauthUserInfo.getEmail(),
 				oauthUserInfo.getNickname(),
 				oauthUserInfo.getProvider(),

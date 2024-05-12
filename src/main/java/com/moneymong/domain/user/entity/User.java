@@ -32,13 +32,6 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(
-            name = "user_token",
-            unique = true,
-            nullable = false
-    )
-    private String userToken;
-
     @Column(nullable = false)
     private String email;
 
@@ -56,9 +49,8 @@ public class User extends BaseEntity {
 
     private LocalDate birthDay;
 
-    public static User of(String userToken, String email, String nickname, String provider, String oauthId) {
+    public static User of(String email, String nickname, String provider, String oauthId) {
         return User.builder()
-                .userToken(userToken)
                 .email(email)
                 .nickname(nickname)
                 .provider(provider)
