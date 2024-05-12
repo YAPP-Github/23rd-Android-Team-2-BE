@@ -15,7 +15,7 @@ public class JwtAuthentication{
 
 	public JwtAuthentication(Long id, String accessToken) {
 		this.id = validateId(id);
-		this.accessToken = validateUserToken(accessToken);
+		this.accessToken = validateAccessToken(accessToken);
 	}
 
 	private Long validateId(Long id) {
@@ -26,11 +26,11 @@ public class JwtAuthentication{
 		return id;
 	}
 
-	private String validateUserToken(String userToken) {
-		if (StringUtils.isEmpty(userToken)) {
+	private String validateAccessToken(String accessToken) {
+		if (StringUtils.isEmpty(accessToken)) {
 			throw new InvalidTokenException(ErrorCode.INVALID_TOKEN);
 		}
 
-		return userToken;
+		return accessToken;
 	}
 }

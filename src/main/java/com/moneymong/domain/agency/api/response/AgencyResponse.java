@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.ZonedDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -14,6 +16,7 @@ public class AgencyResponse {
     private String name;
     private int headCount;
     private AgencyType type;
+    private ZonedDateTime createdAt;
 
     public static AgencyResponse from(Agency agency) {
         return AgencyResponse.builder()
@@ -21,6 +24,7 @@ public class AgencyResponse {
                 .name(agency.getAgencyName())
                 .headCount(agency.getHeadCount())
                 .type(agency.getAgencyType())
+                .createdAt(agency.getCreatedAt())
                 .build();
     }
 }

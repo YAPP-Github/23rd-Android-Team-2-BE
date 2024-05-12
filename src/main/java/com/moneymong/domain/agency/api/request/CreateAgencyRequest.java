@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateAgencyRequest {
     private String name;
-    private String description;
     private AgencyType agencyType;
 }
