@@ -66,7 +66,6 @@ public class AgencyService {
         Agency agency = Agency.of(
                 request.getName(),
                 request.getAgencyType(),
-                request.getDescription(),
                 INITIAL_HEAD_COUNT,
                 universityName
         );
