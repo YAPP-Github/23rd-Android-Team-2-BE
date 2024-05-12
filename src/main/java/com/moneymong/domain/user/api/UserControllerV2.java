@@ -22,7 +22,7 @@ public class UserControllerV2 {
     @DeleteMapping("/me")
     public void deleteUser(
             @AuthenticationPrincipal JwtAuthentication user,
-            @Valid UserDeleteRequest deleteRequest
+            @RequestBody @Valid UserDeleteRequest deleteRequest
     ) {
         userFacadeService.revoke(deleteRequest, user.getId());
     }
