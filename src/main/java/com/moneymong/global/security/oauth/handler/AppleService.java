@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.moneymong.domain.user.entity.AppleUser;
 import com.moneymong.domain.user.repository.AppleUserRepository;
+import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import com.moneymong.global.security.oauth.dto.AppleUserData;
 import com.moneymong.global.security.oauth.dto.OAuthUserDataRequest;
@@ -22,7 +23,6 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -32,9 +32,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.security.PrivateKey;
 import java.security.Security;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+
+import static com.moneymong.global.exception.enums.ErrorCode.USER_NOT_FOUND_APPLE;
 
 @Slf4j
 @Component
@@ -82,7 +83,7 @@ public class AppleService implements OAuthAuthenticationHandler {
         parameterMap.add("code", request.getCode());
 
         URI uri = UriComponentsBuilder
-                .fromUriString(host + "/auth/token")
+                .fromUriString(host + "/auth/oauth2/v2/token")
                 .queryParams(parameterMap)
                 .build()
                 .toUri();
@@ -102,7 +103,6 @@ public class AppleService implements OAuthAuthenticationHandler {
             log.info("[AppleService] refreshToken = {}", refreshToken);
             return decodePayload(idToken, request.getName(), refreshToken);
         } catch (RestClientException e) {
-            log.info("[AppleService] error message = {}", e.getMessage());
             log.warn("[AppleService] failed to get OAuth User Data = {}", request.getAccessToken());
             throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
         }
@@ -111,7 +111,7 @@ public class AppleService implements OAuthAuthenticationHandler {
     @Override
     public void unlink(Long userId) {
         AppleUser appleUser = appleUserRepository.findAppleUserByUserId(userId)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND_APPLE));
 
         String refreshToken = appleUser.getAppleRefreshToken();
         String clientSecret = createClientSecret();
@@ -123,7 +123,7 @@ public class AppleService implements OAuthAuthenticationHandler {
         params.add("token_type_hint", "refresh_token");
 
         URI uri = UriComponentsBuilder
-                .fromUriString(host + "/auth/revoke")
+                .fromUriString(host + "/auth/oauth2/v2/revoke")
                 .build()
                 .toUri();
 
@@ -177,7 +177,6 @@ public class AppleService implements OAuthAuthenticationHandler {
             DecodedJWT decoded = JWT.decode(idToken);
             Map<String, Claim> claims = decoded.getClaims();
 
-            log.info("[AppleService] claims = {}", claims.keySet());
             String providerUid = decoded.getSubject();
             String email = claims.get("sub").asString();
 
