@@ -11,7 +11,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserProfileResponse {
     private Long id;
-    private String userToken;
     private String provider;
     private String nickname;
     private String email;
@@ -21,7 +20,6 @@ public class UserProfileResponse {
     public static UserProfileResponse from(User user, UserUniversity userUniversity) {
         return UserProfileResponse.builder()
                 .id(user.getId())
-                .userToken(user.getUserToken())
                 .provider(user.getProvider())
                 .nickname(user.getNickname())
                 .email(user.getEmail())

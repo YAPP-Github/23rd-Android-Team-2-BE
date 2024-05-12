@@ -52,26 +52,22 @@ public class Agency extends BaseEntity {
     )
     private Integer headCount;
 
-    private String description;
-
     @Column(name = "university_name")
     private String universityName;
 
     @Builder
-    private Agency(Long id, String agencyName, AgencyType agencyType, Integer headCount, String description, String universityName) {
+    private Agency(Long id, String agencyName, AgencyType agencyType, Integer headCount, String universityName) {
         this.id = id;
         this.agencyName = agencyName;
         this.agencyType = agencyType;
         this.headCount = headCount;
-        this.description = description;
         this.universityName = universityName;
     }
 
-    public static Agency of(String agencyName, AgencyType agencyType, String description, int headCount, String universityName) {
+    public static Agency of(String agencyName, AgencyType agencyType, int headCount, String universityName) {
         return Agency.builder()
                 .agencyName(agencyName)
                 .agencyType(agencyType)
-                .description(description)
                 .headCount(headCount)
                 .universityName(universityName)
                 .build();
