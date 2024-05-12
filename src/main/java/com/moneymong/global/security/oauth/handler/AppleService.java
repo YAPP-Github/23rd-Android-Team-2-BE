@@ -22,6 +22,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -33,10 +34,7 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -84,7 +82,7 @@ public class AppleService implements OAuthAuthenticationHandler {
         parameterMap.add("code", request.getCode());
 
         URI uri = UriComponentsBuilder
-                .fromUriString(host + "/auth/oauth2/v2/token")
+                .fromUriString(host + "/auth/token")
                 .queryParams(parameterMap)
                 .build()
                 .toUri();
@@ -125,7 +123,7 @@ public class AppleService implements OAuthAuthenticationHandler {
         params.add("token_type_hint", "refresh_token");
 
         URI uri = UriComponentsBuilder
-                .fromUriString(host + "/auth/oauth2/v2/revoke")
+                .fromUriString(host + "/auth/revoke")
                 .build()
                 .toUri();
 
@@ -136,21 +134,26 @@ public class AppleService implements OAuthAuthenticationHandler {
 
         try {
             restTemplate.postForEntity(uri, httpEntity, AppleUserData.class);
+            appleUserRepository.delete(appleUser);
         } catch (RestClientException e) {
             throw new HttpClientException(ErrorCode.HTTP_CLIENT_REQUEST_FAILED);
         }
     }
 
     private String createClientSecret() {
-        ZonedDateTime expiration = ZonedDateTime.now().plusMinutes(5);
+        Date expirationDate = Date.from(ZonedDateTime.now().plusDays(30).toInstant());
+
+        Map<String, Object> jwtHeader = new HashMap<>();
+        jwtHeader.put(JwsHeader.KEY_ID, keyId);
+        jwtHeader.put(JwsHeader.ALGORITHM, "ES256");
 
         return Jwts.builder()
-                .setHeaderParam(JwsHeader.KEY_ID, keyId)
+                .setHeaderParams(jwtHeader)
                 .setIssuer(teamId)
                 .setAudience(host)
                 .setSubject(clientId)
-                .setExpiration(Date.from(expiration.withZoneSameInstant(ZoneId.systemDefault()).toInstant()))
-                .setIssuedAt(new Date())
+                .setExpiration(expirationDate)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
                 .compact();
     }
