@@ -11,7 +11,8 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public enum OAuthProvider {
 
-	KAKAO("KAKAO");
+	KAKAO("KAKAO"),
+	APPLE("APPLE");
 
 	private final String name;
 

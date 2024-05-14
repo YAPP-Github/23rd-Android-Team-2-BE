@@ -33,6 +33,7 @@ import static com.moneymong.domain.agency.entity.enums.AgencyUserRole.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AgencyService {
 
     private static final int INITIAL_HEAD_COUNT = 1;
@@ -65,7 +66,6 @@ public class AgencyService {
         Agency agency = Agency.of(
                 request.getName(),
                 request.getAgencyType(),
-                request.getDescription(),
                 INITIAL_HEAD_COUNT,
                 universityName
         );

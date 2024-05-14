@@ -4,13 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class LoginRequest {
+public class UserDeleteRequest {
     @NotBlank
     private String provider;
 
-    private String accessToken;
-
-    private String name;
-
-    private String code;
+    @NotBlank
+    private String token;
 }

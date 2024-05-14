@@ -27,6 +27,10 @@ services:
       DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+      APPLE_PRIVATE_KEY: ${APPLE_PRIVATE_KEY}
+      APPLE_TEAM_ID: ${APPLE_TEAM_ID}
+      APPLE_KEY_ID: ${APPLE_KEY_ID}
+      APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}
 
   redis:
     container_name: moneymong-redis

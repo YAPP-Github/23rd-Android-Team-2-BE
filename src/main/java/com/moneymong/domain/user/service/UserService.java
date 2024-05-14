@@ -1,8 +1,10 @@
 package com.moneymong.domain.user.service;
 
 import com.moneymong.domain.user.api.response.UserProfileResponse;
+import com.moneymong.domain.user.entity.AppleUser;
 import com.moneymong.domain.user.entity.User;
 import com.moneymong.domain.user.entity.UserUniversity;
+import com.moneymong.domain.user.repository.AppleUserRepository;
 import com.moneymong.domain.user.repository.UserRepository;
 import com.moneymong.domain.user.repository.UserUniversityRepository;
 import com.moneymong.global.exception.custom.NotFoundException;
@@ -25,19 +27,13 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final UserUniversityRepository userUniversityRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final AppleUserRepository appleUserRepository;
 
 	@Transactional
 	public AuthUserInfo getOrRegister(OAuthUserInfo oauthUserInfo) {
 		User user = userRepository
 			.findByUserIdByProviderAndOauthId(oauthUserInfo.getProvider(), oauthUserInfo.getOauthId())
-			.orElseGet(() -> save(
-					User.of(UUID.randomUUID().toString(),
-							oauthUserInfo.getEmail(),
-							oauthUserInfo.getNickname(),
-							oauthUserInfo.getProvider(),
-							oauthUserInfo.getOauthId()
-					)
-			));
+			.orElseGet(() -> registerUser(oauthUserInfo));
 
 		return AuthUserInfo.from(user.getId(), user.getNickname(), DEFAULT_ROLE);
 	}
@@ -46,6 +42,29 @@ public class UserService {
 	public User save(User unsavedUser) {
 		return userRepository.save(unsavedUser);
 	}
+
+	@Transactional
+	public User registerUser(OAuthUserInfo oauthUserInfo) {
+		User newUser = User.of(
+				oauthUserInfo.getEmail(),
+				oauthUserInfo.getNickname(),
+				oauthUserInfo.getProvider(),
+				oauthUserInfo.getOauthId()
+		);
+		newUser = save(newUser);
+
+		if (oauthUserInfo.getAppleRefreshToken() != null) {
+			appleUserRepository.save(
+					AppleUser.of(
+							newUser.getId(),
+							oauthUserInfo.getAppleRefreshToken()
+					)
+			);
+		}
+
+		return newUser;
+	}
+
 
 	@Transactional(readOnly = true)
 	public UserProfileResponse getUserProfile(Long userId) {

@@ -2,6 +2,7 @@ package com.moneymong.domain.user.service;
 
 import com.moneymong.domain.agency.service.AgencyUserService;
 import com.moneymong.domain.user.api.request.LoginRequest;
+import com.moneymong.domain.user.api.request.UserDeleteRequest;
 import com.moneymong.global.security.oauth.dto.AuthUserInfo;
 import com.moneymong.domain.user.api.response.LoginSuccessResponse;
 import com.moneymong.global.security.oauth.dto.OAuthUserDataResponse;
@@ -42,5 +43,11 @@ public class UserFacadeService {
         userService.delete(userId);
         userUniversityService.delete(userId);
         agencyUserService.deleteAll(userId);
+    }
+
+    @Transactional
+    public void revoke(UserDeleteRequest deleteRequest, Long userId) {
+        oAuthService.revoke(deleteRequest);
+        delete(userId);
     }
 }

@@ -6,11 +6,13 @@ import com.moneymong.domain.invitationcode.api.response.InvitationCodeResponse;
 import com.moneymong.domain.invitationcode.service.InvitationCodeService;
 import com.moneymong.global.security.token.dto.jwt.JwtAuthentication;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "4. [초대코드]")
 @RequestMapping("/api/v1/agencies/{agencyId}/invitation-code")
 @RequiredArgsConstructor
 @RestController
