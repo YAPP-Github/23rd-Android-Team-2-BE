@@ -12,6 +12,7 @@ import com.moneymong.global.security.token.exception.RefreshTokenNotFoundExcepti
 import com.moneymong.global.security.token.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TokenService {
 
@@ -38,6 +40,7 @@ public class TokenService {
         String accessToken = createAccessToken(userId, role);
         String refreshToken = createRefreshToken(userId, role);
 
+        log.info("[Token] = {}", accessToken);
         return new Tokens(accessToken, refreshToken);
     }
 
