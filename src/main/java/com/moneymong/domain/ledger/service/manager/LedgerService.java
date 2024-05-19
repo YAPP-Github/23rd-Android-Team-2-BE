@@ -17,7 +17,6 @@ import com.moneymong.domain.user.repository.UserRepository;
 import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
-import com.moneymong.utils.AmountCalculatorByFundType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -100,36 +99,12 @@ public class LedgerService {
             final Long ledgerDetailId,
             final UpdateLedgerRequest updateLedgerRequest
     ) {
-        // === 유저 ===
         User user = getUser(userId);
 
-        // === 장부 ===
         LedgerDetail ledgerDetail = getLedgerDetail(ledgerDetailId);
-
-        Ledger ledger = ledgerDetail.getLedger();
-
-        // === 소속 ===
-        AgencyUser agencyUser = getAgencyUser(userId, ledger);
-
-        // === 권한 ===
-        validateStaffUserRole(agencyUser.getAgencyUserRole());
-
-        ledgerDetailService.createLedgerDetail(
-                ledger,
-                user,
-                updateLedgerRequest.getStoreInfo(),
-                ledgerDetail.getFundType(),
-                updateLedgerRequest.getAmount(),
-                ledger.getTotalBalance(),
-                updateLedgerRequest.getDescription(),
-                updateLedgerRequest.getPaymentDate()
-        );
-
-        ledgerDetailService.removeLedgerDetail(userId, ledgerDetailId);
 
         return ledgerDetailService.updateLedgerDetail(
                 user,
-                ledger,
                 ledgerDetail,
                 updateLedgerRequest
         );

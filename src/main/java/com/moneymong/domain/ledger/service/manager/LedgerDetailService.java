@@ -13,6 +13,7 @@ import com.moneymong.domain.ledger.entity.enums.FundType;
 import com.moneymong.domain.ledger.repository.LedgerDetailRepository;
 import com.moneymong.domain.ledger.repository.LedgerDocumentRepository;
 import com.moneymong.domain.ledger.repository.LedgerReceiptRepository;
+import com.moneymong.domain.ledger.repository.LedgerRepository;
 import com.moneymong.domain.ledger.service.mapper.LedgerAssembler;
 import com.moneymong.domain.ledger.service.reader.LedgerDocumentReader;
 import com.moneymong.domain.ledger.service.reader.LedgerReceiptReader;
@@ -22,8 +23,8 @@ import com.moneymong.global.exception.custom.InvalidAccessException;
 import com.moneymong.global.exception.custom.NotFoundException;
 import com.moneymong.global.exception.enums.ErrorCode;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import com.moneymong.utils.AmountCalculatorByFundType;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +32,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.moneymong.domain.ledger.entity.enums.FundType.INCOME;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LedgerDetailService {
+    private final LedgerRepository ledgerRepository;
     private final LedgerAssembler ledgerAssembler;
     private final LedgerReceiptReader ledgerReceiptReader;
     private final LedgerDocumentReader ledgerDocumentReader;
@@ -69,51 +73,44 @@ public class LedgerDetailService {
 
         int newAmount = AmountCalculatorByFundType.calculate(fundType, amount);
 
-        /**
-         * 가장 오래된 장부 내역인 경우 잔고를 amount 값으로 설정한다.
-         * 이전 내역이 있는 경우, 가장 가까운 시일에 생성된 장부 내역을 기준으로 잔고를 저장한다.
-         */
-        Optional<LedgerDetail> mostRecentLedgerDetail = ledgerDetailRepository.findMostRecentLedgerDetail(ledger, paymentDate);
-
-        if (mostRecentLedgerDetail.isPresent()) {
-            LedgerDetail recentDetail = mostRecentLedgerDetail.get();
-
-            int newBalance = recentDetail.getBalance() + newAmount;
-            ledgerDetail.updateBalance(newBalance);
-        }else {
-            ledgerDetail.updateBalance(newAmount);
-        }
-
         ledger.updateTotalBalance(newAmount);
 
-        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
-                ledger,
-                paymentDate,
-                newAmount
-        );
+        ledgerDetailRepository.save(ledgerDetail);
 
-        return ledgerDetailRepository.save(ledgerDetail);
+        updateBalance(ledger);
+
+        return ledgerDetail;
     }
 
     @Transactional
     public LedgerDetailInfoView updateLedgerDetail(
             User user,
-            Ledger ledger,
             LedgerDetail ledgerDetail,
             UpdateLedgerRequest updateLedgerRequest
     ) {
-
-//        LedgerDetail createdLedgerDetail = createLedgerDetail(ledger,
-//                user,
-//                updateLedgerRequest.getStoreInfo(),
-//                ledgerDetail.getFundType(),
-//                updateLedgerRequest.getAmount(),
-//                ledger.getTotalBalance(),
-//                updateLedgerRequest.getDescription(),
-//                updateLedgerRequest.getPaymentDate()
-//        );
-
         long ledgerDetailId = ledgerDetail.getId();
+
+        Ledger ledger = ledgerDetail.getLedger();
+
+        int newAmount = AmountCalculatorByFundType.calculate(
+                ledgerDetail.getFundType(),
+                ledgerDetail.getAmount() - updateLedgerRequest.getAmount()
+        );
+
+        ledger.updateTotalBalance(-newAmount);
+
+        ledgerDetail.updateLedgerDetailInfo(
+                updateLedgerRequest.getStoreInfo(),
+                updateLedgerRequest.getAmount(),
+                updateLedgerRequest.getDescription(),
+                updateLedgerRequest.getPaymentDate()
+        );
+
+        AgencyUser agencyUser = getAgencyUser(user, ledgerDetail);
+
+        validateStaffUserRole(agencyUser.getAgencyUserRole());
+
+        updateBalance(ledger);
 
         // 2. 장부 상세 내역 조회
         List<LedgerReceipt> ledgerReceipts = ledgerReceiptReader.getLedgerReceipts(ledgerDetailId);
@@ -151,13 +148,9 @@ public class LedgerDetailService {
 
         int newAmount = AmountCalculatorByFundType.calculate(ledgerDetail.getFundType(), ledgerDetail.getAmount());
 
-        ledgerDetailRepository.bulkUpdateLedgerDetailBalance(
-                ledger,
-                ledgerDetail.getPaymentDate(),
-                -newAmount
-        );
-
         ledger.updateTotalBalance(-newAmount);
+
+        updateBalance(ledger);
     }
 
     private void validateStaffUserRole(AgencyUserRole userRole) {
@@ -182,5 +175,25 @@ public class LedgerDetailService {
         return userRepository
                 .findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private void updateBalance(Ledger ledger) {
+        List<LedgerDetail> ledgerDetails = ledgerDetailRepository.findAllByLedger(ledger);
+
+        ledgerDetails.sort(Comparator.comparing(LedgerDetail::getPaymentDate));
+
+        int previousBalance = 0;
+
+        for (int i = 0; i < ledgerDetails.size(); i++) {
+            LedgerDetail detail = ledgerDetails.get(i);
+
+            if (detail.getFundType() == INCOME) {
+                previousBalance += detail.getAmount();
+            } else {
+                previousBalance -= detail.getAmount();
+            }
+
+            detail.updateBalance(previousBalance);
+        }
     }
 }

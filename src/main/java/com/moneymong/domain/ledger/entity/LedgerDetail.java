@@ -84,6 +84,18 @@ public class LedgerDetail extends TimeBaseEntity {
         this.balance = balance;
     }
 
+    public void updateLedgerDetailInfo(
+            String storeInfo,
+            int amount,
+            String description,
+            ZonedDateTime paymentDate
+    ) {
+        this.storeInfo = storeInfo;
+        this.amount = amount;
+        this.description = description;
+        this.paymentDate = paymentDate;
+    }
+
     public static LedgerDetail of(
             final Ledger ledger,
             final User user,
