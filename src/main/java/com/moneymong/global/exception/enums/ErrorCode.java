@@ -14,6 +14,7 @@ public enum ErrorCode {
 
     // ---- 유저 ---- //
     USER_NOT_FOUND(MoneymongConstant.NOT_FOUND, "USER-001", "존재하지 않는 회원입니다."),
+    USER_NOT_FOUND_APPLE(MoneymongConstant.NOT_FOUND, "USER-002", "존재하지 않는 APPLE 유저입니다."),
 
     // ---- 대학교 ---- //
     USER_UNIVERSITY_NOT_FOUND(MoneymongConstant.NOT_FOUND, "UNIVERSITY-001", "회원의 대학 정보가 존재하지 않습니다."),

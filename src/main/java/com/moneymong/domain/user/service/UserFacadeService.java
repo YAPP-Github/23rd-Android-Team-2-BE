@@ -40,14 +40,9 @@ public class UserFacadeService {
 
     @Transactional
     public void delete(Long userId) {
+        oAuthService.revoke(userId);
         userService.delete(userId);
         userUniversityService.delete(userId);
         agencyUserService.deleteAll(userId);
-    }
-
-    @Transactional
-    public void revoke(UserDeleteRequest deleteRequest, Long userId) {
-        oAuthService.revoke(deleteRequest);
-        delete(userId);
     }
 }

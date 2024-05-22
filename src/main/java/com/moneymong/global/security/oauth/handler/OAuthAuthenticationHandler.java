@@ -9,5 +9,5 @@ public interface OAuthAuthenticationHandler {
 
     OAuthUserDataResponse getOAuthUserData(OAuthUserDataRequest request);
 
-    void unlink(String token);
+    void unlink(Long userId);
 }
